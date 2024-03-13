@@ -1,0 +1,7 @@
+[package]
+name = "in_silico_cancer_cell"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nalgebra = "0.32.4"

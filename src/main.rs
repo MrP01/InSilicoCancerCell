@@ -1,3 +1,11 @@
-mod channels;
+use utils::exit_on_error;
 
-fn main() {}
+mod cell;
+mod channels;
+mod constants;
+mod patchclampdata;
+mod utils;
+
+fn main() {
+  let data = exit_on_error(patchclampdata::PatchClampData::load());
+}

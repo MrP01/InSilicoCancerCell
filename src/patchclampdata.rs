@@ -23,9 +23,9 @@ impl fmt::Display for CellPhase {
 }
 
 pub struct PatchClampData {
-  protocol: PatchClampProtocol,
-  phase: CellPhase,
-  current: DVector<f64>,
+  pub protocol: PatchClampProtocol,
+  pub phase: CellPhase,
+  pub current: DVector<f64>,
 }
 
 impl PatchClampData {

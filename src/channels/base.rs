@@ -10,21 +10,27 @@ pub trait Named {
 }
 
 pub trait Simulatable<const N_STATES: usize> {
-  fn update(&mut self);
+  fn update_state(&mut self, voltage: f64);
+  fn current(&self) -> f64;
 }
 
 pub trait HasTransitionMatrix<const N_STATES: usize> {
+  #[allow(non_upper_case_globals)]
+  const conductance: f64;
   fn initial_state() -> SVector<f64, N_STATES>;
-  fn transition_matrix(&self, V: f64) -> SMatrix<f64, N_STATES, N_STATES>;
+  fn transition_matrix(&self, voltage: f64) -> SMatrix<f64, N_STATES, N_STATES>;
 }
 
 impl<const N_STATES: usize> Simulatable<N_STATES> for IonChannelCat<N_STATES>
 where
   IonChannelCat<N_STATES>: HasTransitionMatrix<N_STATES>,
 {
-  fn update(&mut self) {
-    let V = 3.5;
-    self.state = self.transition_matrix(V) * self.state;
+  fn update_state(&mut self, voltage: f64) {
+    self.state = self.transition_matrix(voltage) * self.state;
+  }
+
+  fn current(&self) -> f64 {
+    IonChannelCat::conductance * self.state[1]
   }
 }
 

@@ -3,12 +3,14 @@ use nalgebra::DVector;
 use regex::Regex;
 use std::path::Path;
 
+#[allow(dead_code)]
 pub enum PatchClampProtocol {
   Activation,
   Deactivation,
   Ramp,
 }
 
+#[allow(dead_code)]
 pub enum CellPhase {
   G0,
   G1,

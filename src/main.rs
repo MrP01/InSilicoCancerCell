@@ -23,6 +23,7 @@ fn main() {
   let pulse_protocol = PulseProtocol::default();
   let mut cell = A549CancerCell::new();
   let simulation = cell.simulate(pulse_protocol);
-  let error = (simulation.as_dvec() - measurements.current).norm_squared();
-  log::info!("Simulation match with measurements: {}", error);
+  let rows = measurements.current.len();
+  let error = (simulation.as_dvec().rows_range(0..rows) - measurements.current).norm_squared();
+  log::info!("Simulation match with measurements: {:.3}", error);
 }

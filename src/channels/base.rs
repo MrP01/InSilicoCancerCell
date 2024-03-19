@@ -1,5 +1,7 @@
 use nalgebra::{SMatrix, SVector};
 
+use crate::constants;
+
 pub struct IonChannelCat<const N_STATES: usize> {
   pub n_channels: u32,
   pub state: SVector<f64, N_STATES>,
@@ -11,7 +13,7 @@ pub trait Named {
 
 pub trait Simulatable<const N_STATES: usize> {
   fn update_state(&mut self, voltage: f64);
-  fn current(&self) -> f64;
+  fn current(&self, voltage: f64) -> f64;
 }
 
 pub trait HasTransitionMatrix<const N_STATES: usize> {
@@ -29,8 +31,8 @@ where
     self.state = self.transition_matrix(voltage) * self.state;
   }
 
-  fn current(&self) -> f64 {
-    IonChannelCat::conductance * self.state[1]
+  fn current(&self, voltage: f64) -> f64 {
+    IonChannelCat::conductance * self.state[1] * (voltage - constants::EvK)
   }
 }
 
@@ -38,6 +40,7 @@ pub trait Constructable<const N_STATES: usize> {
   fn new() -> impl HasTransitionMatrix<N_STATES>;
 }
 
+#[allow(refining_impl_trait)]
 impl<const N_STATES: usize> Constructable<N_STATES> for IonChannelCat<N_STATES>
 where
   IonChannelCat<N_STATES>: HasTransitionMatrix<N_STATES>,

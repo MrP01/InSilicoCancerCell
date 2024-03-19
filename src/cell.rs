@@ -2,7 +2,7 @@ use nalgebra::DVector;
 
 use crate::{
   channels::{
-    base::{Constructable, Simulatable},
+    base::{Constructable, Named, Simulatable},
     crac1,
   },
   constants,
@@ -37,6 +37,11 @@ impl A549CancerCell {
   pub fn simulate(&mut self, pulse_protocol: PulseProtocol) -> MembraneCurrentThroughput {
     let mut total_time = 0.0;
     let mut recorded = MembraneCurrentThroughput::empty();
+    log::info!(
+      "Simulating {} with {} channels.",
+      crac1::CRAC1IonChannelCat::name(),
+      self.crac1_channel.n_channels
+    );
     for step in pulse_protocol {
       log::info!(
         "Pulse protocol step {} ({:.3} V) for {:.3} s",
@@ -47,12 +52,12 @@ impl A549CancerCell {
       let mut time: f64 = 0.0;
       while time < step.duration {
         self.crac1_channel.update_state(step.voltage);
-        recorded.current.push(self.crac1_channel.current());
+        recorded.current.push(self.crac1_channel.current(step.voltage));
         time += constants::dt;
       }
       total_time += time;
     }
-    log::info!("Total simulation time: {total_time} s");
+    log::info!("Total simulation time: {total_time:.3} s");
     return recorded;
   }
 }

@@ -11,7 +11,7 @@ pub trait Named {
   fn name() -> String;
 }
 
-pub trait Simulatable<const N_STATES: usize> {
+pub trait Simulatable {
   fn update_state(&mut self, voltage: f64);
   fn current(&self, voltage: f64) -> f64;
 }
@@ -23,7 +23,7 @@ pub trait HasTransitionMatrix<const N_STATES: usize> {
   fn transition_matrix(&self, voltage: f64) -> SMatrix<f64, N_STATES, N_STATES>;
 }
 
-impl<const N_STATES: usize> Simulatable<N_STATES> for IonChannelCat<N_STATES>
+impl<const N_STATES: usize> Simulatable for IonChannelCat<N_STATES>
 where
   IonChannelCat<N_STATES>: HasTransitionMatrix<N_STATES>,
 {

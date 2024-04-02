@@ -3,11 +3,16 @@ name = "in_silico_cancer_cell"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "in_silico_cancer_cell"
+crate-type = ["cdylib"]
+
 [dependencies]
 cached = "0.49.2"
 log = "0.4.21"
 matfile = "0.4.1"
 nalgebra = "0.32.4"
 nalgebra-py = "0.3.1"
+pyo3 = "0.16.6"
 regex = "1.10.3"
 simplelog = "0.12.2"

@@ -1,6 +1,3 @@
 stuff/
-
-
-# Added by cargo
-
 /target
+.venv

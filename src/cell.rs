@@ -23,6 +23,7 @@ impl MembraneCurrentThroughput {
   }
 }
 
+#[pyo3::pyclass]
 pub struct A549CancerCell {
   crac1_channel: crac1::CRAC1IonChannelCat,
   kv71_channel: kv71::KV71IonChannelCat,

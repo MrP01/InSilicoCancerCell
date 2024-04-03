@@ -2,11 +2,12 @@ use nalgebra::DVector;
 
 use crate::{
   channels::{
-    base::{Constructable, HasTransitionMatrix, IonChannelCat, Named, Simulatable},
+    base::{Constructable, Named, Simulatable},
     crac1, kv71,
   },
   constants,
-  pulseprotocol::PulseProtocol,
+  patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
+  pulseprotocol::{ProtocolGenerator, PulseProtocol},
 };
 
 pub struct MembraneCurrentThroughput {
@@ -30,13 +31,6 @@ pub struct A549CancerCell {
 }
 
 impl A549CancerCell {
-  pub fn new() -> A549CancerCell {
-    return A549CancerCell {
-      crac1_channel: crac1::CRAC1IonChannelCat::new(),
-      kv71_channel: kv71::KV71IonChannelCat::new(),
-    };
-  }
-
   pub fn channels(&mut self) -> Vec<Box<&mut dyn Simulatable>> {
     return vec![Box::new(&mut self.crac1_channel), Box::new(&mut self.kv71_channel)];
   }
@@ -75,5 +69,30 @@ impl A549CancerCell {
     }
     log::info!("Total simulation time: {total_time:.3} s");
     return recorded;
+  }
+}
+
+pub fn evaluate_match(measurements: PatchClampData, simulation: MembraneCurrentThroughput) -> f64 {
+  let rows = measurements.current.len();
+  let error = (simulation.as_dvec().rows_range(0..rows) - measurements.current).norm_squared();
+  log::info!("Simulation match with measurements: {:.3}", error);
+  return error;
+}
+
+#[pyo3::pymethods]
+impl A549CancerCell {
+  #[staticmethod]
+  pub fn new() -> A549CancerCell {
+    return A549CancerCell {
+      crac1_channel: crac1::CRAC1IonChannelCat::new(),
+      kv71_channel: kv71::KV71IonChannelCat::new(),
+    };
+  }
+
+  pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
+    let measurements = PatchClampData::load(protocol, phase).unwrap();
+    let pulse_protocol = PulseProtocol::default();
+    let simulation = self.simulate(pulse_protocol);
+    return evaluate_match(measurements, simulation);
   }
 }

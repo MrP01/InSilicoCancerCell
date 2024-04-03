@@ -7,10 +7,10 @@ mod patchclampdata;
 mod pulseprotocol;
 mod utils;
 
+use cell::evaluate_match;
 use cell::A549CancerCell;
 use patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol};
 use pulseprotocol::{ProtocolGenerator, PulseProtocol};
-use utils::evaluate_match;
 
 fn main() {
   utils::setup_logging();

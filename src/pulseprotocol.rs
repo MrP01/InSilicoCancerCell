@@ -3,6 +3,7 @@ pub struct PulseProtocolStep {
   pub voltage: f64,
   pub duration: f64,
 }
+
 pub type PulseProtocol = impl Iterator<Item = PulseProtocolStep>;
 
 pub trait ProtocolGenerator {

@@ -1,6 +1,6 @@
 [project]
 name = "in_silico_cancer_cell"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 classifiers = [
   "Programming Language :: Rust",
   "Programming Language :: Python :: Implementation :: CPython",
@@ -13,6 +13,8 @@ requires = ["maturin>=1.5,<2.0"]
 build-backend = "maturin"
 
 [tool.maturin]
+python-source = "python"
+module-name = "in_silico_cancer_cell._in_rusty_silico"
 features = ["pyo3/extension-module"]
 
 [tool.poetry]
@@ -24,4 +26,11 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
+ipython = "^8.23.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.1.1"
+
+[tool.ruff]
+line-length = 120

@@ -27,9 +27,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-ipython = "^8.23.0"
+matplotlib = "^3.8.3"
 
 [tool.poetry.group.dev.dependencies]
+ipython = "^8.23.0"
 pytest = "^8.1.1"
 
 [tool.ruff]

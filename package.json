@@ -1,0 +1,18 @@
+{
+  "name": "in_silico_cancer_cell",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "rimraf dist pkg && astro build",
+    "start": "rimraf dist pkg && astro dev",
+    "test": "cargo test && wasm-pack test --headless",
+    "dev": "astro dev",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@wasm-tool/wasm-pack-plugin": "^1.7.0",
+    "astro": "^4.5.15",
+    "rimraf": "^5.0.5"
+  }
+}

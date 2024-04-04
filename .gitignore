@@ -3,3 +3,22 @@ __pycache__/
 stuff/
 /target
 .venv
+
+# build output
+dist/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.production
+.DS_Store
+.idea/

@@ -2,6 +2,7 @@
   "name": "in_silico_cancer_cell",
   "type": "module",
   "version": "0.0.1",
+  "license": "LGPL-3.0-only",
   "scripts": {
     "build": "rimraf dist pkg && astro build",
     "start": "rimraf dist pkg && astro dev",
@@ -13,6 +14,10 @@
   "dependencies": {
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
     "astro": "^4.5.15",
-    "rimraf": "^5.0.5"
+    "vite-plugin-wasm": "^3.3.0"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.5",
+    "wasm-pack": "^0.12.1"
   }
 }

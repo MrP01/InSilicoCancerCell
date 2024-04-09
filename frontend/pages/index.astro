@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
-import "../pkg/in_silico_frontend";
+import { run } from "../pkg/in_silico_frontend";
 ---
 
 <Layout title="Welcome to Astro.">
@@ -38,6 +38,7 @@ import "../pkg/in_silico_frontend";
     <p class="instructions">
       To get started, open the directory <code>src/pages</code> in your project.<br
       />
+      {run().toString()}
     </p>
     <ul role="list" class="link-card-grid">
       <Card

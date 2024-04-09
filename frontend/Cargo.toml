@@ -29,9 +29,4 @@ wasm-bindgen-test = "0.2.45"
 wasm-bindgen-futures = "0.3.22"
 futures = "0.1.27"
 js-sys = "0.3.22"
-
-# The `console_error_panic_hook` crate provides better debugging of panics by
-# logging them with `console.error`. This is great for development, but requires
-# all the `std::fmt` and `std::panicking` infrastructure, so it's only enabled
-# in debug mode.
-console_error_panic_hook = "0.1.5"
+console_error_panic_hook = "0.1.7"

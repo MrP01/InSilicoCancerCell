@@ -12,8 +12,12 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^3.2.0",
+    "@observablehq/plot": "^0.6.14",
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
     "astro": "^4.5.15",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {

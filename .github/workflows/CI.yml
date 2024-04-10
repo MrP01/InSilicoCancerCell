@@ -52,6 +52,14 @@ jobs:
           name: wheels-linux-${{ matrix.platform.target }}
           path: dist
 
+      # builds main.rs
+      - run: cargo build
+
+      # builds frontend with wasm-pack
+      - uses: bahmutov/npm-install@v1
+      - run: yarn run wasm-pack build frontend
+      - run: yarn run build
+
   windows:
     runs-on: ${{ matrix.platform.runner }}
     strategy:
@@ -123,7 +131,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: "startsWith(github.ref, 'refs/tags/')"
+    if: startsWith(github.ref, 'refs/tags/')
     needs: [linux, windows, macos, sdist]
     steps:
       - uses: actions/download-artifact@v4

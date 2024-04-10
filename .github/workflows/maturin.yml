@@ -52,14 +52,6 @@ jobs:
           name: wheels-linux-${{ matrix.platform.target }}
           path: dist
 
-      # builds main.rs
-      - run: cargo build
-
-      # builds frontend with wasm-pack
-      - uses: bahmutov/npm-install@v1
-      - run: yarn run wasm-pack build frontend
-      - run: yarn run build
-
   windows:
     runs-on: ${{ matrix.platform.runner }}
     strategy:

@@ -3,7 +3,7 @@
 #
 #    maturin generate-ci github
 #
-name: Build Maturin
+name: Build Maturin (Python Package)
 
 on:
   push:

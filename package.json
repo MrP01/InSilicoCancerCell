@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "license": "LGPL-3.0-only",
   "scripts": {
-    "build": "rimraf dist pkg && astro build",
-    "start": "rimraf dist pkg && astro dev",
+    "build": "astro build",
+    "start": "astro dev",
     "test": "cargo test && wasm-pack test --headless",
     "dev": "astro dev",
     "preview": "astro preview",
@@ -17,7 +17,6 @@
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {
-    "rimraf": "^5.0.5",
     "wasm-pack": "^0.12.1"
   }
 }

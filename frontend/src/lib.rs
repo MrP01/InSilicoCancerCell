@@ -1,3 +1,4 @@
+use in_silico_cancer_cell::cell::A549CancerCell;
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
@@ -8,6 +9,7 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
 pub fn run() -> Vec<f64> {
+  let cell = A549CancerCell::new();
   return vec![2.0, 3.45, 11.0];
 }
 

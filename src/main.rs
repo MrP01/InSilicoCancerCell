@@ -1,4 +1,4 @@
-#![feature(coroutines, iter_from_coroutine, type_alias_impl_trait)]
+#![feature(coroutines, iter_from_coroutine, type_alias_impl_trait, cfg_eval)]
 
 mod cell;
 mod channels;

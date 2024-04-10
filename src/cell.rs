@@ -24,7 +24,7 @@ impl MembraneCurrentThroughput {
   }
 }
 
-#[pyo3::pyclass]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct A549CancerCell {
   crac1_channel: crac1::CRAC1IonChannelCat,
   kv71_channel: kv71::KV71IonChannelCat,
@@ -79,9 +79,10 @@ pub fn evaluate_match(measurements: PatchClampData, simulation: MembraneCurrentT
   return error;
 }
 
-#[pyo3::pymethods]
+#[cfg_eval]
+#[cfg_attr(feature = "pyo3", pyo3::pymethods)]
 impl A549CancerCell {
-  #[staticmethod]
+  #[cfg_attr(feature = "pyo3", staticmethod)]
   pub fn new() -> A549CancerCell {
     return A549CancerCell {
       crac1_channel: crac1::CRAC1IonChannelCat::new(),

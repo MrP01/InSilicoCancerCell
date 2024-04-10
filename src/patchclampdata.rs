@@ -4,7 +4,7 @@ use regex::Regex;
 use std::path::Path;
 
 #[allow(dead_code)]
-#[pyo3::pyclass]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[derive(Clone)]
 pub enum PatchClampProtocol {
   Activation,
@@ -13,7 +13,7 @@ pub enum PatchClampProtocol {
 }
 
 #[allow(dead_code)]
-#[pyo3::pyclass]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[derive(Clone)]
 pub enum CellPhase {
   G0,

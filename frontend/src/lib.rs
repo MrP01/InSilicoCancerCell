@@ -1,4 +1,8 @@
-use in_silico_cancer_cell::cell::A549CancerCell;
+use in_silico_cancer_cell::{
+  cell::A549CancerCell,
+  patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
+  pulseprotocol::{ProtocolGenerator, PulseProtocol},
+};
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
@@ -9,7 +13,10 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
 pub fn run() -> Vec<f64> {
-  let cell = A549CancerCell::new();
+  // let measurements = PatchClampData::load(PatchClampProtocol::Ramp, CellPhase::G0).unwrap();
+  let pulse_protocol = PulseProtocol::default();
+  let mut cell = A549CancerCell::new();
+  // let simulation = cell.simulate(pulse_protocol);
   return vec![2.0, 3.45, 11.0];
 }
 

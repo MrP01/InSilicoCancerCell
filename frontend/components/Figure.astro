@@ -1,0 +1,13 @@
+---
+import * as Plot from "@observablehq/plot";
+import { JSDOM } from "jsdom";
+
+const { options } = Astro.props;
+const jsdom = new JSDOM();
+const plottyplot = Plot.plot({
+  ...options,
+  document: jsdom.window._document,
+});
+---
+
+<Fragment set:html={plottyplot.outerHTML} />

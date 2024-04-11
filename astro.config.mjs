@@ -1,6 +1,5 @@
 import { defineConfig } from "astro/config";
 import wasm from "vite-plugin-wasm";
-import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,5 +10,4 @@ export default defineConfig({
     },
     plugins: [wasm()],
   },
-  integrations: [react()],
 });

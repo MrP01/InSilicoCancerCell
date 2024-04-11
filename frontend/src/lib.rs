@@ -13,11 +13,11 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
 pub fn run() -> Vec<f64> {
-  // let measurements = PatchClampData::load(PatchClampProtocol::Ramp, CellPhase::G0).unwrap();
+  // let measurements = PatchClampData::demo();
   let pulse_protocol = PulseProtocol::default();
   let mut cell = A549CancerCell::new();
-  // let simulation = cell.simulate(pulse_protocol);
-  return vec![2.0, 3.45, 11.0];
+  let simulation = cell.simulate(pulse_protocol);
+  return simulation.as_dvec().iter().cloned().collect();
 }
 
 // This is like the `main` function, except for JavaScript.
@@ -27,6 +27,6 @@ pub fn main_js() -> Result<(), JsValue> {
   // It's disabled in release mode so it doesn't bloat up the file size.
   #[cfg(debug_assertions)]
   console_error_panic_hook::set_once();
-  console::log_1(&JsValue::from_str("Hello world!"));
+  console::log_1(&JsValue::from_str("Hello from the in-silico Rust library!"));
   Ok(())
 }

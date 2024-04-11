@@ -1,7 +1,7 @@
 use core::fmt;
 use nalgebra::DVector;
 use regex::Regex;
-use std::path::Path;
+use std::{path::Path, vec};
 
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
@@ -65,6 +65,18 @@ impl PatchClampData {
       })
     } else {
       Err(Box::new(matfile::Error::ConversionError))
+    }
+  }
+
+  pub fn demo() -> PatchClampData {
+    let mut c = DVector::zeros(100);
+    for i in 0..c.len() {
+      c[i] = 0.0 + 0.1 * (i as f64);
+    }
+    PatchClampData {
+      protocol: PatchClampProtocol::Activation,
+      phase: CellPhase::G0,
+      current: c,
     }
   }
 }

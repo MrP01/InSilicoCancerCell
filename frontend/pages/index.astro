@@ -8,29 +8,11 @@ import Figure from "../components/Figure.astro";
 
 <Layout title="Welcome to Astro.">
   <main>
-    <h1>Welcome to <span class="text-gradient">Astro</span></h1>
-    <p class="instructions">
-      To get started, open the directory <code>src/pages</code> in your project.<br
-      />
-      {run().toString()}
-    </p>
+    <h1><span class="text-gradient">In-Silico</span> Cancer Cell</h1>
+    <p class="instructions">Welcome! 🚀 This is the full simulation output:</p>
     <Figure
       options={{
-        marks: [
-          Plot.dot(
-            [
-              { width: 1, height: 2, sex: "lightgreen" },
-              { width: 3, height: 4, sex: "lightblue" },
-              { width: 2, height: 2, sex: "lightgreen" },
-              { width: 1.8, height: 3.2, sex: "lightgreen" },
-            ],
-            {
-              x: "width",
-              y: "height",
-              stroke: "sex",
-            }
-          ),
-        ],
+        marks: [Plot.lineY(run())],
       }}
     />
     <ul role="list" class="link-card-grid">

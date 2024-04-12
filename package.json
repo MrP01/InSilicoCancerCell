@@ -19,6 +19,7 @@
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {
+    "sass": "^1.75.0",
     "wasm-pack": "^0.12.1"
   }
 }

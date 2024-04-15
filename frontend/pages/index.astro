@@ -6,35 +6,39 @@ import * as Plot from "@observablehq/plot";
 import Figure from "../components/Figure.astro";
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="Elecrophysiological Model of a Cancer Cell">
   <main>
     <h1><span class="text-gradient">In-Silico</span> Cancer Cell</h1>
     <p class="instructions">Welcome! 🚀 This is the full simulation output:</p>
     <Figure
       options={{
-        marks: [Plot.lineY(run())],
+        marks: [
+          Plot.lineY(run(), { y: (y) => y * 1e12, z: null, stroke: (y) => y }),
+        ],
+        width: 1100,
+        height: 450,
       }}
     />
+    <!-- <img
+      src="https://journals.plos.org/ploscompbiol/article/figure/image?size=large&download=&id=10.1371/journal.pcbi.1009091.g002"
+      width="100%"
+      style="margin: 20px 0"
+    /> -->
     <ul role="list" class="link-card-grid">
       <Card
-        href="https://docs.astro.build/"
-        title="Documentation"
-        body="Learn how Astro works and explore the official API docs."
+        href="https://github.com/MrP01/InSilicoCancerCell"
+        title="Simulation: Source Code"
+        body="Explore the source code of this simulation."
       />
       <Card
-        href="https://astro.build/integrations/"
-        title="Integrations"
-        body="Supercharge your project with new frameworks and libraries."
+        href="https://www.tugraz.at/en/institutes/hce/home"
+        title="Institute: HCE"
+        body="Developed at the Institute of Health Care Engineering with European Testing Center of Medical Devices"
       />
       <Card
-        href="https://astro.build/themes/"
-        title="Themes"
-        body="Explore a galaxy of community-built starter themes."
-      />
-      <Card
-        href="https://astro.build/chat/"
-        title="Community"
-        body="Come say hi to our amazing Discord community. ❤️"
+        href="https://www.tugraz.at/"
+        title="Place: TU Graz"
+        body="Part of the Technical University of Graz."
       />
     </ul>
   </main>

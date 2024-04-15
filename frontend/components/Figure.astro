@@ -10,4 +10,23 @@ const plottyplot = Plot.plot({
 });
 ---
 
-<Fragment set:html={plottyplot.outerHTML} />
+<astro-figure data-plot-options={JSON.stringify(options)}>
+  <Fragment set:html={plottyplot.outerHTML} />
+</astro-figure>
+
+<script>
+  // import * as Plot from "@observablehq/plot";
+  class AstroFigure extends HTMLElement {
+    constructor() {
+      super();
+      // this.innerHTML = "";
+      // this.appendChild(
+      //   Plot.plot({
+      //     ...JSON.parse(this.dataset.plotOptions || ""),
+      //     tip: "x",
+      //   })
+      // );
+    }
+  }
+  customElements.define("astro-figure", AstroFigure);
+</script>

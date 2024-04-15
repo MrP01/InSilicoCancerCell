@@ -17,7 +17,7 @@ pub fn run() -> Vec<f64> {
   let pulse_protocol = PulseProtocol::default();
   let mut cell = A549CancerCell::new();
   let simulation = cell.simulate(pulse_protocol);
-  return simulation.as_dvec().iter().cloned().collect();
+  return simulation.current;
 }
 
 // This is like the `main` function, except for JavaScript.

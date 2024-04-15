@@ -22,7 +22,7 @@ code {
 main {
   margin: auto;
   padding: 1rem;
-  width: 800px;
+  width: 1100px;
   max-width: calc(100% - 2rem);
   color: white;
   font-size: 20px;
@@ -38,6 +38,7 @@ h1 {
 }
 .text-gradient {
   background-image: var(--accent-gradient);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: 400%;

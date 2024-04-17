@@ -1,15 +1,10 @@
-use super::base::{HasTransitionMatrix, IonChannelCat, Named};
-use crate::constants;
-use nalgebra::{Matrix5, Vector5};
+use super::base::HasTransitionMatrix;
+use crate::{constants, define_ion_channel};
+use nalgebra::Matrix5;
 
-pub type KV71IonChannelCat = IonChannelCat<5>;
+define_ion_channel!(KV71IonChannelCat, "Kv71", 5, 3.2e-12, (0.0, 0.0, 1.0, 0.0, 0.0));
+
 impl HasTransitionMatrix<5> for KV71IonChannelCat {
-  const conductance: f64 = 3.2e-12;
-
-  fn initial_state() -> Vector5<f64> {
-    return Vector5::new(0.0, 0.0, 1.0, 0.0, 0.0);
-  }
-
   fn transition_matrix(&self, v: f64) -> Matrix5<f64> {
     // Constants
     let factor = v * constants::F / (constants::R * constants::T);
@@ -40,12 +35,6 @@ impl HasTransitionMatrix<5> for KV71IonChannelCat {
       0.0, 0.0, eps_prob, 1.0 - delta_prob - lambda_prob, micro_prob,
       0.0, 0.0, 0.0, lambda_prob, 1.0 - micro_prob,
     ]);
-  }
-}
-
-impl Named for KV71IonChannelCat {
-  fn name() -> String {
-    return String::from("Kv_7_1");
   }
 }
 

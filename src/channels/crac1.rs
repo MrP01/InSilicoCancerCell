@@ -1,16 +1,12 @@
-use super::base::{HasTransitionMatrix, IonChannelCat, Named};
-use crate::constants;
-use nalgebra::{Matrix2, SVector, Vector2};
+use super::base::HasTransitionMatrix;
+use crate::{constants, define_ion_channel};
+use nalgebra::Matrix2;
 
-pub type CRAC1IonChannelCat = IonChannelCat<2>;
+define_ion_channel!(CRAC1IonChannelCat, "CRACM1", 2, 24e-15, (0.0, 1.0));
+
 impl HasTransitionMatrix<2> for CRAC1IonChannelCat {
-  const conductance: f64 = 24e-15;
-
-  fn initial_state() -> SVector<f64, 2> {
-    return Vector2::new(0.0, 1.0);
-  }
-
   fn transition_matrix(&self, v: f64) -> Matrix2<f64> {
+    nalgebra::SVector::<f64, 2>::new(2.0, 3.0);
     if v <= 0.0 {
       let tau_o = 41.0 * (v / 110.0).exp();
       let tau_c = 19.0 * (v / 48.0).exp();
@@ -20,10 +16,5 @@ impl HasTransitionMatrix<2> for CRAC1IonChannelCat {
     } else {
       return Matrix2::new(1.0, 1.0, 0.0, 0.0);
     }
-  }
-}
-impl Named for CRAC1IonChannelCat {
-  fn name() -> String {
-    return String::from("CRACM1");
   }
 }

@@ -1,14 +1,8 @@
-use nalgebra::{SMatrix, SVector};
+use nalgebra::SMatrix;
 
-use crate::constants;
-
-pub struct IonChannelCat<const N_STATES: usize> {
-  pub n_channels: u32,
-  pub state: SVector<f64, N_STATES>,
-}
-
-pub trait Named {
-  fn name() -> String;
+#[allow(non_upper_case_globals)]
+pub trait HasTransitionMatrix<const N_STATES: usize> {
+  fn transition_matrix(&self, voltage: f64) -> SMatrix<f64, N_STATES, N_STATES>;
 }
 
 pub trait Simulatable {
@@ -16,39 +10,36 @@ pub trait Simulatable {
   fn current(&self, voltage: f64) -> f64;
 }
 
-pub trait HasTransitionMatrix<const N_STATES: usize> {
-  #[allow(non_upper_case_globals)]
-  const conductance: f64;
-  fn initial_state() -> SVector<f64, N_STATES>;
-  fn transition_matrix(&self, voltage: f64) -> SMatrix<f64, N_STATES, N_STATES>;
-}
+#[macro_export]
+macro_rules! define_ion_channel {
+  ( $name: ident, $display_name: expr, $N_STATES: expr, $conductance: expr, ($($initial_state: expr), *) ) => {
+    pub struct $name {
+      pub state: nalgebra::SVector<f64, $N_STATES>,
+      pub n_channels: u32,
+    }
+    #[allow(non_upper_case_globals)]
+    impl $name {
+      pub const n_states: usize = $N_STATES;
+      pub const conductance: f64 = $conductance;
+      pub fn display_name() -> String {
+        return String::from($display_name);
+      }
+      pub fn new() -> Self {
+        return $name {
+          n_channels: 10,
+          state: nalgebra::SVector::<f64, $N_STATES>::from_vec(vec![$($initial_state), *]),
+          // state: vec![$($initial_state), *]
+        };
+      }
+    }
+    impl crate::channels::base::Simulatable for $name {
+      fn update_state(&mut self, voltage: f64) {
+        self.state = self.transition_matrix(voltage) * self.state;
+      }
 
-impl<const N_STATES: usize> Simulatable for IonChannelCat<N_STATES>
-where
-  IonChannelCat<N_STATES>: HasTransitionMatrix<N_STATES>,
-{
-  fn update_state(&mut self, voltage: f64) {
-    self.state = self.transition_matrix(voltage) * self.state;
-  }
-
-  fn current(&self, voltage: f64) -> f64 {
-    IonChannelCat::conductance * self.state[1] * (voltage - constants::EvK)
-  }
-}
-
-pub trait Constructable<const N_STATES: usize> {
-  fn new() -> impl HasTransitionMatrix<N_STATES>;
-}
-
-#[allow(refining_impl_trait)]
-impl<const N_STATES: usize> Constructable<N_STATES> for IonChannelCat<N_STATES>
-where
-  IonChannelCat<N_STATES>: HasTransitionMatrix<N_STATES>,
-{
-  fn new() -> Self {
-    return IonChannelCat {
-      n_channels: 10,
-      state: Self::initial_state(),
-    };
-  }
+      fn current(&self, voltage: f64) -> f64 {
+        Self::conductance * self.state[1] * (voltage - constants::EvK)
+      }
+    }
+  };
 }

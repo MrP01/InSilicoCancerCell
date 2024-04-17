@@ -1,22 +1,24 @@
 use nalgebra::DVector;
+use std::collections::HashMap;
 
 use crate::{
-  channels::{
-    base::{Constructable, Named, Simulatable},
-    crac1, kv71,
-  },
+  channels::{base::Simulatable, crac1, kv71},
   constants,
   patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
   pulseprotocol::{ProtocolGenerator, PulseProtocol},
 };
 
 pub struct MembraneCurrentThroughput {
-  current: Vec<f64>,
+  pub current: Vec<f64>,
+  pub states: HashMap<String, Vec<f64>>,
 }
 
 impl MembraneCurrentThroughput {
   pub fn empty() -> Self {
-    Self { current: vec![] }
+    Self {
+      current: vec![],
+      states: HashMap::new(),
+    }
   }
 
   pub fn as_dvec(self) -> DVector<f64> {
@@ -39,16 +41,18 @@ impl A549CancerCell {
     let mut total_time = 0.0;
     let mut recorded = MembraneCurrentThroughput::empty();
     log::info!(
-      "Simulating {} with {} channels.",
-      crac1::CRAC1IonChannelCat::name(),
+      "Simulating {} ({} states) with {} channels.",
+      crac1::CRAC1IonChannelCat::display_name(),
+      crac1::CRAC1IonChannelCat::n_states,
       self.crac1_channel.n_channels
     );
     log::info!(
-      "Simulating {} with {} channels.",
-      kv71::KV71IonChannelCat::name(),
+      "Simulating {} ({} states) with {} channels.",
+      kv71::KV71IonChannelCat::display_name(),
+      kv71::KV71IonChannelCat::n_states,
       self.kv71_channel.n_channels
     );
-    for step in pulse_protocol {
+    for (n, step) in pulse_protocol.enumerate() {
       log::info!(
         "Pulse protocol step {} ({:.3} V) for {:.3} s",
         step.label,
@@ -62,7 +66,14 @@ impl A549CancerCell {
           channel.update_state(step.voltage);
           total_current += channel.current(step.voltage);
         }
-        recorded.current.push(total_current);
+        if n % constants::STEPS_PER_MEASUREMENT == 0 {
+          recorded.current.push(total_current);
+          // for channel in self.channels() {
+          // recorded
+          //   .states
+          //   .insert(channel.namename(), channel.state.iter().cloned().collect());
+          // }
+        }
         time += constants::dt;
       }
       total_time += time;

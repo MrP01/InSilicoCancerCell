@@ -2,7 +2,7 @@ use nalgebra::DVector;
 use std::collections::HashMap;
 
 use crate::{
-  channels::{base::Simulatable, crac1, kv71},
+  channels::{base::IsChannel, crac1, kv34, kv71},
   constants,
   patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
   pulseprotocol::{ProtocolGenerator, PulseProtocol},
@@ -29,29 +29,21 @@ impl MembraneCurrentThroughput {
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct A549CancerCell {
   crac1_channel: crac1::CRAC1IonChannelCat,
+  kv34_channel: kv34::KV34IonChannelCat,
   kv71_channel: kv71::KV71IonChannelCat,
 }
 
 impl A549CancerCell {
-  pub fn channels(&mut self) -> Vec<Box<&mut dyn Simulatable>> {
-    return vec![Box::new(&mut self.crac1_channel), Box::new(&mut self.kv71_channel)];
+  pub fn channels(&mut self) -> Vec<&mut dyn IsChannel> {
+    return vec![&mut self.crac1_channel, &mut self.kv34_channel, &mut self.kv71_channel];
   }
 
   pub fn simulate(&mut self, pulse_protocol: PulseProtocol) -> MembraneCurrentThroughput {
     let mut total_time = 0.0;
     let mut recorded = MembraneCurrentThroughput::empty();
-    log::info!(
-      "Simulating {} ({} states) with {} channels.",
-      crac1::CRAC1IonChannelCat::display_name(),
-      crac1::CRAC1IonChannelCat::n_states,
-      self.crac1_channel.n_channels
-    );
-    log::info!(
-      "Simulating {} ({} states) with {} channels.",
-      kv71::KV71IonChannelCat::display_name(),
-      kv71::KV71IonChannelCat::n_states,
-      self.kv71_channel.n_channels
-    );
+    for channel in self.channels() {
+      log::info!("{}", channel.display_me());
+    }
     for (n, step) in pulse_protocol.enumerate() {
       log::info!(
         "Pulse protocol step {} ({:.3} V) for {:.3} s",
@@ -97,6 +89,7 @@ impl A549CancerCell {
   pub fn new() -> A549CancerCell {
     return A549CancerCell {
       crac1_channel: crac1::CRAC1IonChannelCat::new(),
+      kv34_channel: kv34::KV34IonChannelCat::new(),
       kv71_channel: kv71::KV71IonChannelCat::new(),
     };
   }

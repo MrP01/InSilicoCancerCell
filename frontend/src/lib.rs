@@ -1,6 +1,6 @@
 use in_silico_cancer_cell::{
   cell::A549CancerCell,
-  patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
+  // patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
   pulseprotocol::{ProtocolGenerator, PulseProtocol},
 };
 use wasm_bindgen::prelude::*;

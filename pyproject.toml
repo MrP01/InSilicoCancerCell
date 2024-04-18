@@ -35,3 +35,10 @@ pytest = "^8.1.1"
 
 [tool.ruff]
 line-length = 120
+
+[tool.nitpick]
+style = [
+  "github://MrP01/lint-me-now/nitpick-base-style.toml",
+  "github://MrP01/lint-me-now/nitpick-rust-style.toml",
+  "github://MrP01/lint-me-now/nitpick-python-style.toml",
+]

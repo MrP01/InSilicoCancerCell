@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use nalgebra::DVector;
 
 use crate::{
-  channels::{base::IsChannel, crac1, kv34, kv71},
+  channels::{base::IsChannel, crac1, kv13, kv34, kv71},
   constants,
   patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
   pulseprotocol::{ProtocolGenerator, PulseProtocol},
@@ -30,13 +30,19 @@ impl MembraneCurrentThroughput {
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct A549CancerCell {
   crac1_channel: crac1::CRAC1IonChannelCat,
+  kv13_channel: kv13::KV13IonChannelCat,
   kv34_channel: kv34::KV34IonChannelCat,
   kv71_channel: kv71::KV71IonChannelCat,
 }
 
 impl A549CancerCell {
   pub fn channels(&mut self) -> Vec<&mut dyn IsChannel> {
-    return vec![&mut self.crac1_channel, &mut self.kv34_channel, &mut self.kv71_channel];
+    return vec![
+      &mut self.crac1_channel,
+      &mut self.kv13_channel,
+      &mut self.kv34_channel,
+      &mut self.kv71_channel,
+    ];
   }
 
   pub fn simulate(&mut self, pulse_protocol: PulseProtocol) -> MembraneCurrentThroughput {
@@ -90,6 +96,7 @@ impl A549CancerCell {
   pub fn new() -> A549CancerCell {
     return A549CancerCell {
       crac1_channel: crac1::CRAC1IonChannelCat::new(),
+      kv13_channel: kv13::KV13IonChannelCat::new(),
       kv34_channel: kv34::KV34IonChannelCat::new(),
       kv71_channel: kv71::KV71IonChannelCat::new(),
     };

@@ -1,0 +1,52 @@
+use super::base::HasTransitionMatrix;
+use crate::{constants, define_ion_channel};
+pub type Matrix7<T> = nalgebra::Matrix<T, nalgebra::U7, nalgebra::U7, nalgebra::ArrayStorage<T, 7, 7>>;
+
+define_ion_channel!(
+  KV13IonChannelCat,
+  "Kv13",
+  7,
+  15e-12,
+  (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+);
+
+impl HasTransitionMatrix<7> for KV13IonChannelCat {
+  fn transition_matrix(&self, v: f64) -> Matrix7<f64> {
+    // Constants
+    let a = 0.488;
+    let b = 0.043;
+    let c = 0.003;
+    let d = 0.00008;
+    let const_a = 280.035;
+    let const_b = 1.648;
+    let m = 27.530;
+    let n = 17.528;
+    let p = 174.961;
+    let q = 1016.330;
+
+    // Transition rates
+    let alpha_rate = a * (v * 1e3 / m).exp();
+    let beta_rate = b * (-v * 1e3 / n).exp();
+    let gamma_rate = c * (v * 1e3 / p).exp();
+    let phi_rate = d * (-v * 1e3 / q).exp();
+
+    // Transition probabilities = rate constants * ms
+    let alpha = alpha_rate * constants::dt * 1e3;
+    let beta = beta_rate * constants::dt * 1e3;
+    let gamma = gamma_rate * constants::dt * 1e3;
+    let phi = phi_rate * constants::dt * 1e3;
+    let A = const_a * constants::dt * 1e3;
+    let B = const_b * constants::dt * 1e3;
+
+    #[rustfmt::skip]
+    return Matrix7::from_row_slice(&[
+      1.0 - 4.0 * alpha, beta, 0.0, 0.0, 0.0, 0.0, 0.0,
+      4.0 * alpha, 1.0 - 3.0 * alpha - beta, 2.0 * beta, 0.0, 0.0, 0.0, 0.0,
+      0.0, 3.0 * alpha, 1.0 - 2.0 * alpha - 2.0 * beta, 3.0 * beta, 0.0, 0.0, 0.0,
+      0.0, 0.0, 2.0 * alpha, 1.0 - alpha - 3.0 * beta, 4.0 * beta, 0.0, 0.0,
+      0.0, 0.0, 0.0, alpha, 1.0 - 4.0 * beta - A, B, 0.0,
+      0.0, 0.0, 0.0, 0.0, A, 1.0 - gamma - B, phi,
+      0.0, 0.0, 0.0, 0.0, 0.0, gamma, 1.0 - phi
+    ]);
+  }
+}

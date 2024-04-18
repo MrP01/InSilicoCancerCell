@@ -1,6 +1,5 @@
 import pathlib
 
-import in_silico_cancer_cell as insilico
 import in_silico_cancer_cell.plot as insilico_plot
 
 RESULTS = pathlib.Path(__file__).resolve().parent / "figures" / "results"

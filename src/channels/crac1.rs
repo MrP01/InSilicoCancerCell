@@ -1,6 +1,7 @@
+use nalgebra::Matrix2;
+
 use super::base::HasTransitionMatrix;
 use crate::{constants, define_ion_channel};
-use nalgebra::Matrix2;
 
 define_ion_channel!(CRAC1IonChannelCat, "CRACM1", 2, 24e-15, (0.0, 1.0));
 

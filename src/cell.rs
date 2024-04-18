@@ -1,5 +1,6 @@
-use nalgebra::DVector;
 use std::collections::HashMap;
+
+use nalgebra::DVector;
 
 use crate::{
   channels::{base::IsChannel, crac1, kv34, kv71},

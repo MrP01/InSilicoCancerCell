@@ -1,6 +1,7 @@
+use nalgebra::Matrix5;
+
 use super::base::HasTransitionMatrix;
 use crate::{constants, define_ion_channel};
-use nalgebra::Matrix5;
 
 define_ion_channel!(KV71IonChannelCat, "Kv71", 5, 3.2e-12, (0.0, 0.0, 1.0, 0.0, 0.0));
 

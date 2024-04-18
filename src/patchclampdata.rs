@@ -1,7 +1,8 @@
 use core::fmt;
+use std::path::Path;
+
 use nalgebra::DVector;
 use regex::Regex;
-use std::path::Path;
 
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]

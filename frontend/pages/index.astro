@@ -1,8 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
-import { run } from "../pkg/in_silico_frontend";
-import * as Plot from "@observablehq/plot";
 import Figure from "../components/Figure.astro";
 ---
 
@@ -11,10 +9,8 @@ import Figure from "../components/Figure.astro";
     <h1><span class="text-gradient">In-Silico</span> Cancer Cell</h1>
     <p class="instructions">Welcome! 🚀 This is the full simulation output:</p>
     <Figure
-      options={{
-        marks: [
-          Plot.lineY(run(), { y: (y) => y * 1e12, z: null, stroke: (y) => y }),
-        ],
+      plot="fullSimulationCurrent"
+      extra={{
         width: 1100,
         height: 450,
       }}
@@ -35,11 +31,7 @@ import Figure from "../components/Figure.astro";
         title="Institute: HCE"
         body="Developed at the Institute of Health Care Engineering with European Testing Center of Medical Devices"
       />
-      <Card
-        href="https://www.tugraz.at/"
-        title="Place: TU Graz"
-        body="Part of the Technical University of Graz."
-      />
+      <Card href="https://www.tugraz.at/" title="Place: TU Graz" body="Part of the Technical University of Graz." />
     </ul>
   </main>
 </Layout>
@@ -48,10 +40,7 @@ import Figure from "../components/Figure.astro";
   .instructions {
     margin-bottom: 2rem;
     border: 1px solid rgba(var(--accent-light), 25%);
-    background: linear-gradient(
-      rgba(var(--accent-dark), 66%),
-      rgba(var(--accent-dark), 33%)
-    );
+    background: linear-gradient(rgba(var(--accent-dark), 66%), rgba(var(--accent-dark), 33%));
     padding: 1.5rem;
     border-radius: 8px;
   }

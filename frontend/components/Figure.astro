@@ -1,31 +1,37 @@
 ---
 import * as Plot from "@observablehq/plot";
 import { JSDOM } from "jsdom";
+import { generatePlot } from "../plots";
 
-const { options } = Astro.props;
+const { plot, extra } = Astro.props;
 const jsdom = new JSDOM();
-const plottyplot = Plot.plot({
-  ...options,
+const staticPlot = Plot.plot({
+  ...generatePlot(plot),
+  ...extra,
   document: jsdom.window._document,
 });
 ---
 
-<astro-figure data-plot-options={JSON.stringify(options)}>
-  <Fragment set:html={plottyplot.outerHTML} />
+<astro-figure data-plot={plot} data-plot-extra={JSON.stringify(extra)}>
+  <Fragment set:html={staticPlot.outerHTML} />
 </astro-figure>
 
 <script>
-  // import * as Plot from "@observablehq/plot";
+  import * as Plot from "@observablehq/plot";
+  import { generatePlot } from "../plots";
+
   class AstroFigure extends HTMLElement {
     constructor() {
       super();
-      // this.innerHTML = "";
-      // this.appendChild(
-      //   Plot.plot({
-      //     ...JSON.parse(this.dataset.plotOptions || ""),
-      //     tip: "x",
-      //   })
-      // );
+      this.innerHTML = "";
+      this.appendChild(
+        Plot.plot({
+          ...generatePlot(this.dataset.plot, true),
+          ...JSON.parse(this.dataset.plotExtra || ""),
+          style: "--plot-background: black",
+        })
+      );
+      console.log(`In-place replacement of ${this.dataset.plot} succeeded.`);
     }
   }
   customElements.define("astro-figure", AstroFigure);

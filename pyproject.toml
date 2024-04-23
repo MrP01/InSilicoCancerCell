@@ -27,7 +27,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-matplotlib = "^3.8.3"
+matplotlib = "^3.8.4"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.23.0"
@@ -42,3 +42,4 @@ style = [
   "github://MrP01/lint-me-now/nitpick-rust-style.toml",
   "github://MrP01/lint-me-now/nitpick-python-style.toml",
 ]
+cache = "never"

@@ -9,6 +9,7 @@ mod utils;
 
 use cell::evaluate_match;
 use cell::A549CancerCell;
+use cell::TotalCurrentRecord;
 use patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol};
 use pulseprotocol::{ProtocolGenerator, PulseProtocol};
 
@@ -17,6 +18,7 @@ fn main() {
   let measurements = PatchClampData::load(PatchClampProtocol::Ramp, CellPhase::G0).unwrap();
   let pulse_protocol = PulseProtocol::default();
   let mut cell = A549CancerCell::new();
-  let simulation = cell.simulate(pulse_protocol);
-  evaluate_match(measurements, simulation);
+  let mut recorded = TotalCurrentRecord::empty();
+  cell.simulate(pulse_protocol, &mut recorded);
+  evaluate_match(measurements, recorded);
 }

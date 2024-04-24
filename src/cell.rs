@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use nalgebra::DVector;
 
 use crate::{
@@ -9,21 +7,29 @@ use crate::{
   pulseprotocol::{ProtocolGenerator, PulseProtocol},
 };
 
-pub struct MembraneCurrentThroughput {
-  pub current: Vec<f64>,
-  pub states: HashMap<String, Vec<f64>>,
+pub trait SimulationRecorder {
+  fn record(&mut self, cell: &A549CancerCell, voltage: f64);
 }
 
-impl MembraneCurrentThroughput {
+pub struct TotalCurrentRecord {
+  pub current: Vec<f64>,
+}
+
+impl TotalCurrentRecord {
   pub fn empty() -> Self {
-    Self {
-      current: vec![],
-      states: HashMap::new(),
-    }
+    Self { current: vec![] }
   }
 
   pub fn as_dvec(self) -> DVector<f64> {
     DVector::<f64>::from_vec(self.current)
+  }
+}
+
+impl SimulationRecorder for TotalCurrentRecord {
+  fn record(&mut self, cell: &A549CancerCell, voltage: f64) {
+    self
+      .current
+      .push(cell.channels().iter().map(|c| c.current(voltage)).sum());
   }
 }
 
@@ -36,7 +42,15 @@ pub struct A549CancerCell {
 }
 
 impl A549CancerCell {
-  pub fn channels(&mut self) -> Vec<&mut dyn IsChannel> {
+  pub fn channels(&self) -> Vec<&dyn IsChannel> {
+    return vec![
+      &self.crac1_channel,
+      &self.kv13_channel,
+      &self.kv34_channel,
+      &self.kv71_channel,
+    ];
+  }
+  pub fn channels_mut(&mut self) -> Vec<&mut dyn IsChannel> {
     return vec![
       &mut self.crac1_channel,
       &mut self.kv13_channel,
@@ -45,10 +59,9 @@ impl A549CancerCell {
     ];
   }
 
-  pub fn simulate(&mut self, pulse_protocol: PulseProtocol) -> MembraneCurrentThroughput {
+  pub fn simulate(&mut self, pulse_protocol: PulseProtocol, recorder: &mut impl SimulationRecorder) {
     let mut total_time = 0.0;
-    let mut recorded = MembraneCurrentThroughput::empty();
-    for channel in self.channels() {
+    for channel in self.channels_mut() {
       log::info!("{}", channel.display_me());
     }
     for (n, step) in pulse_protocol.enumerate() {
@@ -60,29 +73,21 @@ impl A549CancerCell {
       );
       let mut time: f64 = 0.0;
       while time < step.duration {
-        let mut total_current = 0.0;
-        for channel in self.channels() {
+        for channel in self.channels_mut() {
           channel.update_state(step.voltage);
-          total_current += channel.current(step.voltage);
         }
         if n % constants::STEPS_PER_MEASUREMENT == 0 {
-          recorded.current.push(total_current);
-          // for channel in self.channels() {
-          // recorded
-          //   .states
-          //   .insert(channel.namename(), channel.state.iter().cloned().collect());
-          // }
+          recorder.record(self, step.voltage);
         }
         time += constants::dt;
       }
       total_time += time;
     }
     log::info!("Total simulation time: {total_time:.3} s");
-    return recorded;
   }
 }
 
-pub fn evaluate_match(measurements: PatchClampData, simulation: MembraneCurrentThroughput) -> f64 {
+pub fn evaluate_match(measurements: PatchClampData, simulation: TotalCurrentRecord) -> f64 {
   let rows = measurements.current.len();
   let error = (simulation.as_dvec().rows_range(0..rows) - measurements.current).norm_squared();
   log::info!("Simulation match with measurements: {:.3}", error);
@@ -105,7 +110,8 @@ impl A549CancerCell {
   pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
     let measurements = PatchClampData::load(protocol, phase).unwrap();
     let pulse_protocol = PulseProtocol::default();
-    let simulation = self.simulate(pulse_protocol);
-    return evaluate_match(measurements, simulation);
+    let mut recorded = TotalCurrentRecord::empty();
+    self.simulate(pulse_protocol, &mut recorded);
+    return evaluate_match(measurements, recorded);
   }
 }

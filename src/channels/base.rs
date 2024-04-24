@@ -7,6 +7,8 @@ pub trait HasTransitionMatrix<const N_STATES: usize> {
 pub trait IsChannel {
   fn update_state(&mut self, voltage: f64);
   fn current(&self, voltage: f64) -> f64;
+  fn internal_state(&self) -> Vec<f64>;
+  fn display_name(&self) -> String;
   fn display_me(&self) -> String;
 }
 
@@ -37,6 +39,12 @@ macro_rules! define_ion_channel {
       }
       fn current(&self, voltage: f64) -> f64 {
         Self::conductance * self.state[1] * (voltage - constants::EvK)
+      }
+      fn internal_state(&self) -> Vec<f64> {
+        self.state.iter().cloned().collect()
+      }
+      fn display_name(&self) -> String {
+        Self::display_name()
       }
       fn display_me(&self) -> String {
         format!(

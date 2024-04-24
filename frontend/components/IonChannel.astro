@@ -1,0 +1,8 @@
+---
+import Figure from "./Figure.astro";
+
+const { channel } = Astro.props;
+---
+
+<Figure plot="channelCurrent" args={JSON.stringify({ channel })} />
+<Figure plot="channelState" args={JSON.stringify({ channel })} />

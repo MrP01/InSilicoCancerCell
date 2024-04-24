@@ -12,11 +12,13 @@ use web_sys::console;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct ChannelThroughput {
   pub current: Vec<f64>,
   pub states: Vec<Vec<f64>>,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct FullRecorder {
   pub total_current: Vec<f64>,
   pub channels: HashMap<String, ChannelThroughput>,
@@ -59,13 +61,13 @@ impl SimulationRecorder for FullRecorder {
 }
 
 #[wasm_bindgen]
-pub fn run() -> Vec<f64> {
+pub fn run() -> JsValue {
   // let measurements = PatchClampData::demo();
   let pulse_protocol = PulseProtocol::default();
   let mut cell = A549CancerCell::new();
-  let mut recorded = TotalCurrentRecord::empty();
+  let mut recorded = FullRecorder::new_for_cell(&cell);
   cell.simulate(pulse_protocol, &mut recorded);
-  return recorded.current;
+  return serde_wasm_bindgen::to_value(&recorded).unwrap();
 }
 
 // This is like the `main` function, except for JavaScript.
@@ -73,6 +75,7 @@ pub fn run() -> Vec<f64> {
 pub fn main_js() -> Result<(), JsValue> {
   // This provides better error messages in debug mode.
   // It's disabled in release mode so it doesn't bloat up the file size.
+
   #[cfg(debug_assertions)]
   console_error_panic_hook::set_once();
   console::log_1(&JsValue::from_str("Hello from the in-silico Rust library!"));

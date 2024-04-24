@@ -1,7 +1,7 @@
 use std::{collections::HashMap, vec};
 
 use in_silico_cancer_cell::{
-  cell::{A549CancerCell, SimulationRecorder, TotalCurrentRecord},
+  cell::{A549CancerCell, SimulationRecorder},
   pulseprotocol::{ProtocolGenerator, PulseProtocol},
 };
 use wasm_bindgen::prelude::*;

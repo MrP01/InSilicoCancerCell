@@ -31,12 +31,13 @@ impl HasTransitionMatrix<7> for KV13IonChannelCat {
     let phi_rate = d * (-v * 1e3 / q).exp();
 
     // Transition probabilities = rate constants * ms
+    // TODO: I removed the * 1e3 here (compare the Kv_1_3.m file), which is correct?
     let alpha = alpha_rate * constants::dt;
     let beta = beta_rate * constants::dt;
     let gamma = gamma_rate * constants::dt;
     let phi = phi_rate * constants::dt;
-    let A = const_a * constants::dt;
-    let B = const_b * constants::dt;
+    let a_prob = const_a * constants::dt;
+    let b_prob = const_b * constants::dt;
 
     #[rustfmt::skip]
     return Matrix7::from_row_slice(&[
@@ -44,8 +45,8 @@ impl HasTransitionMatrix<7> for KV13IonChannelCat {
       4.0 * alpha, 1.0 - 3.0 * alpha - beta, 2.0 * beta, 0.0, 0.0, 0.0, 0.0,
       0.0, 3.0 * alpha, 1.0 - 2.0 * alpha - 2.0 * beta, 3.0 * beta, 0.0, 0.0, 0.0,
       0.0, 0.0, 2.0 * alpha, 1.0 - alpha - 3.0 * beta, 4.0 * beta, 0.0, 0.0,
-      0.0, 0.0, 0.0, alpha, 1.0 - 4.0 * beta - A, B, 0.0,
-      0.0, 0.0, 0.0, 0.0, A, 1.0 - gamma - B, phi,
+      0.0, 0.0, 0.0, alpha, 1.0 - 4.0 * beta - a_prob, b_prob, 0.0,
+      0.0, 0.0, 0.0, 0.0, a_prob, 1.0 - gamma - b_prob, phi,
       0.0, 0.0, 0.0, 0.0, 0.0, gamma, 1.0 - phi
     ]);
   }

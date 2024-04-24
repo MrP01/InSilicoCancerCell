@@ -1,7 +1,7 @@
 use nalgebra::DVector;
 
 use crate::{
-  channels::{base::IsChannel, crac1, kv13, kv34, kv71},
+  channels::{self, base::IsChannel},
   constants,
   patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
   pulseprotocol::{ProtocolGenerator, PulseProtocol},
@@ -35,10 +35,12 @@ impl SimulationRecorder for TotalCurrentRecord {
 
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct A549CancerCell {
-  crac1_channel: crac1::CRAC1IonChannelCat,
-  kv13_channel: kv13::KV13IonChannelCat,
-  kv34_channel: kv34::KV34IonChannelCat,
-  kv71_channel: kv71::KV71IonChannelCat,
+  crac1_channel: channels::crac1::CRAC1IonChannelCat,
+  kv13_channel: channels::kv13::KV13IonChannelCat,
+  kv34_channel: channels::kv34::KV34IonChannelCat,
+  kv71_channel: channels::kv71::KV71IonChannelCat,
+  kca11_channel: channels::kca11::KCa11IonChannelCat,
+  kca31_channel: channels::kca31::KCa31IonChannelCat,
 }
 
 impl A549CancerCell {
@@ -48,6 +50,8 @@ impl A549CancerCell {
       &self.kv13_channel,
       &self.kv34_channel,
       &self.kv71_channel,
+      &self.kca11_channel,
+      &self.kca31_channel,
     ];
   }
   pub fn channels_mut(&mut self) -> Vec<&mut dyn IsChannel> {
@@ -56,6 +60,8 @@ impl A549CancerCell {
       &mut self.kv13_channel,
       &mut self.kv34_channel,
       &mut self.kv71_channel,
+      &mut self.kca11_channel,
+      &mut self.kca31_channel,
     ];
   }
 
@@ -100,10 +106,12 @@ impl A549CancerCell {
   #[cfg_attr(feature = "pyo3", staticmethod)]
   pub fn new() -> A549CancerCell {
     return A549CancerCell {
-      crac1_channel: crac1::CRAC1IonChannelCat::new(),
-      kv13_channel: kv13::KV13IonChannelCat::new(),
-      kv34_channel: kv34::KV34IonChannelCat::new(),
-      kv71_channel: kv71::KV71IonChannelCat::new(),
+      crac1_channel: channels::crac1::CRAC1IonChannelCat::new(),
+      kv13_channel: channels::kv13::KV13IonChannelCat::new(),
+      kv34_channel: channels::kv34::KV34IonChannelCat::new(),
+      kv71_channel: channels::kv71::KV71IonChannelCat::new(),
+      kca11_channel: channels::kca11::KCa11IonChannelCat::new(),
+      kca31_channel: channels::kca31::KCa31IonChannelCat::new(),
     };
   }
 

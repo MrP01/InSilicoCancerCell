@@ -10,21 +10,14 @@ html {
   background-size: 224px;
 }
 code {
-  font-family:
-    Menlo,
-    Monaco,
-    Lucida Console,
-    Liberation Mono,
-    DejaVu Sans Mono,
-    Bitstream Vera Sans Mono,
-    Courier New,
+  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New,
     monospace;
 }
 
 main {
   margin: auto;
   padding: 1rem;
-  width: 1100px;
+  width: 1800px;
   max-width: calc(100% - 2rem);
   color: white;
   font-size: 20px;
@@ -32,10 +25,10 @@ main {
 }
 
 h1 {
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: 700;
   line-height: 1;
-  text-align: center;
+  // text-align: center;
   margin-bottom: 1em;
 }
 .text-gradient {

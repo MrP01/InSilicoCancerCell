@@ -43,10 +43,10 @@ function channelState({ channel }, interactive = false) {
   }
   return {
     color: {
-      scheme: "spectral",
+      scheme: "observable10",
     },
     marks: [
-      Plot.areaY(tidy, { x: "step", y: "value", fill: "state", reverse: true, tip: interactive ? "x" : undefined }),
+      Plot.areaY(tidy, { x: "step", y: "value", fill: "state", reverse: true, tip: interactive ? "xy" : undefined }),
     ],
     width: 600,
     height: 300,

@@ -2,8 +2,28 @@
 import Figure from "./Figure.astro";
 
 const { channel } = Astro.props;
-// console.log("Ion", channel);
 ---
 
-<Figure plot="channelCurrent" args={{ channel }} />
-<Figure plot="channelState" args={{ channel }} />
+<div class="ion-channel">
+  <h2>{channel} Channel</h2>
+  <Figure plot="channelCurrent" args={{ channel }} />
+  <Figure plot="channelState" args={{ channel }} />
+</div>
+
+<style>
+  .ion-channel {
+    max-width: 600px;
+    position: relative;
+    padding: 10px 20px;
+    margin: 20px 10px;
+    border: 2px solid grey;
+    border-radius: 20px;
+  }
+  h2 {
+    margin: 0;
+    background-color: #13151a;
+    padding: 8px;
+    position: absolute;
+    top: -35px;
+  }
+</style>

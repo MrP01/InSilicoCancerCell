@@ -7,7 +7,7 @@ define_ion_channel!(
   "Kv13",
   7,
   15e-12,
-  (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+  (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 );
 
 impl HasTransitionMatrix<7> for KV13IonChannelCat {
@@ -31,12 +31,12 @@ impl HasTransitionMatrix<7> for KV13IonChannelCat {
     let phi_rate = d * (-v * 1e3 / q).exp();
 
     // Transition probabilities = rate constants * ms
-    let alpha = alpha_rate * constants::dt * 1e3;
-    let beta = beta_rate * constants::dt * 1e3;
-    let gamma = gamma_rate * constants::dt * 1e3;
-    let phi = phi_rate * constants::dt * 1e3;
-    let A = const_a * constants::dt * 1e3;
-    let B = const_b * constants::dt * 1e3;
+    let alpha = alpha_rate * constants::dt;
+    let beta = beta_rate * constants::dt;
+    let gamma = gamma_rate * constants::dt;
+    let phi = phi_rate * constants::dt;
+    let A = const_a * constants::dt;
+    let B = const_b * constants::dt;
 
     #[rustfmt::skip]
     return Matrix7::from_row_slice(&[

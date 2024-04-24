@@ -9,22 +9,24 @@ import IonChannel from "../components/IonChannel.astro";
   <main>
     <h1><span class="text-gradient">In-Silico</span> Cancer Cell</h1>
     <!-- <p class="instructions">Welcome! 🚀 This is the full simulation output:</p> -->
+    <div class="channel-grid">
+      <IonChannel channel="Kv71" />
+      <IonChannel channel="CRACM1" />
+      <IonChannel channel="Kv13" />
+      <!-- <IonChannel channel="Kv34" /> -->
+    </div>
     <Figure
       plot="fullSimulationCurrent"
       extra={{
-        width: 1100,
-        height: 450,
+        width: 1800,
+        height: 300,
       }}
     />
-    <!-- <IonChannel channel="Kv13" />
-    <IonChannel channel="Kv34" /> -->
-    <IonChannel channel="Kv71" />
-    <IonChannel channel="CRACM1" />
-    <img
+    <!-- <img
       src="https://journals.plos.org/ploscompbiol/article/figure/image?size=large&download=&id=10.1371/journal.pcbi.1009091.g002"
       width="100%"
       style="margin: 20px 0"
-    />
+    /> -->
     <ul role="list" class="link-card-grid">
       <Card
         href="https://github.com/MrP01/InSilicoCancerCell"
@@ -57,5 +59,9 @@ import IonChannel from "../components/IonChannel.astro";
     grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
     gap: 2rem;
     padding: 0;
+  }
+  .channel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40ch, 2fr));
   }
 </style>

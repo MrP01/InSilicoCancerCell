@@ -2,7 +2,8 @@
 import Figure from "./Figure.astro";
 
 const { channel } = Astro.props;
+// console.log("Ion", channel);
 ---
 
-<Figure plot="channelCurrent" args={JSON.stringify({ channel })} />
-<Figure plot="channelState" args={JSON.stringify({ channel })} />
+<Figure plot="channelCurrent" args={{ channel }} />
+<Figure plot="channelState" args={{ channel }} />

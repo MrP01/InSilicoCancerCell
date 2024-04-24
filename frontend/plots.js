@@ -3,7 +3,7 @@ import * as Plot from "@observablehq/plot";
 
 const simulation = run();
 
-function fullSimulationCurrent(interactive = false) {
+function fullSimulationCurrent({}, interactive = false) {
   return {
     marks: [
       Plot.lineY(simulation.total_current, {
@@ -16,14 +16,45 @@ function fullSimulationCurrent(interactive = false) {
   };
 }
 
-function channelCurrent(interactive = false) {
-  return {};
+function channelCurrent({ channel }, interactive = false) {
+  return {
+    marks: [
+      Plot.lineY(simulation.channels.get(channel).current, {
+        y: (y) => y * 1e12,
+        z: null,
+        stroke: (y) => y,
+        tip: interactive ? "x" : undefined,
+      }),
+    ],
+    width: 600,
+    height: 300,
+  };
 }
-function channelState(interactive = false) {
-  return {};
+
+function channelState({ channel }, interactive = false) {
+  let record = simulation.channels.get(channel).states;
+  let n_states = record[0].length;
+  console.log("channel", channel, interactive, "has", n_states);
+  let tidy = [];
+  for (let step = 0; step < record.length; step++) {
+    for (let state = 0; state < n_states; state++) {
+      tidy.push({ step, state: state, value: record[step][state] });
+    }
+  }
+  return {
+    color: {
+      scheme: "spectral",
+    },
+    marks: [
+      Plot.areaY(tidy, { x: "step", y: "value", fill: "state", reverse: true, tip: interactive ? "x" : undefined }),
+    ],
+    width: 600,
+    height: 300,
+  };
 }
 
 const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState };
-export function generatePlot(name, args = [], interactive = false) {
-  return ALL_PLOT_GENERATORS[name](...args, (interactive = interactive));
+export function generatePlot(name, args = {}, interactive = false) {
+  console.log(name, "args", args);
+  return ALL_PLOT_GENERATORS[name](args, (interactive = interactive));
 }

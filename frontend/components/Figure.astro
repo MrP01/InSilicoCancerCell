@@ -27,7 +27,7 @@ const staticPlot = Plot.plot({
       this.appendChild(
         Plot.plot({
           ...generatePlot(this.dataset.plot, JSON.parse(this.dataset.args || "[]"), true),
-          ...JSON.parse(this.dataset.extra || ""),
+          ...JSON.parse(this.dataset.extra || "{}"),
           style: "--plot-background: black",
         })
       );

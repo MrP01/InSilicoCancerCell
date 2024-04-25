@@ -37,11 +37,13 @@ impl SimulationRecorder for TotalCurrentRecord {
 pub struct A549CancerCell {
   crac1_channel: channels::crac1::CRAC1IonChannelCat,
   kv13_channel: channels::kv13::KV13IonChannelCat,
+  kv31_channel: channels::kv31::KV31IonChannelCat,
   kv34_channel: channels::kv34::KV34IonChannelCat,
   kv71_channel: channels::kv71::KV71IonChannelCat,
   kca11_channel: channels::kca11::KCa11IonChannelCat,
   kca31_channel: channels::kca31::KCa31IonChannelCat,
   clc2_channel: channels::clc2::CLC2IonChannelCat,
+  task1_channel: channels::task1::Task1IonChannelCat,
 }
 
 impl A549CancerCell {
@@ -49,22 +51,26 @@ impl A549CancerCell {
     return vec![
       &self.crac1_channel,
       &self.kv13_channel,
+      &self.kv31_channel,
       &self.kv34_channel,
       &self.kv71_channel,
       &self.kca11_channel,
       &self.kca31_channel,
       &self.clc2_channel,
+      &self.task1_channel,
     ];
   }
   pub fn channels_mut(&mut self) -> Vec<&mut dyn IsChannel> {
     return vec![
       &mut self.crac1_channel,
       &mut self.kv13_channel,
+      &mut self.kv31_channel,
       &mut self.kv34_channel,
       &mut self.kv71_channel,
       &mut self.kca11_channel,
       &mut self.kca31_channel,
       &mut self.clc2_channel,
+      &mut self.task1_channel,
     ];
   }
 
@@ -111,11 +117,13 @@ impl A549CancerCell {
     return A549CancerCell {
       crac1_channel: channels::crac1::CRAC1IonChannelCat::new(),
       kv13_channel: channels::kv13::KV13IonChannelCat::new(),
+      kv31_channel: channels::kv31::KV31IonChannelCat::new(),
       kv34_channel: channels::kv34::KV34IonChannelCat::new(),
       kv71_channel: channels::kv71::KV71IonChannelCat::new(),
       kca11_channel: channels::kca11::KCa11IonChannelCat::new(),
       kca31_channel: channels::kca31::KCa31IonChannelCat::new(),
       clc2_channel: channels::clc2::CLC2IonChannelCat::new(),
+      task1_channel: channels::task1::Task1IonChannelCat::new(),
     };
   }
 

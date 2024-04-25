@@ -84,18 +84,22 @@ impl A549CancerCell {
     min_points: usize,
   ) {
     let total_duration = pulse_protocol.total_duration();
-    let steps_per_measurement: usize = ((total_duration / constants::dt) / (min_points as f64)).ceil() as usize;
+    let steps_per_measurement = ((total_duration / constants::dt) / (min_points as f64)).floor() as usize;
+    if steps_per_measurement == 0 {
+      panic!("constants::dt is too small for the supplied amount of minimum record points!");
+    }
     log::info!(
-      "Starting simulation. Duration according to pulse protocol: {:.3} s. Measuring every {} iterations.",
+      "Starting simulation. Duration according to pulse protocol: {:.3} s. Recording every {} iterations.",
       total_duration,
       steps_per_measurement
     );
+    let mut n = 0;
     let mut total_time = 0.0;
     for channel in self.channels_mut() {
       log::info!("{}", channel.display_me());
     }
     let start = std::time::Instant::now();
-    for (n, step) in pulse_protocol.generator().enumerate() {
+    for step in pulse_protocol.generator() {
       log::info!(
         "Pulse protocol step {:7} ({:6.3} V) for {:.3} s -> {:8.0} iterations",
         step.label,
@@ -111,6 +115,7 @@ impl A549CancerCell {
         if n % steps_per_measurement == 0 {
           recorder.record(self, step.voltage);
         }
+        n += 1;
         time += constants::dt;
         #[cfg(all(debug_assertions, feature = "pause-each-step"))]
         {

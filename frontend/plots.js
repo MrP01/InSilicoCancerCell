@@ -4,6 +4,7 @@ import * as Plot from "@observablehq/plot";
 const simulation = run();
 
 function fullSimulationCurrent({}, interactive = false) {
+  // if (interactive) window.thesimulation = simulation;
   return {
     marks: [
       Plot.lineY(simulation.total_current, {

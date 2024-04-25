@@ -35,7 +35,10 @@ macro_rules! define_ion_channel {
     }
     impl crate::channels::base::IsChannel for $name {
       fn update_state(&mut self, voltage: f64) {
-        self.state = self.transition_matrix(voltage) * self.state;
+        let transition = self.transition_matrix(voltage);
+        #[cfg(debug_assertions)]
+        crate::channels::base::validate_transition_matrix::<$N_STATES>(Self::display_name(), transition);
+        self.state = transition * self.state;
       }
       fn current(&self, voltage: f64) -> f64 {
         Self::conductance * self.state[1] * (voltage - constants::EvK)
@@ -56,4 +59,19 @@ macro_rules! define_ion_channel {
       }
     }
   };
+}
+
+pub fn validate_transition_matrix<const N_STATES: usize>(
+  channel: String,
+  matrix: nalgebra::SMatrix<f64, N_STATES, N_STATES>,
+) {
+  if matrix.min() < 0.0 {
+    log::warn!("Transition matrix of {channel} has negative values!");
+  }
+  if matrix.max() > 1.0 {
+    log::warn!("Transition matrix of {channel} has values > 1!");
+  }
+  if (matrix.row_sum().transpose() - nalgebra::SVector::<f64, N_STATES>::from_element(1.0)).norm() > f64::EPSILON {
+    log::warn!("Transition matrix of {channel} does not sum to 1!");
+  }
 }

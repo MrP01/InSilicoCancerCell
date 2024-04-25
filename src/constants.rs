@@ -1,7 +1,6 @@
 #![allow(non_upper_case_globals)]
 
-pub const dt: f64 = 1e-6; // timestep
-pub const STEPS_PER_MEASUREMENT: usize = 100;
+pub const dt: f64 = 1e-3; // timestep
 pub const EvK: f64 = -77.4e-3; // reversal potential K
 
 // pub const EvCa: f64 = 95.6e-3; // reversal potential Ca

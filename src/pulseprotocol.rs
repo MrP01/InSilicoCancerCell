@@ -4,14 +4,14 @@ pub struct PulseProtocolStep {
   pub duration: f64,
 }
 
-pub type PulseProtocol = impl Iterator<Item = PulseProtocolStep>;
-
 pub trait ProtocolGenerator {
-  fn default() -> Self;
+  fn generator(&self) -> impl Iterator<Item = PulseProtocolStep>;
+  fn total_duration(&self) -> f64;
 }
 
-impl ProtocolGenerator for PulseProtocol {
-  fn default() -> Self {
+pub struct DefaultPulseProtocol {}
+impl ProtocolGenerator for DefaultPulseProtocol {
+  fn generator(&self) -> impl Iterator<Item = PulseProtocolStep> {
     std::iter::from_coroutine(|| {
       let mut v_test = -0.04;
       while v_test <= 0.04 {
@@ -38,5 +38,9 @@ impl ProtocolGenerator for PulseProtocol {
         v_test += 0.01;
       }
     })
+  }
+
+  fn total_duration(&self) -> f64 {
+    self.generator().map(|step| step.duration).sum()
   }
 }

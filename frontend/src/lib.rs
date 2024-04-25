@@ -2,7 +2,7 @@ use std::{collections::HashMap, vec};
 
 use in_silico_cancer_cell::{
   cell::{A549CancerCell, SimulationRecorder},
-  pulseprotocol::{ProtocolGenerator, PulseProtocol},
+  pulseprotocol::DefaultPulseProtocol,
 };
 use wasm_bindgen::prelude::*;
 use web_sys::console;
@@ -20,6 +20,7 @@ pub struct ChannelThroughput {
 
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct FullRecorder {
+  pub voltage: Vec<f64>,
   pub total_current: Vec<f64>,
   pub channels: HashMap<String, ChannelThroughput>,
 }
@@ -36,6 +37,7 @@ impl FullRecorder {
       );
     }
     Self {
+      voltage: vec![],
       total_current: vec![],
       channels,
     }
@@ -44,6 +46,7 @@ impl FullRecorder {
 
 impl SimulationRecorder for FullRecorder {
   fn record(&mut self, cell: &A549CancerCell, voltage: f64) {
+    self.voltage.push(voltage);
     let mut total_current = 0.0;
     for channel in cell.channels() {
       channel.display_me();
@@ -63,10 +66,10 @@ impl SimulationRecorder for FullRecorder {
 #[wasm_bindgen]
 pub fn run() -> JsValue {
   // let measurements = PatchClampData::demo();
-  let pulse_protocol = PulseProtocol::default();
+  let pulse_protocol = DefaultPulseProtocol {};
   let mut cell = A549CancerCell::new();
   let mut recorded = FullRecorder::new_for_cell(&cell);
-  cell.simulate(pulse_protocol, &mut recorded);
+  cell.simulate(pulse_protocol, &mut recorded, 500);
   return serde_wasm_bindgen::to_value(&recorded).unwrap();
 }
 

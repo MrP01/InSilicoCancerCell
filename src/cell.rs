@@ -7,7 +7,7 @@ use crate::{
   channels::{self, base::IsChannel},
   constants,
   patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
-  pulseprotocol::{ProtocolGenerator, PulseProtocol},
+  pulseprotocol::{DefaultPulseProtocol, ProtocolGenerator},
 };
 
 pub trait SimulationRecorder {
@@ -77,13 +77,25 @@ impl A549CancerCell {
     ];
   }
 
-  pub fn simulate(&mut self, pulse_protocol: PulseProtocol, recorder: &mut impl SimulationRecorder) {
+  pub fn simulate(
+    &mut self,
+    pulse_protocol: impl ProtocolGenerator,
+    recorder: &mut impl SimulationRecorder,
+    min_points: usize,
+  ) {
+    let total_duration = pulse_protocol.total_duration();
+    let steps_per_measurement: usize = ((total_duration / constants::dt) / (min_points as f64)).ceil() as usize;
+    log::info!(
+      "Starting simulation. Duration according to pulse protocol: {:.3} s. Measuring every {} iterations.",
+      total_duration,
+      steps_per_measurement
+    );
     let mut total_time = 0.0;
     for channel in self.channels_mut() {
       log::info!("{}", channel.display_me());
     }
     let start = std::time::Instant::now();
-    for (n, step) in pulse_protocol.enumerate() {
+    for (n, step) in pulse_protocol.generator().enumerate() {
       log::info!(
         "Pulse protocol step {:7} ({:6.3} V) for {:.3} s -> {:8.0} iterations",
         step.label,
@@ -96,7 +108,7 @@ impl A549CancerCell {
         for channel in self.channels_mut() {
           channel.update_state(step.voltage);
         }
-        if n % constants::STEPS_PER_MEASUREMENT == 0 {
+        if n % steps_per_measurement == 0 {
           recorder.record(self, step.voltage);
         }
         time += constants::dt;
@@ -111,11 +123,16 @@ impl A549CancerCell {
     }
     let runtime = start.elapsed().as_secs_f64();
     log::info!("Total time passed from the cell perspective: {total_time:.3} s");
-    log::info!("Simulation runtime: {runtime:.3} s");
+    log::info!("Total simulation runtime: {runtime:.3} s");
   }
 }
 
 pub fn evaluate_match(measurements: PatchClampData, simulation: TotalCurrentRecord) -> f64 {
+  log::info!(
+    "Collected data: {} points from simulation, {} points from measurements.",
+    simulation.current.len(),
+    measurements.current.len()
+  );
   let rows = measurements.current.len();
   let error = (simulation.as_dvec().rows_range(0..rows) - measurements.current).norm_squared();
   log::info!("Simulation match with measurements: {:.3}", error);
@@ -142,9 +159,9 @@ impl A549CancerCell {
 
   pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
     let measurements = PatchClampData::load(protocol, phase).unwrap();
-    let pulse_protocol = PulseProtocol::default();
+    let pulse_protocol = DefaultPulseProtocol {};
     let mut recorded = TotalCurrentRecord::empty();
-    self.simulate(pulse_protocol, &mut recorded);
+    self.simulate(pulse_protocol, &mut recorded, measurements.current.len());
     return evaluate_match(measurements, recorded);
   }
 }

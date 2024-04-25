@@ -1,4 +1,5 @@
 #![feature(coroutines, iter_from_coroutine, type_alias_impl_trait, cfg_eval)]
+#![allow(dead_code)]
 
 mod cell;
 mod channels;

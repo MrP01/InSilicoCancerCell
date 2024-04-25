@@ -1,3 +1,4 @@
+#[cfg(debug_assertions)]
 use std::io::{self, BufRead};
 
 use nalgebra::DVector;
@@ -81,12 +82,14 @@ impl A549CancerCell {
     for channel in self.channels_mut() {
       log::info!("{}", channel.display_me());
     }
+    let start = std::time::Instant::now();
     for (n, step) in pulse_protocol.enumerate() {
       log::info!(
-        "Pulse protocol step {} ({:.3} V) for {:.3} s",
+        "Pulse protocol step {:7} ({:6.3} V) for {:.3} s -> {:8.0} iterations",
         step.label,
         step.voltage,
-        step.duration
+        step.duration,
+        step.duration / constants::dt
       );
       let mut time: f64 = 0.0;
       while time < step.duration {
@@ -102,7 +105,9 @@ impl A549CancerCell {
       }
       total_time += time;
     }
-    log::info!("Total simulation time: {total_time:.3} s");
+    let runtime = start.elapsed().as_secs_f64();
+    log::info!("Total time passed from the cell perspective: {total_time:.3} s");
+    log::info!("Simulation runtime: {runtime:.3} s");
   }
 }
 

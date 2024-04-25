@@ -6,7 +6,7 @@ use crate::{constants, define_ion_channel};
 define_ion_channel!(KCa31IonChannelCat, "KCa31", 4, 11e-12, (0.0, 0.0, 0.0, 0.0));
 
 impl HasTransitionMatrix<4> for KCa31IonChannelCat {
-  fn transition_matrix(&self, v: f64) -> Matrix4<f64> {
+  fn transition_matrix(&self, _v: f64) -> Matrix4<f64> {
     // Constants
     let k12 = 27.0;
     let k23 = 5425.0;

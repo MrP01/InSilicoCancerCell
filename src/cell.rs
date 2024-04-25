@@ -1,5 +1,5 @@
-#[cfg(debug_assertions)]
-use std::io::{self, BufRead};
+#[cfg(all(debug_assertions, feature = "pause-each-step"))]
+use std::io::{BufRead, Write};
 
 use nalgebra::DVector;
 
@@ -100,8 +100,12 @@ impl A549CancerCell {
           recorder.record(self, step.voltage);
         }
         time += constants::dt;
-        #[cfg(debug_assertions)]
-        io::stdin().lock().read_line(&mut String::new()).unwrap();
+        #[cfg(all(debug_assertions, feature = "pause-each-step"))]
+        {
+          print!("Break (t = {time:.7}); press return to continue");
+          std::io::stdout().flush().unwrap();
+          std::io::stdin().lock().read_line(&mut String::new()).unwrap();
+        }
       }
       total_time += time;
     }

@@ -75,9 +75,7 @@ pub fn validate_transition_matrix<const N_STATES: usize>(
     log::warn!("Transition matrix of {channel} has values > 1!");
     bad = true;
   }
-  if (matrix.row_sum().transpose() - nalgebra::SVector::<f64, N_STATES>::from_element(1.0)).norm_squared()
-    > 1000.0 * f64::EPSILON
-  {
+  if (matrix.row_sum().transpose() - nalgebra::SVector::<f64, N_STATES>::from_element(1.0)).norm_squared() > 1e-6 {
     log::warn!("Transition matrix of {channel} does not sum to 1!");
     bad = true;
   }

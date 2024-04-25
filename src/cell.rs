@@ -41,6 +41,7 @@ pub struct A549CancerCell {
   kv71_channel: channels::kv71::KV71IonChannelCat,
   kca11_channel: channels::kca11::KCa11IonChannelCat,
   kca31_channel: channels::kca31::KCa31IonChannelCat,
+  clc2_channel: channels::clc2::CLC2IonChannelCat,
 }
 
 impl A549CancerCell {
@@ -52,6 +53,7 @@ impl A549CancerCell {
       &self.kv71_channel,
       &self.kca11_channel,
       &self.kca31_channel,
+      &self.clc2_channel,
     ];
   }
   pub fn channels_mut(&mut self) -> Vec<&mut dyn IsChannel> {
@@ -62,6 +64,7 @@ impl A549CancerCell {
       &mut self.kv71_channel,
       &mut self.kca11_channel,
       &mut self.kca31_channel,
+      &mut self.clc2_channel,
     ];
   }
 
@@ -112,6 +115,7 @@ impl A549CancerCell {
       kv71_channel: channels::kv71::KV71IonChannelCat::new(),
       kca11_channel: channels::kca11::KCa11IonChannelCat::new(),
       kca31_channel: channels::kca31::KCa31IonChannelCat::new(),
+      clc2_channel: channels::clc2::CLC2IonChannelCat::new(),
     };
   }
 

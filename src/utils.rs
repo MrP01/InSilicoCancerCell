@@ -1,7 +1,7 @@
 pub fn setup_logging() {
   simplelog::CombinedLogger::init(vec![
     simplelog::TermLogger::new(
-      simplelog::LevelFilter::Info,
+      simplelog::LevelFilter::Debug,
       simplelog::Config::default(),
       simplelog::TerminalMode::Mixed,
       simplelog::ColorChoice::Auto,

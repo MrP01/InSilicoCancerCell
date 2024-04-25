@@ -61,17 +61,29 @@ macro_rules! define_ion_channel {
   };
 }
 
+#[cfg(debug_assertions)]
 pub fn validate_transition_matrix<const N_STATES: usize>(
   channel: String,
   matrix: nalgebra::SMatrix<f64, N_STATES, N_STATES>,
 ) {
+  let mut bad = false;
   if matrix.min() < 0.0 {
     log::warn!("Transition matrix of {channel} has negative values!");
+    bad = true;
   }
   if matrix.max() > 1.0 {
     log::warn!("Transition matrix of {channel} has values > 1!");
+    bad = true;
   }
-  if (matrix.row_sum().transpose() - nalgebra::SVector::<f64, N_STATES>::from_element(1.0)).norm() > f64::EPSILON {
+  if (matrix.row_sum().transpose() - nalgebra::SVector::<f64, N_STATES>::from_element(1.0)).norm_squared()
+    > 1000.0 * f64::EPSILON
+  {
     log::warn!("Transition matrix of {channel} does not sum to 1!");
+    bad = true;
+  }
+  if bad {
+    log::debug!("Matrix: {}", matrix);
+    log::debug!("Row sum: {}", matrix.row_sum(),);
+    log::debug!("Column sum: {}", matrix.column_sum());
   }
 }

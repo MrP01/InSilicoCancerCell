@@ -31,13 +31,12 @@ impl HasTransitionMatrix<4> for KCa31IonChannelCat {
     let k32_prob = k32_rate * constants::dt;
     let k53_prob = k53_rate * constants::dt;
 
-    // #[rustfmt::skip]
-    // return Matrix4::from_row_slice(&[
-    //   1.0 - k12_prob, k21_prob, 0.0, 0.0,
-    //   k12_prob, 1.0 - k21_prob - k23_prob, k32_prob, 0.0,
-    //   0.0, k23_prob, 1.0 - k32_prob - k35_prob, k53_prob,
-    //   0.0, 0.0, k35_prob, 1.0 - k53_prob
-    // ]);
-    return Matrix4::zeros();
+    #[rustfmt::skip]
+    return Matrix4::from_row_slice(&[
+      1.0 - k12_prob, k21_prob, 0.0, 0.0,
+      k12_prob, 1.0 - k21_prob - k23_prob, k32_prob, 0.0,
+      0.0, k23_prob, 1.0 - k32_prob - k35_prob, k53_prob,
+      0.0, 0.0, k35_prob, 1.0 - k53_prob
+    ]);
   }
 }

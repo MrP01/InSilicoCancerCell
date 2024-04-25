@@ -1,3 +1,5 @@
+use std::io::{self, BufRead};
+
 use nalgebra::DVector;
 
 use crate::{
@@ -95,6 +97,8 @@ impl A549CancerCell {
           recorder.record(self, step.voltage);
         }
         time += constants::dt;
+        #[cfg(debug_assertions)]
+        io::stdin().lock().read_line(&mut String::new()).unwrap();
       }
       total_time += time;
     }

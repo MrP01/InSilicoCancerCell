@@ -98,6 +98,7 @@ impl A549CancerCell {
     for channel in self.channels_mut() {
       log::info!("{}", channel.display_me());
     }
+    #[cfg(not(target_arch = "wasm32"))]
     let start = std::time::Instant::now();
     for step in pulse_protocol.generator() {
       log::info!(
@@ -126,9 +127,12 @@ impl A549CancerCell {
       }
       total_time += time;
     }
-    let runtime = start.elapsed().as_secs_f64();
     log::info!("Total time passed from the cell perspective: {total_time:.3} s");
-    log::info!("Total simulation runtime: {runtime:.3} s");
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+      let runtime = start.elapsed().as_secs_f64();
+      log::info!("Total simulation runtime: {runtime:.3} s");
+    }
   }
 }
 

@@ -69,7 +69,7 @@ pub fn run() -> JsValue {
   let pulse_protocol = DefaultPulseProtocol {};
   let mut cell = A549CancerCell::new();
   let mut recorded = FullRecorder::new_for_cell(&cell);
-  cell.simulate(pulse_protocol, &mut recorded, 500);
+  cell.simulate(pulse_protocol, &mut recorded, 800);
   return serde_wasm_bindgen::to_value(&recorded).unwrap();
 }
 

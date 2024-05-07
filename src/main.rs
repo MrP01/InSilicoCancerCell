@@ -3,7 +3,8 @@
 
 use argmin::core::{CostFunction, Error, Executor, Gradient, State};
 use argmin::solver::gradientdescent::SteepestDescent;
-use argmin::solver::linesearch::MoreThuenteLineSearch;
+use argmin::solver::linesearch::HagerZhangLineSearch;
+use nalgebra::Vector3;
 
 mod cell;
 mod channels;
@@ -18,7 +19,7 @@ use cell::TotalCurrentRecord;
 use patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol};
 use pulseprotocol::DefaultPulseProtocol;
 
-fn target(params: &Vec<f64>) -> f64 {
+fn target(params: &Vector3<f64>) -> f64 {
   4.0 * params[0].powi(2) + 7.0 * params[1] + 22.0
 }
 
@@ -26,7 +27,7 @@ struct MyProblem {}
 
 // Implement `CostFunction` for `MyProblem`
 impl CostFunction for MyProblem {
-  type Param = Vec<f64>;
+  type Param = Vector3<f64>;
   type Output = f64;
   fn cost(&self, param: &Self::Param) -> Result<Self::Output, Error> {
     Ok(target(param))
@@ -34,81 +35,82 @@ impl CostFunction for MyProblem {
 }
 
 impl Gradient for MyProblem {
-  type Param = Vec<f64>;
-  type Gradient = Vec<f64>;
+  type Param = Vector3<f64>;
+  type Gradient = Vector3<f64>;
   fn gradient(&self, param: &Self::Param) -> Result<Self::Gradient, Error> {
-    Ok(vec![1.0, 2.0, 3.0])
+    Ok([1.0, 2.0, 3.0].clone().into())
   }
 }
 
-// fn optimise() {
-//   // Create new instance of cost function
-//   let cost = MyProblem {};
+fn optimise() {
+  // Create new instance of cost function
+  let cost = MyProblem {};
 
-//   // Define initial parameter vector
-//   let init_param: Vec<f64> = vec![-1.2, 1.0, 6.5];
+  // Define initial parameter vector
+  let init_param: Vector3<f64> = Vector3::from_element(2.0);
 
-//   // Set up line search needed by `SteepestDescent`
-//   let linesearch = MoreThuenteLineSearch::new();
+  // Set up line search needed by `SteepestDescent`
+  let linesearch = HagerZhangLineSearch::<Vector3<f64>, Vector3<f64>, f64>::new();
 
-//   // Set up solver -- `SteepestDescent` requires a linesearch
-//   let solver = argmin::solver::quasinewton::BFGS::new(linesearch);
+  // Set up solver -- `SteepestDescent` requires a linesearch
+  let solver = argmin::solver::gradientdescent::SteepestDescent::new(linesearch);
 
-//   // Create an `Executor` object
-//   let res = Executor::new(cost, solver)
-//     // Via `configure`, one has access to the internally used state.
-//     // This state can be initialized, for instance by providing an
-//     // initial parameter vector.
-//     // The maximum number of iterations is also set via this method.
-//     // In this particular case, the state exposed is of type `IterState`.
-//     // The documentation of `IterState` shows how this struct can be
-//     // manipulated.
-//     // Population based solvers use `PopulationState` instead of
-//     // `IterState`.
-//     .configure(|state| {
-//       state
-//         // Set initial parameters (depending on the solver,
-//         // this may be required)
-//         .param(init_param)
-//         // Set maximum iterations to 10
-//         // (optional, set to `std::u64::MAX` if not provided)
-//         .max_iters(10)
-//         // Set target cost. The solver stops when this cost
-//         // function value is reached (optional)
-//         .target_cost(0.0)
-//     })
-//     // run the solver on the defined problem
-//     .run()?;
+  // Create an `Executor` object
+  let res = Executor::new(cost, solver)
+    // Via `configure`, one has access to the internally used state.
+    // This state can be initialized, for instance by providing an
+    // initial parameter vector.
+    // The maximum number of iterations is also set via this method.
+    // In this particular case, the state exposed is of type `IterState`.
+    // The documentation of `IterState` shows how this struct can be
+    // manipulated.
+    // Population based solvers use `PopulationState` instead of
+    // `IterState`.
+    .configure(|state| {
+      state
+        // Set initial parameters (depending on the solver,
+        // this may be required)
+        .param(init_param)
+        // Set maximum iterations to 10
+        // (optional, set to `std::u64::MAX` if not provided)
+        .max_iters(10)
+        // Set target cost. The solver stops when this cost
+        // function value is reached (optional)
+        .target_cost(0.0)
+    })
+    // run the solver on the defined problem
+    .run()
+    .unwrap();
 
-//   // print result
-//   println!("{}", res);
+  // print result
+  println!("{}", res);
 
-//   // Extract results from state
+  // Extract results from state
 
-//   // Best parameter vector
-//   let best = res.state().get_best_param().unwrap();
+  // Best parameter vector
+  let best = res.state().get_best_param().unwrap();
 
-//   // Cost function value associated with best parameter vector
-//   let best_cost = res.state().get_best_cost();
+  // Cost function value associated with best parameter vector
+  let best_cost = res.state().get_best_cost();
 
-//   // Check the execution status
-//   let termination_status = res.state().get_termination_status();
+  // Check the execution status
+  let termination_status = res.state().get_termination_status();
 
-//   // Optionally, check why the optimizer terminated (if status is terminated)
-//   let termination_reason = res.state().get_termination_reason();
+  // Optionally, check why the optimizer terminated (if status is terminated)
+  let termination_reason = res.state().get_termination_reason();
 
-//   // Time needed for optimization
-//   let time_needed = res.state().get_time().unwrap();
+  // Time needed for optimization
+  let time_needed = res.state().get_time().unwrap();
 
-//   // Total number of iterations needed
-//   let num_iterations = res.state().get_iter();
+  // Total number of iterations needed
+  let num_iterations = res.state().get_iter();
 
-//   // Iteration number where the last best parameter vector was found
-//   let num_iterations_best = res.state().get_last_best_iter();
+  // Iteration number where the last best parameter vector was found
+  let num_iterations_best = res.state().get_last_best_iter();
 
-//   // Number of evaluation counts per method (Cost, Gradient)
-//   let function_evaluation_counts = res.state().get_func_counts();
-// }
+  // Number of evaluation counts per method (Cost, Gradient)
+  let function_evaluation_counts = res.state().get_func_counts();
+}
 
 fn main() {
   utils::setup_logging();

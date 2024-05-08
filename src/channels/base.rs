@@ -52,7 +52,7 @@ macro_rules! define_ion_channel {
       fn current(&self, voltage: f64) -> f64 {
         let mut open = 0.0;
         $(open += self.state[$states_responsible_for_current];)+
-        Self::conductance * open * (voltage - constants::EvK)
+        Self::conductance * open * (self.n_channels as f64) * (voltage - constants::EvK)
       }
       fn internal_state(&self) -> Vec<f64> {
         self.state.iter().cloned().collect()

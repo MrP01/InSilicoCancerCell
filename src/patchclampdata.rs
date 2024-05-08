@@ -56,8 +56,8 @@ impl PatchClampData {
       .iter()
       .filter(|array| array_name_regex.is_match(array.name()))
       .collect();
-    assert!(raw_data.len() > 0);
-    if let matfile::NumericData::Double { real, imag: _ } = raw_data.get(0).expect("msg").data() {
+    assert!(!raw_data.is_empty());
+    if let matfile::NumericData::Double { real, imag: _ } = raw_data.first().expect("msg").data() {
       let current = DVector::from_vec(real.to_vec());
       Ok(PatchClampData {
         protocol,

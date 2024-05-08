@@ -51,7 +51,7 @@ pub struct A549CancerCell {
 
 impl A549CancerCell {
   pub fn channels(&self) -> Vec<&dyn IsChannel> {
-    return vec![
+    vec![
       &self.crac1_channel,
       &self.kv13_channel,
       &self.kv31_channel,
@@ -61,10 +61,10 @@ impl A549CancerCell {
       &self.kca31_channel,
       &self.clc2_channel,
       &self.task1_channel,
-    ];
+    ]
   }
   pub fn channels_mut(&mut self) -> Vec<&mut dyn IsChannel> {
-    return vec![
+    vec![
       &mut self.crac1_channel,
       &mut self.kv13_channel,
       &mut self.kv31_channel,
@@ -74,7 +74,7 @@ impl A549CancerCell {
       &mut self.kca31_channel,
       &mut self.clc2_channel,
       &mut self.task1_channel,
-    ];
+    ]
   }
 
   pub fn simulate(
@@ -145,15 +145,21 @@ pub fn evaluate_match(measurements: PatchClampData, simulation: TotalCurrentReco
   let rows = measurements.current.len();
   let error = (simulation.as_dvec().rows_range(0..rows) - measurements.current).norm_squared();
   log::info!("Simulation match with measurements: {:.3}", error);
-  return error;
+  error
 }
 
 #[cfg_eval]
 #[cfg_attr(feature = "pyo3", pyo3::pymethods)]
+impl Default for A549CancerCell {
+  fn default() -> Self {
+    Self::new()
+  }
+}
+
 impl A549CancerCell {
   #[cfg_attr(feature = "pyo3", staticmethod)]
   pub fn new() -> A549CancerCell {
-    return A549CancerCell {
+    A549CancerCell {
       crac1_channel: channels::crac1::CRAC1IonChannelCat::new(),
       kv13_channel: channels::kv13::KV13IonChannelCat::new(),
       kv31_channel: channels::kv31::KV31IonChannelCat::new(),
@@ -163,7 +169,7 @@ impl A549CancerCell {
       kca31_channel: channels::kca31::KCa31IonChannelCat::new(),
       clc2_channel: channels::clc2::CLC2IonChannelCat::new(),
       task1_channel: channels::task1::Task1IonChannelCat::new(),
-    };
+    }
   }
 
   pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
@@ -171,6 +177,6 @@ impl A549CancerCell {
     let pulse_protocol = DefaultPulseProtocol {};
     let mut recorded = TotalCurrentRecord::empty();
     self.simulate(pulse_protocol, &mut recorded, measurements.current.len());
-    return evaluate_match(measurements, recorded);
+    evaluate_match(measurements, recorded)
   }
 }

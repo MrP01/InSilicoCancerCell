@@ -13,9 +13,9 @@ impl HasTransitionMatrix<2> for CRAC1IonChannelCat {
       let tau_c = 19.0 * (v / 48.0).exp();
       let alpha = 1.0 / tau_c * constants::dt * 1e3;
       let beta = 1.0 / tau_o * constants::dt * 1e3;
-      return Matrix2::new(1.0 - alpha, beta, alpha, 1.0 - beta);
+      Matrix2::new(1.0 - alpha, beta, alpha, 1.0 - beta)
     } else {
-      return Matrix2::new(1.0, 1.0, 0.0, 0.0);
+      Matrix2::new(1.0, 1.0, 0.0, 0.0)
     }
   }
 }

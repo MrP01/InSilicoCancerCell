@@ -37,7 +37,7 @@ impl Gradient for MyProblem {
   type Param = Vector3<f64>;
   type Gradient = Vector3<f64>;
   fn gradient(&self, _param: &Self::Param) -> Result<Self::Gradient, Error> {
-    Ok([1.0, 2.0, 3.0].clone().into())
+    Ok([1.0, 2.0, 3.0].into())
   }
 }
 

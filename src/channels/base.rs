@@ -20,6 +20,12 @@ macro_rules! define_ion_channel {
       pub n_channels: u32,
     }
     #[allow(non_upper_case_globals)]
+    impl Default for $name {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
     impl $name{
       pub const n_states: usize = $N_STATES;
       pub const conductance: f64 = $conductance;
@@ -33,11 +39,11 @@ macro_rules! define_ion_channel {
         };
       }
     }
-    impl crate::channels::base::IsChannel for $name {
+    impl $crate::channels::base::IsChannel for $name {
       fn update_state(&mut self, voltage: f64) {
         let transition = self.transition_matrix(voltage);
         #[cfg(debug_assertions)]
-        crate::channels::base::validate_transition_matrix::<$N_STATES>(Self::display_name(), transition);
+        $crate::channels::base::validate_transition_matrix::<$N_STATES>(Self::display_name(), transition);
         self.state = transition * self.state;
       }
       fn current(&self, voltage: f64) -> f64 {

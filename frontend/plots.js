@@ -7,6 +7,11 @@ function fullSimulationCurrent({}, interactive = false) {
   // if (interactive) window.thesimulation = simulation;
   return {
     marks: [
+      Plot.lineY(simulation.voltage, {
+        y: (y) => y / 4,
+        z: null,
+        tip: interactive ? "x" : undefined,
+      }),
       Plot.lineY(simulation.total_current, {
         y: (y) => y * 1e12,
         z: null,

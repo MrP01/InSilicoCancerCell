@@ -150,12 +150,6 @@ pub fn evaluate_match(measurements: PatchClampData, simulation: TotalCurrentReco
 
 #[cfg_eval]
 #[cfg_attr(feature = "pyo3", pyo3::pymethods)]
-impl Default for A549CancerCell {
-  fn default() -> Self {
-    Self::new()
-  }
-}
-
 impl A549CancerCell {
   #[cfg_attr(feature = "pyo3", staticmethod)]
   pub fn new() -> A549CancerCell {
@@ -178,5 +172,11 @@ impl A549CancerCell {
     let mut recorded = TotalCurrentRecord::empty();
     self.simulate(pulse_protocol, &mut recorded, measurements.current.len());
     evaluate_match(measurements, recorded)
+  }
+}
+
+impl Default for A549CancerCell {
+  fn default() -> Self {
+    Self::new()
   }
 }

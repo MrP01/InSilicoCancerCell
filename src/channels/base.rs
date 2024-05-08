@@ -41,7 +41,7 @@ macro_rules! define_ion_channel {
         self.state = transition * self.state;
       }
       fn current(&self, voltage: f64) -> f64 {
-        Self::conductance * self.state[1] * (voltage - constants::EvK)
+        Self::conductance * (self.state[2] + self.state[3]) * (voltage - constants::EvK)
       }
       fn internal_state(&self) -> Vec<f64> {
         self.state.iter().cloned().collect()
@@ -66,22 +66,22 @@ pub fn validate_transition_matrix<const N_STATES: usize>(
   channel: String,
   matrix: nalgebra::SMatrix<f64, N_STATES, N_STATES>,
 ) {
-  // let mut bad = false;
-  // if matrix.min() < 0.0 {
-  //   log::warn!("Transition matrix of {channel} has negative values!");
-  //   bad = true;
-  // }
-  // if matrix.max() > 1.0 {
-  //   log::warn!("Transition matrix of {channel} has values > 1!");
-  //   bad = true;
-  // }
-  // if (matrix.row_sum().transpose() - nalgebra::SVector::<f64, N_STATES>::from_element(1.0)).norm_squared() > 1e-6 {
-  //   log::warn!("Transition matrix of {channel} does not sum to 1!");
-  //   bad = true;
-  // }
-  // if bad {
-  //   log::debug!("Matrix: {}", matrix);
-  //   log::debug!("Row sum: {}", matrix.row_sum(),);
-  //   log::debug!("Column sum: {}", matrix.column_sum());
-  // }
+  let mut bad = false;
+  if matrix.min() < 0.0 {
+    log::warn!("Transition matrix of {channel} has negative values!");
+    bad = true;
+  }
+  if matrix.max() > 1.0 {
+    log::warn!("Transition matrix of {channel} has values > 1!");
+    bad = true;
+  }
+  if (matrix.row_sum().transpose() - nalgebra::SVector::<f64, N_STATES>::from_element(1.0)).norm_squared() > 1e-6 {
+    log::warn!("Transition matrix of {channel} does not sum to 1!");
+    bad = true;
+  }
+  if bad {
+    log::debug!("Matrix: {}", matrix);
+    log::debug!("Row sum: {}", matrix.row_sum(),);
+    log::debug!("Column sum: {}", matrix.column_sum());
+  }
 }

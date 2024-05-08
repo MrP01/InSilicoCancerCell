@@ -3,7 +3,7 @@ use nalgebra::Matrix5;
 use super::base::HasTransitionMatrix;
 use crate::{constants, define_ion_channel};
 
-define_ion_channel!(KV71IonChannelCat, "Kv71", 5, 3.2e-12, (0.0, 0.0, 1.0, 0.0, 0.0));
+define_ion_channel!(KV71IonChannelCat, "Kv71", 5, 3.2e-12, (1.0, 0.0, 0.0, 0.0, 0.0));
 
 impl HasTransitionMatrix<5> for KV71IonChannelCat {
   fn transition_matrix(&self, v: f64) -> Matrix5<f64> {

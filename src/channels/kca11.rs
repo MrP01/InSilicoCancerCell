@@ -6,9 +6,10 @@ pub type Matrix10<T> = nalgebra::Matrix<T, nalgebra::U10, nalgebra::U10, nalgebr
 define_ion_channel!(
   KCa11IonChannelCat,
   "KCa11",
-  10,
-  250e-12,
-  (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+  10,                                                 // number of states
+  250e-12,                                            // conductance
+  (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), // initial state
+  (5, 6, 7, 8, 9)                                     // states which count towards the current
 );
 
 impl HasTransitionMatrix<10> for KCa11IonChannelCat {

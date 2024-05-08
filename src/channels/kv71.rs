@@ -3,7 +3,14 @@ use nalgebra::Matrix5;
 use super::base::HasTransitionMatrix;
 use crate::{constants, define_ion_channel};
 
-define_ion_channel!(KV71IonChannelCat, "Kv71", 5, 3.2e-12, (1.0, 0.0, 0.0, 0.0, 0.0));
+define_ion_channel!(
+  KV71IonChannelCat,
+  "Kv71",
+  5,                         // number of states
+  3.2e-12,                   // conductance
+  (1.0, 0.0, 0.0, 0.0, 0.0), // initial state
+  (2, 3)                     // states which count towards the current
+);
 
 impl HasTransitionMatrix<5> for KV71IonChannelCat {
   fn transition_matrix(&self, v: f64) -> Matrix5<f64> {
@@ -38,11 +45,3 @@ impl HasTransitionMatrix<5> for KV71IonChannelCat {
     ]);
   }
 }
-
-// fn kv_7_1(v: f64) -> StateSpace {
-// let a = system_matrix_7_1(0.0, 1.0); // Assuming dt = 1.0 for simplicity
-// let b = DVector::from_vec(vec![0.0, 0.0, 0.0, 0.0, 0.0]);
-// let c = DVector::from_vec(vec![0.0, 0.0, 1.0, 1.0, 0.0]);
-// let d = 0.0;
-// StateSpace { a, b, c, d, g_k: g }
-// }

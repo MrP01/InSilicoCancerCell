@@ -3,7 +3,14 @@ use nalgebra::Matrix4;
 use super::base::HasTransitionMatrix;
 use crate::{constants, define_ion_channel};
 
-define_ion_channel!(KCa31IonChannelCat, "KCa31", 4, 11e-12, (0.0, 0.0, 0.0, 0.0));
+define_ion_channel!(
+  KCa31IonChannelCat,
+  "KCa31",
+  4,                    // number of states
+  11e-12,               // conductance
+  (0.0, 0.0, 0.0, 0.0), // initial state
+  (3)                   // states which count towards the current
+);
 
 impl HasTransitionMatrix<4> for KCa31IonChannelCat {
   fn transition_matrix(&self, _v: f64) -> Matrix4<f64> {

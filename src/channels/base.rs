@@ -14,18 +14,25 @@ pub trait IsChannel {
 
 #[macro_export]
 macro_rules! define_ion_channel {
-  ( $name: ident, $display_name: expr, $N_STATES: expr, $conductance: expr, ($($initial_state: expr), *) ) => {
+  (
+    $name: ident,
+    $display_name: expr,
+    $N_STATES: expr,
+    $conductance: expr,
+    ($($initial_state: expr), *),
+    ($($states_responsible_for_current: expr), *)
+  ) => {
     pub struct $name {
       pub state: nalgebra::SVector<f64, $N_STATES>,
       pub n_channels: u32,
     }
-    #[allow(non_upper_case_globals)]
     impl Default for $name {
         fn default() -> Self {
             Self::new()
         }
     }
 
+    #[allow(non_upper_case_globals)]
     impl $name{
       pub const n_states: usize = $N_STATES;
       pub const conductance: f64 = $conductance;
@@ -47,7 +54,9 @@ macro_rules! define_ion_channel {
         self.state = transition * self.state;
       }
       fn current(&self, voltage: f64) -> f64 {
-        Self::conductance * (self.state[2] + self.state[3]) * (voltage - constants::EvK)
+        let mut open = 0.0;
+        $(open += self.state[$states_responsible_for_current];)+
+        Self::conductance * open * (voltage - constants::EvK)
       }
       fn internal_state(&self) -> Vec<f64> {
         self.state.iter().cloned().collect()

@@ -3,7 +3,14 @@ use nalgebra::Matrix6;
 use super::base::HasTransitionMatrix;
 use crate::{constants, define_ion_channel};
 
-define_ion_channel!(KV31IonChannelCat, "Kv31", 6, 40e-12, (0.0, 1.0, 0.0, 0.0, 0.0, 0.0));
+define_ion_channel!(
+  KV31IonChannelCat,
+  "Kv31",
+  6,                              // number of states
+  40e-12,                         // conductance
+  (0.0, 1.0, 0.0, 0.0, 0.0, 0.0), // initial state
+  (5)                             // states which count towards the current
+);
 
 impl HasTransitionMatrix<6> for KV31IonChannelCat {
   fn transition_matrix(&self, v: f64) -> Matrix6<f64> {

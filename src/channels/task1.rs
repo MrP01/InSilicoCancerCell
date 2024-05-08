@@ -3,7 +3,14 @@ use nalgebra::Matrix3;
 use super::base::HasTransitionMatrix;
 use crate::{constants, define_ion_channel};
 
-define_ion_channel!(Task1IonChannelCat, "Task1", 3, 16e-12, (0.0, 0.0, 1.0));
+define_ion_channel!(
+  Task1IonChannelCat,
+  "Task1",
+  3,               // number of states
+  16e-12,          // conductance
+  (0.0, 0.0, 1.0), // initial state
+  (2)              // states which count towards the current
+);
 
 impl HasTransitionMatrix<3> for Task1IonChannelCat {
   fn transition_matrix(&self, v: f64) -> Matrix3<f64> {

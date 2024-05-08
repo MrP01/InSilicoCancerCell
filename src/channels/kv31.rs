@@ -6,9 +6,9 @@ use crate::{constants, define_ion_channel};
 define_ion_channel!(
   KV31IonChannelCat,
   "Kv31",
-  6,                              // number of states
-  40e-12,                         // conductance
-  (5)                             // states which count towards the current
+  6,      // number of states
+  40e-12, // conductance
+  (5)     // states which count towards the current
 );
 
 impl HasTransitionMatrix<6> for KV31IonChannelCat {

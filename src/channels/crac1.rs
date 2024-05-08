@@ -6,9 +6,9 @@ use crate::{constants, define_ion_channel};
 define_ion_channel!(
   CRAC1IonChannelCat,
   "CRACM1",
-  2,          // number of states
-  24e-15,     // conductance
-  (1)         // states which count towards the current
+  2,      // number of states
+  24e-15, // conductance
+  (1)     // states which count towards the current
 );
 
 impl HasTransitionMatrix<2> for CRAC1IonChannelCat {

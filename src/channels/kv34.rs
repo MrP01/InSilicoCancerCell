@@ -5,9 +5,9 @@ pub type Matrix7<T> = nalgebra::Matrix<T, nalgebra::U7, nalgebra::U7, nalgebra::
 define_ion_channel!(
   KV34IonChannelCat,
   "Kv34",
-  7,                                   // number of states
-  14e-12,                              // conductance
-  (5)                                  // states which count towards the current
+  7,      // number of states
+  14e-12, // conductance
+  (5)     // states which count towards the current
 );
 
 impl HasTransitionMatrix<7> for KV34IonChannelCat {

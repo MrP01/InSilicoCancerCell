@@ -2,7 +2,6 @@
 #![allow(dead_code)]
 
 use argmin::core::{CostFunction, Error, Executor, Gradient, State};
-use argmin::solver::gradientdescent::SteepestDescent;
 use argmin::solver::linesearch::HagerZhangLineSearch;
 use nalgebra::Vector3;
 
@@ -37,7 +36,7 @@ impl CostFunction for MyProblem {
 impl Gradient for MyProblem {
   type Param = Vector3<f64>;
   type Gradient = Vector3<f64>;
-  fn gradient(&self, param: &Self::Param) -> Result<Self::Gradient, Error> {
+  fn gradient(&self, _param: &Self::Param) -> Result<Self::Gradient, Error> {
     Ok([1.0, 2.0, 3.0].clone().into())
   }
 }
@@ -88,28 +87,28 @@ fn optimise() {
   // Extract results from state
 
   // Best parameter vector
-  let best = res.state().get_best_param().unwrap();
+  let _best = res.state().get_best_param().unwrap();
 
   // Cost function value associated with best parameter vector
-  let best_cost = res.state().get_best_cost();
+  let _best_cost = res.state().get_best_cost();
 
   // Check the execution status
-  let termination_status = res.state().get_termination_status();
+  let _termination_status = res.state().get_termination_status();
 
   // Optionally, check why the optimizer terminated (if status is terminated)
-  let termination_reason = res.state().get_termination_reason();
+  let _termination_reason = res.state().get_termination_reason();
 
   // Time needed for optimization
-  let time_needed = res.state().get_time().unwrap();
+  let _time_needed = res.state().get_time().unwrap();
 
   // Total number of iterations needed
-  let num_iterations = res.state().get_iter();
+  let _num_iterations = res.state().get_iter();
 
   // Iteration number where the last best parameter vector was found
-  let num_iterations_best = res.state().get_last_best_iter();
+  let _num_iterations_best = res.state().get_last_best_iter();
 
   // Number of evaluation counts per method (Cost, Gradient)
-  let function_evaluation_counts = res.state().get_func_counts();
+  let _function_evaluation_counts = res.state().get_func_counts();
 }
 
 fn main() {

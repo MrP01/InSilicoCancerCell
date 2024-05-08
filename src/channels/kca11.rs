@@ -8,7 +8,6 @@ define_ion_channel!(
   "KCa11",
   10,                                                 // number of states
   250e-12,                                            // conductance
-  (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), // initial state
   (5, 6, 7, 8, 9)                                     // states which count towards the current
 );
 

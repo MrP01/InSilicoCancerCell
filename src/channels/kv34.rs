@@ -7,7 +7,6 @@ define_ion_channel!(
   "Kv34",
   7,                                   // number of states
   14e-12,                              // conductance
-  (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), // initial state
   (5)                                  // states which count towards the current
 );
 

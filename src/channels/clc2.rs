@@ -5,10 +5,9 @@ pub type Matrix12<T> = nalgebra::Matrix<T, nalgebra::U12, nalgebra::U12, nalgebr
 define_ion_channel!(
   CLC2IonChannelCat,
   "CLC2",
-  12,                                                                // number of states
-  2.8e-12,                                                           // conductance
-  (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), // initial state
-  (3, 6, 7, 9, 11)                                                   // states which count towards the current
+  12,               // number of states
+  2.8e-12,          // conductance
+  (3, 6, 7, 9, 11)  // states which count towards the current
 );
 
 impl HasTransitionMatrix<12> for CLC2IonChannelCat {

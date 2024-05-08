@@ -17,32 +17,28 @@ macro_rules! define_ion_channel {
   (
     $name: ident,
     $display_name: expr,
-    $N_STATES: expr,
+    $n_states: expr,
     $conductance: expr,
-    ($($initial_state: expr), *),
     ($($states_responsible_for_current: expr), *)
   ) => {
     pub struct $name {
-      pub state: nalgebra::SVector<f64, $N_STATES>,
+      pub state: nalgebra::SVector<f64, $n_states>,
       pub n_channels: u32,
-    }
-    impl Default for $name {
-        fn default() -> Self {
-            Self::new()
-        }
     }
 
     #[allow(non_upper_case_globals)]
     impl $name{
-      pub const n_states: usize = $N_STATES;
+      pub const n_states: usize = $n_states;
       pub const conductance: f64 = $conductance;
       pub fn display_name() -> String {
         return String::from($display_name);
       }
       pub fn new() -> Self {
+        let mut x0 = nalgebra::SVector::<f64, $n_states>::from_vec(vec![0.0; $n_states]);
+        x0[0] = 1.0;
         return $name {
           n_channels: 10,
-          state: nalgebra::SVector::<f64, $N_STATES>::from_vec(vec![$($initial_state), *]),
+          state: x0,
         };
       }
     }
@@ -50,7 +46,7 @@ macro_rules! define_ion_channel {
       fn update_state(&mut self, voltage: f64) {
         let transition = self.transition_matrix(voltage);
         #[cfg(debug_assertions)]
-        $crate::channels::base::validate_transition_matrix::<$N_STATES>(Self::display_name(), transition);
+        $crate::channels::base::validate_transition_matrix::<$n_states>(Self::display_name(), transition);
         self.state = transition * self.state;
       }
       fn current(&self, voltage: f64) -> f64 {
@@ -71,6 +67,11 @@ macro_rules! define_ion_channel {
           Self::n_states,
           self.n_channels
         )
+      }
+    }
+    impl Default for $name {
+      fn default() -> Self {
+        Self::new()
       }
     }
   };

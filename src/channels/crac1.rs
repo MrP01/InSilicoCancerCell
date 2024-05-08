@@ -8,7 +8,6 @@ define_ion_channel!(
   "CRACM1",
   2,          // number of states
   24e-15,     // conductance
-  (0.0, 1.0), // initial state
   (1)         // states which count towards the current
 );
 

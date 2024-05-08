@@ -166,6 +166,33 @@ impl A549CancerCell {
     }
   }
 
+  pub fn set_langthaler_et_al_channel_counts(&mut self, phase: CellPhase) {
+    match phase {
+      CellPhase::G0 => {
+        self.kv13_channel.n_channels = 22;
+        self.kv31_channel.n_channels = 78;
+        self.kv34_channel.n_channels = 5;
+        self.kv71_channel.n_channels = 1350;
+        self.kca11_channel.n_channels = 40;
+        self.kca31_channel.n_channels = 77;
+        self.task1_channel.n_channels = 19;
+        self.crac1_channel.n_channels = 200;
+        self.clc2_channel.n_channels = 13;
+      }
+      CellPhase::G1 => {
+        self.kv13_channel.n_channels = 20;
+        self.kv31_channel.n_channels = 90;
+        self.kv34_channel.n_channels = 54;
+        self.kv71_channel.n_channels = 558;
+        self.kca11_channel.n_channels = 15;
+        self.kca31_channel.n_channels = 63;
+        self.task1_channel.n_channels = 10;
+        self.crac1_channel.n_channels = 200;
+        self.clc2_channel.n_channels = 11;
+      }
+    }
+  }
+
   pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
     let measurements = PatchClampData::load(protocol, phase).unwrap();
     let pulse_protocol = DefaultPulseProtocol {};

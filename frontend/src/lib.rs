@@ -2,6 +2,7 @@ use std::{collections::HashMap, vec};
 
 use in_silico_cancer_cell::{
   cell::{A549CancerCell, SimulationRecorder},
+  patchclampdata::CellPhase,
   pulseprotocol::DefaultPulseProtocol,
 };
 use wasm_bindgen::prelude::*;
@@ -65,9 +66,11 @@ impl SimulationRecorder for FullRecorder {
 
 #[wasm_bindgen]
 pub fn run() -> JsValue {
+  console::log_1(&JsValue::from_str("Simulating now..."));
   // let measurements = PatchClampData::demo();
   let pulse_protocol = DefaultPulseProtocol {};
   let mut cell = A549CancerCell::new();
+  cell.set_langthaler_et_al_channel_counts(CellPhase::G0);
   let mut recorded = FullRecorder::new_for_cell(&cell);
   cell.simulate(pulse_protocol, &mut recorded, 800);
   return serde_wasm_bindgen::to_value(&recorded).unwrap();

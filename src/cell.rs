@@ -7,7 +7,7 @@ use crate::{
   channels::{self, base::IsChannel},
   constants,
   patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
-  pulseprotocol::{DefaultPulseProtocol, ProtocolGenerator},
+  pulseprotocol::{DefaultPulseProtocol, ProtocolGenerator, RepeatingGenerator},
 };
 
 pub trait SimulationRecorder {
@@ -79,11 +79,11 @@ impl A549CancerCell {
 
   pub fn simulate(
     &mut self,
-    pulse_protocol: impl ProtocolGenerator,
+    pulse_protocol: impl ProtocolGenerator + RepeatingGenerator,
     recorder: &mut impl SimulationRecorder,
     min_points: usize,
   ) {
-    let total_duration = pulse_protocol.total_duration();
+    let total_duration = pulse_protocol.single_duration();
     let steps_per_measurement = ((total_duration / constants::dt) / (min_points as f64)).floor() as usize;
     if steps_per_measurement == 0 {
       panic!("constants::dt is too small for the supplied amount of minimum record points!");

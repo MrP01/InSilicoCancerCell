@@ -6,9 +6,11 @@ use nalgebra::DVector;
 use crate::{
   channels::{self, base::IsChannel},
   constants,
-  patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol},
-  pulseprotocol::{DefaultPulseProtocol, ProtocolGenerator, RepeatingGenerator},
+  patchclampdata::{CellPhase, PatchClampData},
+  pulseprotocol::{ProtocolGenerator, RepeatingGenerator},
 };
+#[cfg(feature = "default")]
+use crate::{patchclampdata::PatchClampProtocol, pulseprotocol::DefaultPulseProtocol};
 
 pub trait SimulationRecorder {
   fn record(&mut self, cell: &A549CancerCell, voltage: f64);
@@ -193,6 +195,7 @@ impl A549CancerCell {
     }
   }
 
+  #[cfg(feature = "default")]
   pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
     let measurements = PatchClampData::load(protocol, phase).unwrap();
     let pulse_protocol = DefaultPulseProtocol {};

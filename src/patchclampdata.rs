@@ -1,12 +1,11 @@
 use core::fmt;
-use std::path::Path;
 
 use nalgebra::DVector;
-use regex::Regex;
 
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[derive(Clone)]
+#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize))]
 pub enum PatchClampProtocol {
   Activation,
   Deactivation,
@@ -16,6 +15,7 @@ pub enum PatchClampProtocol {
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[derive(Clone)]
+#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize))]
 pub enum CellPhase {
   G0,
   G1,
@@ -29,6 +29,7 @@ impl fmt::Display for CellPhase {
   }
 }
 
+#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize))]
 pub struct PatchClampData {
   pub protocol: PatchClampProtocol,
   pub phase: CellPhase,
@@ -36,8 +37,9 @@ pub struct PatchClampData {
 }
 
 impl PatchClampData {
+  #[cfg(feature = "default")]
   pub fn load(protocol: PatchClampProtocol, phase: CellPhase) -> Result<PatchClampData, Box<dyn std::error::Error>> {
-    let data_path = Path::new("data").join("provision");
+    let data_path = std::path::Path::new("data").join("provision");
     let file: std::fs::File = std::fs::File::open(match protocol {
       PatchClampProtocol::Activation => data_path.join("patch_clamp_data_activation.mat"),
       PatchClampProtocol::Deactivation => data_path.join("patch_clamp_data_deactivation.mat"),
@@ -47,9 +49,9 @@ impl PatchClampData {
     let mat_arrays = mat_file.arrays();
 
     let array_name_regex = match protocol {
-      PatchClampProtocol::Activation => Regex::new(format!(r"m{}_\d+", phase).as_str()),
-      PatchClampProtocol::Deactivation => Regex::new(format!(r"m{}_\d+_deact", phase).as_str()),
-      PatchClampProtocol::Ramp => Regex::new(format!(r"m{}_\d+_ramp20", phase).as_str()),
+      PatchClampProtocol::Activation => regex::Regex::new(format!(r"m{}_\d+", phase).as_str()),
+      PatchClampProtocol::Deactivation => regex::Regex::new(format!(r"m{}_\d+_deact", phase).as_str()),
+      PatchClampProtocol::Ramp => regex::Regex::new(format!(r"m{}_\d+_ramp20", phase).as_str()),
     }
     .unwrap();
     let raw_data: Vec<&matfile::Array> = mat_arrays
@@ -67,6 +69,11 @@ impl PatchClampData {
     } else {
       Err(Box::new(matfile::Error::ConversionError))
     }
+  }
+
+  #[cfg(feature = "default")]
+  pub fn to_json(&self) -> Result<String, serde_json::Error> {
+    serde_json::to_string(self)
   }
 
   pub fn demo() -> PatchClampData {

@@ -1,23 +1,6 @@
-#![feature(coroutines, iter_from_coroutine, type_alias_impl_trait, cfg_eval)]
-#![allow(dead_code)]
-
 use argmin::core::{CostFunction, Error, Executor, Gradient, State};
 use argmin::solver::linesearch::HagerZhangLineSearch;
 use nalgebra::Vector3;
-
-mod cell;
-mod channels;
-mod constants;
-mod optimisation;
-mod patchclampdata;
-mod pulseprotocol;
-mod utils;
-
-use cell::evaluate_match;
-use cell::A549CancerCell;
-use cell::TotalCurrentRecord;
-use patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol};
-use pulseprotocol::DefaultPulseProtocol;
 
 fn target(params: &Vector3<f64>) -> f64 {
   4.0 * params[0].powi(2) + 7.0 * params[1] + 22.0
@@ -110,14 +93,4 @@ fn optimise() {
 
   // Number of evaluation counts per method (Cost, Gradient)
   let _function_evaluation_counts = res.state().get_func_counts();
-}
-
-fn main() {
-  utils::setup_logging();
-  let measurements = PatchClampData::load(PatchClampProtocol::Ramp, CellPhase::G0).unwrap();
-  let pulse_protocol = DefaultPulseProtocol {};
-  let mut cell = A549CancerCell::new();
-  let mut recorded = TotalCurrentRecord::empty();
-  cell.simulate(pulse_protocol, &mut recorded, measurements.current.len());
-  evaluate_match(measurements, recorded);
 }

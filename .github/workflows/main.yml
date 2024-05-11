@@ -25,5 +25,5 @@ jobs:
 
       # builds frontend with wasm-pack
       - uses: bahmutov/npm-install@v1
-      - run: yarn run wasm-pack build frontend
+      - run: yarn run wasm-pack build frontend --release
       - run: yarn run build

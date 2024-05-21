@@ -59,7 +59,7 @@ fn main() {
       evaluate_on_langthaler_et_al_counts(measurements);
     }
     Command::Optimise => {
-      optimisation::find_best_fit_for(measurements);
+      optimisation::find_best_fit_for(measurements, optimisation::InSilicoOptimiser::ParticleSwarm);
     }
   }
 }

@@ -1,5 +1,5 @@
 use argmin::core::State;
-use argmin::core::{CostFunction, Error, Executor};
+use argmin::core::{CostFunction, Error, Executor, Gradient};
 use nalgebra::SVector;
 
 use crate::cell::evaluate_match;
@@ -12,8 +12,9 @@ use crate::pulseprotocol::DefaultPulseProtocol;
 struct MyProblem {
   fit_to: PatchClampData,
 }
+type F64ChannelCounts = SVector<f64, N_CHANNEL_TYPES>;
 impl CostFunction for MyProblem {
-  type Param = SVector<f64, N_CHANNEL_TYPES>;
+  type Param = F64ChannelCounts;
   type Output = f64;
   fn cost(&self, param: &Self::Param) -> Result<Self::Output, Error> {
     let pulse_protocol = DefaultPulseProtocol {};
@@ -25,27 +26,48 @@ impl CostFunction for MyProblem {
   }
 }
 
-// impl Gradient for MyProblem {
-//   type Param = Vector3<f64>;
-//   type Gradient = Vector3<f64>;
-//   fn gradient(&self, _param: &Self::Param) -> Result<Self::Gradient, Error> {
-//     print!("g");
-//     Ok([1.0, 2.0, 3.0].into())
-//   }
-// }
+impl Gradient for MyProblem {
+  type Param = F64ChannelCounts;
+  type Gradient = F64ChannelCounts;
+  fn gradient(&self, current: &Self::Param) -> Result<Self::Gradient, Error> {
+    print!("g");
+    let mut grad = Self::Gradient::zeros();
+    let current_cost = self.cost(current)?;
+    for i in 0..9 {
+      let mut temp_params = current.clone();
+      temp_params[i] += 1.0;
+      grad[i] = (self.cost(&temp_params)? - current_cost) / 2.0;
+    }
+    Ok(grad)
+  }
+}
 
-pub fn find_best_fit_for(data: PatchClampData) {
+pub enum InSilicoOptimiser {
+  ParticleSwarm,
+  // SteepestDescent,
+  // LBFGS,
+}
+
+pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
   let cost = MyProblem { fit_to: data };
-  // let linesearch = HagerZhangLineSearch::<Vector3<f64>, Vector3<f64>, f64>::new();
-  let solver = argmin::solver::particleswarm::ParticleSwarm::new(
-    (
-      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0].into(),
-      [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0].into(),
-    ),
-    200,
-  );
-  let result = Executor::new(cost, solver)
-    .configure(|state| state.max_iters(10))
+  let executor = match using {
+    InSilicoOptimiser::ParticleSwarm => {
+      let solver = argmin::solver::particleswarm::ParticleSwarm::new(
+        (
+          [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0].into(),
+          [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0].into(),
+        ),
+        200,
+      );
+      Executor::new(cost, solver).configure(|state| state.max_iters(10))
+    } // InSilicoOptimiser::LBFGS => {
+      //   let linesearch =
+      //     argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
+      //   let solver = argmin::solver::quasinewton::LBFGS::new(linesearch, 200);
+      //   Executor::new(cost, solver).configure(|state| state.max_iters(10))
+      // }
+  };
+  let result = executor
     .add_observer(
       argmin::core::observers::Observers::new(),
       argmin::core::observers::ObserverMode::Every(4),

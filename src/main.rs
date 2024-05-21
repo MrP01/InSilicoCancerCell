@@ -15,12 +15,17 @@ use cell::TotalCurrentRecord;
 use patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol};
 use pulseprotocol::DefaultPulseProtocol;
 
+fn evaluate_on_langthaler_et_al(measurements: PatchClampData) {
+  let pulse_protocol = DefaultPulseProtocol {};
+  let mut cell = A549CancerCell::new();
+  cell.set_langthaler_et_al_channel_counts(measurements.phase.clone());
+  let mut recorded = TotalCurrentRecord::empty();
+  cell.simulate(pulse_protocol, &mut recorded, measurements.current.len());
+  evaluate_match(&measurements, recorded);
+}
+
 fn main() {
   utils::setup_logging();
   let measurements = PatchClampData::load(PatchClampProtocol::Ramp, CellPhase::G0).unwrap();
-  let pulse_protocol = DefaultPulseProtocol {};
-  let mut cell = A549CancerCell::new();
-  let mut recorded = TotalCurrentRecord::empty();
-  cell.simulate(pulse_protocol, &mut recorded, measurements.current.len());
-  evaluate_match(measurements, recorded);
+  optimisation::find_best_fit_for(measurements);
 }

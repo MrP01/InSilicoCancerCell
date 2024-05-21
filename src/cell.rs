@@ -1,7 +1,7 @@
 #[cfg(all(debug_assertions, feature = "pause-each-step"))]
 use std::io::{BufRead, Write};
 
-use nalgebra::DVector;
+use nalgebra::{DVector, SVector};
 
 use crate::{
   channels::{self, base::IsChannel},
@@ -37,6 +37,9 @@ impl SimulationRecorder for TotalCurrentRecord {
       .push(cell.channels().iter().map(|c| c.current(voltage)).sum());
   }
 }
+
+pub const N_CHANNEL_TYPES: usize = 9;
+pub type ChannelCounts = SVector<u32, N_CHANNEL_TYPES>;
 
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct A549CancerCell {
@@ -138,14 +141,14 @@ impl A549CancerCell {
   }
 }
 
-pub fn evaluate_match(measurements: PatchClampData, simulation: TotalCurrentRecord) -> f64 {
+pub fn evaluate_match(measurements: &PatchClampData, simulation_record: TotalCurrentRecord) -> f64 {
   log::info!(
     "Collected data: {} points from simulation, {} points from measurements.",
-    simulation.current.len(),
+    simulation_record.current.len(),
     measurements.current.len()
   );
   let rows = measurements.current.len();
-  let error = (simulation.as_dvec().rows_range(0..rows) - measurements.current).norm_squared();
+  let error = (simulation_record.as_dvec().rows_range(0..rows) - measurements.current.clone()).norm_squared();
   log::info!("Simulation match with measurements: {:.3}", error);
   error
 }
@@ -168,29 +171,25 @@ impl A549CancerCell {
     }
   }
 
+  pub fn set_channel_counts(&mut self, counts: ChannelCounts) {
+    self.kv13_channel.n_channels = counts[0];
+    self.kv31_channel.n_channels = counts[1];
+    self.kv34_channel.n_channels = counts[2];
+    self.kv71_channel.n_channels = counts[3];
+    self.kca11_channel.n_channels = counts[4];
+    self.kca31_channel.n_channels = counts[5];
+    self.task1_channel.n_channels = counts[6];
+    self.crac1_channel.n_channels = counts[7];
+    self.clc2_channel.n_channels = counts[8];
+  }
+
   pub fn set_langthaler_et_al_channel_counts(&mut self, phase: CellPhase) {
     match phase {
       CellPhase::G0 => {
-        self.kv13_channel.n_channels = 22;
-        self.kv31_channel.n_channels = 78;
-        self.kv34_channel.n_channels = 5;
-        self.kv71_channel.n_channels = 1350;
-        self.kca11_channel.n_channels = 40;
-        self.kca31_channel.n_channels = 77;
-        self.task1_channel.n_channels = 19;
-        self.crac1_channel.n_channels = 200;
-        self.clc2_channel.n_channels = 13;
+        self.set_channel_counts([22, 78, 5, 1350, 40, 77, 19, 200, 13].into());
       }
       CellPhase::G1 => {
-        self.kv13_channel.n_channels = 20;
-        self.kv31_channel.n_channels = 90;
-        self.kv34_channel.n_channels = 54;
-        self.kv71_channel.n_channels = 558;
-        self.kca11_channel.n_channels = 15;
-        self.kca31_channel.n_channels = 63;
-        self.task1_channel.n_channels = 10;
-        self.crac1_channel.n_channels = 200;
-        self.clc2_channel.n_channels = 11;
+        self.set_channel_counts([20, 90, 54, 558, 15, 63, 10, 200, 11].into());
       }
     }
   }
@@ -201,7 +200,7 @@ impl A549CancerCell {
     let pulse_protocol = DefaultPulseProtocol {};
     let mut recorded = TotalCurrentRecord::empty();
     self.simulate(pulse_protocol, &mut recorded, measurements.current.len());
-    evaluate_match(measurements, recorded)
+    evaluate_match(&measurements, recorded)
   }
 }
 

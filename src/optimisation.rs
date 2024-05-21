@@ -19,7 +19,7 @@ impl CostFunction for MyProblem {
   fn cost(&self, param: &Self::Param) -> Result<Self::Output, Error> {
     let pulse_protocol = DefaultPulseProtocol {};
     let mut cell = A549CancerCell::new();
-    cell.set_channel_counts(param.map(|x| x.round() as u32));
+    cell.set_channel_counts(param.map(|x| x.round() as u32).into());
     let mut recorded = TotalCurrentRecord::empty();
     cell.simulate(pulse_protocol, &mut recorded, self.fit_to.current.len());
     Ok(evaluate_match(&self.fit_to, recorded))

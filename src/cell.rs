@@ -1,7 +1,7 @@
 #[cfg(all(debug_assertions, feature = "pause-each-step"))]
 use std::io::{BufRead, Write};
 
-use nalgebra::{DVector, SVector};
+use nalgebra::DVector;
 
 use crate::{
   channels::{self, base::IsChannel},
@@ -39,7 +39,7 @@ impl SimulationRecorder for TotalCurrentRecord {
 }
 
 pub const N_CHANNEL_TYPES: usize = 9;
-pub type ChannelCounts = SVector<u32, N_CHANNEL_TYPES>;
+pub type ChannelCounts = [u32; N_CHANNEL_TYPES];
 
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct A549CancerCell {

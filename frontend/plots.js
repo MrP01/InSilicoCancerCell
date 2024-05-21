@@ -8,7 +8,7 @@ function fullSimulationCurrent({}, interactive = false) {
   return {
     marks: [
       Plot.lineY(simulation.voltage, {
-        y: (y) => y / 4,
+        y: (y) => y * 1e3,
         z: null,
         tip: interactive ? "x" : undefined,
       }),

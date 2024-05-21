@@ -43,7 +43,9 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+  #[command(about = "Evaluate the model on the parameters supplied by Langthaler et al.")]
   RunSingle,
+  #[command(about = "Perform a large-scale optimisation on the number of channels per type")]
   Optimise,
 }
 

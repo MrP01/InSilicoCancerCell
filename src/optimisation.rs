@@ -46,6 +46,10 @@ pub fn find_best_fit_for(data: PatchClampData) {
   );
   let result = Executor::new(cost, solver)
     .configure(|state| state.max_iters(10))
+    .add_observer(
+      argmin::core::observers::Observers::new(),
+      argmin::core::observers::ObserverMode::Every(4),
+    )
     .run()
     .unwrap();
 

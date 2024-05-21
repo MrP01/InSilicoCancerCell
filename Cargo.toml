@@ -33,6 +33,7 @@ argmin = { version = "0.10.0", features = ["wasm-bindgen"], optional = true }
 argmin-math = { version = "0.4.0", features = ["nalgebra_latest"], optional = true }
 serde = { version = "1.0.202", features = ["derive"], optional = true }
 serde_json = { version = "1.0.117", optional = true }
+clap = { version = "4.5.4", features = ["derive"] }
 
 [workspace]
 members = [".", "frontend"]

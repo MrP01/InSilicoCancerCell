@@ -1,4 +1,3 @@
-use argmin::core::State;
 use argmin::core::{CostFunction, Error, Executor, Gradient};
 use nalgebra::SVector;
 
@@ -81,13 +80,13 @@ impl Gradient for ChannelCountsProblem {
 pub enum InSilicoOptimiser {
   ParticleSwarm,
   // SteepestDescent,
-  // LBFGS,
+  LBFGS,
 }
 
 pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
   let mut problem = ChannelCountsProblem::new(data);
   problem.precompute_single_channel_currents();
-  let executor = match using {
+  match using {
     InSilicoOptimiser::ParticleSwarm => {
       let solver = argmin::solver::particleswarm::ParticleSwarm::new(
         (
@@ -96,23 +95,28 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
         ),
         200,
       );
-      Executor::new(problem, solver).configure(|state| state.max_iters(10))
-    } // InSilicoOptimiser::LBFGS => {
-      //   let linesearch =
-      //     argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
-      //   let solver = argmin::solver::quasinewton::LBFGS::new(linesearch, 200);
-      //   Executor::new(cost, solver).configure(|state| state.max_iters(10))
-      // }
+      let result = Executor::new(problem, solver)
+        .configure(|state| state.max_iters(10))
+        .run()
+        .unwrap();
+      println!("{}", result);
+    }
+    InSilicoOptimiser::LBFGS => {
+      let linesearch =
+        argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
+      let solver = argmin::solver::quasinewton::LBFGS::new(linesearch, 200);
+      let result = Executor::new(problem, solver)
+        .configure(|state| state.max_iters(10))
+        .run()
+        .unwrap();
+      println!("{}", result);
+    }
   };
-  let result = executor
-    .add_observer(
-      argmin::core::observers::Observers::new(),
-      argmin::core::observers::ObserverMode::Every(4),
-    )
-    .run()
-    .unwrap();
 
-  println!("{}", result);
-  let _best = result.state().get_best_param().unwrap();
-  let _best_cost = result.state().get_best_cost();
+  // executor.add_observer(
+  //   argmin::core::observers::Observers::new(),
+  //   argmin::core::observers::ObserverMode::Every(4),
+  // )
+  // let _best = result.state().get_best_param().unwrap();
+  // let _best_cost = result.state().get_best_cost();
 }

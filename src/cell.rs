@@ -25,7 +25,7 @@ impl TotalCurrentRecord {
     Self { current: vec![] }
   }
 
-  pub fn as_dvec(self) -> DVector<f64> {
+  pub fn current_as_dvec(self) -> DVector<f64> {
     DVector::<f64>::from_vec(self.current)
   }
 }
@@ -141,16 +141,19 @@ impl A549CancerCell {
   }
 }
 
-pub fn evaluate_match(measurements: &PatchClampData, simulation_record: TotalCurrentRecord) -> f64 {
+pub fn evaluate_current_match(measurements: &PatchClampData, current: DVector<f64>) -> f64 {
   log::info!(
     "Collected data: {} points from simulation, {} points from measurements.",
-    simulation_record.current.len(),
+    current.len(),
     measurements.current.len()
   );
   let rows = measurements.current.len();
-  let error = (simulation_record.as_dvec().rows_range(0..rows) - measurements.current.clone()).norm_squared();
+  let error = (current.rows_range(0..rows) - measurements.current.clone()).norm_squared();
   log::info!("Simulation match with measurements: {:.3}", error);
   error
+}
+pub fn evaluate_match(measurements: &PatchClampData, simulation_record: TotalCurrentRecord) -> f64 {
+  evaluate_current_match(measurements, simulation_record.current_as_dvec())
 }
 
 #[cfg_eval]

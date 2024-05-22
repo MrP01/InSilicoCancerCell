@@ -2,31 +2,67 @@ use argmin::core::State;
 use argmin::core::{CostFunction, Error, Executor, Gradient};
 use nalgebra::SVector;
 
-use crate::cell::evaluate_match;
-use crate::cell::A549CancerCell;
-use crate::cell::TotalCurrentRecord;
+use crate::cell::SimulationRecorder;
 use crate::cell::N_CHANNEL_TYPES;
+use crate::cell::{evaluate_current_match, A549CancerCell};
 use crate::patchclampdata::PatchClampData;
 use crate::pulseprotocol::DefaultPulseProtocol;
 
-struct MyProblem {
-  fit_to: PatchClampData,
+pub struct SingleChannelCurrentRecord {
+  pub currents: [Vec<f64>; N_CHANNEL_TYPES],
 }
-type F64ChannelCounts = SVector<f64, N_CHANNEL_TYPES>;
-impl CostFunction for MyProblem {
-  type Param = F64ChannelCounts;
-  type Output = f64;
-  fn cost(&self, param: &Self::Param) -> Result<Self::Output, Error> {
-    let pulse_protocol = DefaultPulseProtocol {};
-    let mut cell = A549CancerCell::new();
-    cell.set_channel_counts(param.map(|x| x.round() as u32).into());
-    let mut recorded = TotalCurrentRecord::empty();
-    cell.simulate(pulse_protocol, &mut recorded, self.fit_to.current.len());
-    Ok(evaluate_match(&self.fit_to, recorded))
+impl SingleChannelCurrentRecord {
+  pub fn empty() -> Self {
+    Self {
+      currents: [1; 9].map(|_| vec![]),
+    }
+  }
+}
+impl SimulationRecorder for SingleChannelCurrentRecord {
+  fn record(&mut self, cell: &A549CancerCell, voltage: f64) {
+    for (channel, current) in std::iter::zip(cell.channels(), &mut self.currents) {
+      current.push(channel.single_channel_current(voltage));
+    }
   }
 }
 
-impl Gradient for MyProblem {
+struct ChannelCountsProblem {
+  fit_to: PatchClampData,
+  _precomputed_currents: Option<nalgebra::DMatrix<f64>>,
+}
+type F64ChannelCounts = SVector<f64, N_CHANNEL_TYPES>;
+
+impl ChannelCountsProblem {
+  fn new(fit_to: PatchClampData) -> Self {
+    Self {
+      fit_to,
+      _precomputed_currents: None,
+    }
+  }
+  fn precompute_single_channel_currents(&mut self) {
+    let pulse_protocol = DefaultPulseProtocol {};
+    let mut cell = A549CancerCell::new();
+    let mut recorded = SingleChannelCurrentRecord::empty();
+    cell.simulate(pulse_protocol, &mut recorded, self.fit_to.current.len());
+    self._precomputed_currents = Some(nalgebra::DMatrix::from_columns(
+      &recorded.currents.map(|c| nalgebra::DVector::from(c)),
+    ));
+    log::info!("Finished pre-computation of single-channel currents.");
+  }
+}
+
+impl CostFunction for ChannelCountsProblem {
+  type Param = F64ChannelCounts;
+  type Output = f64;
+  fn cost(&self, param: &Self::Param) -> Result<Self::Output, Error> {
+    Ok(evaluate_current_match(
+      &self.fit_to,
+      self._precomputed_currents.as_ref().unwrap() * param,
+    ))
+  }
+}
+
+impl Gradient for ChannelCountsProblem {
   type Param = F64ChannelCounts;
   type Gradient = F64ChannelCounts;
   fn gradient(&self, current: &Self::Param) -> Result<Self::Gradient, Error> {
@@ -49,7 +85,8 @@ pub enum InSilicoOptimiser {
 }
 
 pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
-  let cost = MyProblem { fit_to: data };
+  let mut problem = ChannelCountsProblem::new(data);
+  problem.precompute_single_channel_currents();
   let executor = match using {
     InSilicoOptimiser::ParticleSwarm => {
       let solver = argmin::solver::particleswarm::ParticleSwarm::new(
@@ -59,7 +96,7 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
         ),
         200,
       );
-      Executor::new(cost, solver).configure(|state| state.max_iters(10))
+      Executor::new(problem, solver).configure(|state| state.max_iters(10))
     } // InSilicoOptimiser::LBFGS => {
       //   let linesearch =
       //     argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();

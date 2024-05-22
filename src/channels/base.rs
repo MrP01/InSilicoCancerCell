@@ -6,6 +6,7 @@ pub trait HasTransitionMatrix<const N_STATES: usize> {
 
 pub trait IsChannel {
   fn update_state(&mut self, voltage: f64);
+  fn single_channel_current(&self, voltage: f64) -> f64;
   fn current(&self, voltage: f64) -> f64;
   fn internal_state(&self) -> Vec<f64>;
   fn display_name(&self) -> String;
@@ -27,7 +28,7 @@ macro_rules! define_ion_channel {
     }
 
     #[allow(non_upper_case_globals)]
-    impl $name{
+    impl $name {
       pub const n_states: usize = $n_states;
       pub const conductance: f64 = $conductance;
       pub fn display_name() -> String {
@@ -37,7 +38,7 @@ macro_rules! define_ion_channel {
         let mut x0 = nalgebra::SVector::<f64, $n_states>::from_vec(vec![0.0; $n_states]);
         x0[0] = 1.0;
         return $name {
-          n_channels: 10,
+          n_channels: 1,
           state: x0,
         };
       }
@@ -49,10 +50,13 @@ macro_rules! define_ion_channel {
         $crate::channels::base::validate_transition_matrix::<$n_states>(Self::display_name(), transition);
         self.state = transition * self.state;
       }
-      fn current(&self, voltage: f64) -> f64 {
+      fn single_channel_current(&self, voltage: f64) -> f64 {
         let mut open = 0.0;
         $(open += self.state[$states_responsible_for_current];)+
         Self::conductance * open * (self.n_channels as f64) * (voltage - constants::EvK)
+      }
+      fn current(&self, voltage: f64) -> f64 {
+        (self.n_channels as f64) * self.single_channel_current(voltage)
       }
       fn internal_state(&self) -> Vec<f64> {
         self.state.iter().cloned().collect()

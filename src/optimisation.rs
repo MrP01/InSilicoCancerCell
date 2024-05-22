@@ -1,4 +1,6 @@
 use argmin::core::{CostFunction, Error, Executor, Gradient};
+use argmin_math::ArgminInv;
+use in_silico_cancer_cell::cell::ChannelCounts;
 use nalgebra::SVector;
 
 use crate::cell::SimulationRecorder;
@@ -27,7 +29,7 @@ impl SimulationRecorder for SingleChannelCurrentRecord {
 
 struct ChannelCountsProblem {
   fit_to: PatchClampData,
-  _precomputed_currents: Option<nalgebra::DMatrix<f64>>,
+  current_basis: Option<nalgebra::DMatrix<f64>>,
 }
 type F64ChannelCounts = SVector<f64, N_CHANNEL_TYPES>;
 
@@ -35,7 +37,7 @@ impl ChannelCountsProblem {
   fn new(fit_to: PatchClampData) -> Self {
     Self {
       fit_to,
-      _precomputed_currents: None,
+      current_basis: None,
     }
   }
   fn precompute_single_channel_currents(&mut self) {
@@ -43,10 +45,24 @@ impl ChannelCountsProblem {
     let mut cell = A549CancerCell::new();
     let mut recorded = SingleChannelCurrentRecord::empty();
     cell.simulate(pulse_protocol, &mut recorded, self.fit_to.current.len());
-    self._precomputed_currents = Some(nalgebra::DMatrix::from_columns(
+    self.current_basis = Some(nalgebra::DMatrix::from_columns(
       &recorded.currents.map(|c| nalgebra::DVector::from(c)),
     ));
     log::info!("Finished pre-computation of single-channel currents.");
+  }
+  fn solve_through_projection(&self) -> ChannelCounts {
+    let qr = self.current_basis.clone().unwrap().qr(); // computes A = QR
+    let mut transformed = self.fit_to.current.clone();
+    qr.q_tr_mul(&mut transformed); // computes Q^T I_m
+    let r_inv = qr.unpack_r().inv().expect("R matrix should be invertible");
+    // then finally computes R^(-1) Q^T I_m, the solution of the least-squares problem
+    let solution = r_inv * transformed;
+    return solution
+      .iter()
+      .map(|x| x.round() as u32)
+      .collect::<Vec<u32>>()
+      .try_into()
+      .unwrap();
   }
 }
 
@@ -56,7 +72,7 @@ impl CostFunction for ChannelCountsProblem {
   fn cost(&self, param: &Self::Param) -> Result<Self::Output, Error> {
     Ok(evaluate_current_match(
       &self.fit_to,
-      self._precomputed_currents.as_ref().unwrap() * param,
+      self.current_basis.as_ref().unwrap() * param.map(|x| x.round()),
     ))
   }
 }
@@ -96,7 +112,7 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
         200,
       );
       let result = Executor::new(problem, solver)
-        .configure(|state| state.max_iters(10))
+        .configure(|state| state.max_iters(100))
         .run()
         .unwrap();
       println!("{}", result);

@@ -11,6 +11,15 @@ pub enum PatchClampProtocol {
   Deactivation,
   Ramp,
 }
+impl fmt::Display for PatchClampProtocol {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      PatchClampProtocol::Activation => write!(f, "Activation"),
+      PatchClampProtocol::Deactivation => write!(f, "Deactivation"),
+      PatchClampProtocol::Ramp => write!(f, "Ramp"),
+    }
+  }
+}
 
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
@@ -60,7 +69,13 @@ impl PatchClampData {
       .collect();
     assert!(!raw_data.is_empty());
     if let matfile::NumericData::Double { real, imag: _ } = raw_data.first().expect("msg").data() {
-      let current = DVector::from_vec(real.to_vec());
+      let mut current = DVector::from_vec(real.to_vec());
+      match (&phase, &protocol) {
+        (CellPhase::G0, PatchClampProtocol::Activation) => {
+          current *= 1e9;
+        }
+        _ => {}
+      }
       Ok(PatchClampData {
         protocol,
         phase,

@@ -1,10 +1,10 @@
 import { run } from "./pkg/in_silico_frontend";
 import * as Plot from "@observablehq/plot";
+import patchclampdata from "./pkg/patchclampdata-g0-activation.json";
 
 const simulation = run();
 
 function fullSimulationCurrent({}, interactive = false) {
-  // if (interactive) window.thesimulation = simulation;
   return {
     marks: [
       Plot.lineY(simulation.voltage, {
@@ -13,9 +13,15 @@ function fullSimulationCurrent({}, interactive = false) {
         tip: interactive ? "x" : undefined,
       }),
       Plot.lineY(simulation.total_current, {
-        y: (y) => y * 1e12,
+        y: (y) => y * 1e9,
         z: null,
         stroke: (y) => y,
+        tip: interactive ? "x" : undefined,
+      }),
+      // @ts-ignore
+      Plot.lineY(patchclampdata.current[0], {
+        y: (y) => y * 1e3,
+        z: null,
         tip: interactive ? "x" : undefined,
       }),
     ],

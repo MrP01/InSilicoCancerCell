@@ -47,12 +47,13 @@ enum Command {
   RunSingle,
   #[command(about = "Perform a large-scale optimisation on the number of channels per type")]
   Optimise,
+  #[command(about = "Save patch clamp data (measurements) to a JSON file")]
+  SavePatchClampData,
 }
 
 fn main() {
   utils::setup_logging();
-  let measurements = PatchClampData::load(PatchClampProtocol::Ramp, CellPhase::G0).unwrap();
-
+  let measurements = PatchClampData::load(PatchClampProtocol::Activation, CellPhase::G0).unwrap();
   let cli = Cli::parse();
   match cli.command {
     Command::RunSingle => {
@@ -60,6 +61,17 @@ fn main() {
     }
     Command::Optimise => {
       optimisation::find_best_fit_for(measurements, optimisation::InSilicoOptimiser::ParticleSwarm);
+    }
+    Command::SavePatchClampData => {
+      let path = format!(
+        "frontend/pkg/patchclampdata-{}-{}.json",
+        measurements.phase.to_string().to_lowercase(),
+        measurements.protocol.to_string().to_lowercase()
+      );
+      let file = std::fs::File::create(&path).unwrap();
+      let writer = std::io::BufWriter::new(file);
+      serde_json::to_writer(writer, &measurements).unwrap();
+      log::info!("Wrote to {}", &path);
     }
   }
 }

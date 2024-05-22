@@ -79,7 +79,7 @@ impl Gradient for ChannelCountsProblem {
 
 pub enum InSilicoOptimiser {
   ParticleSwarm,
-  // SteepestDescent,
+  SteepestDescent,
   LBFGS,
 }
 
@@ -101,6 +101,16 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
         .unwrap();
       println!("{}", result);
     }
+    InSilicoOptimiser::SteepestDescent => {
+      let linesearch =
+        argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
+      let solver = argmin::solver::gradientdescent::SteepestDescent::new(linesearch);
+      let result = Executor::new(problem, solver)
+        .configure(|state| state.max_iters(10))
+        .run()
+        .unwrap();
+      println!("{}", result);
+    }
     InSilicoOptimiser::LBFGS => {
       let linesearch =
         argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
@@ -112,7 +122,7 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
       println!("{}", result);
     }
   };
-
+  // TODO:
   // executor.add_observer(
   //   argmin::core::observers::Observers::new(),
   //   argmin::core::observers::ObserverMode::Every(4),

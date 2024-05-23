@@ -3,9 +3,6 @@ import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 import Figure from "../components/Figure.astro";
 import IonChannel from "../components/IonChannel.astro";
-import { get_cell_metadata } from "../pkg/in_silico_frontend";
-
-const metadata = get_cell_metadata();
 ---
 
 <Layout title="Elecrophysiological Model of a Cancer Cell">
@@ -13,15 +10,15 @@ const metadata = get_cell_metadata();
     <h1><span class="text-gradient">In-Silico</span> Cancer Cell</h1>
     <!-- <p class="instructions">Welcome! 🚀 This is the full simulation output:</p> -->
     <div class="channel-grid">
-      <IonChannel channel="Kv71" metadata={metadata} />
-      <IonChannel channel="CRACM1" metadata={metadata} />
-      <IonChannel channel="Kv13" metadata={metadata} />
-      <IonChannel channel="Kv31" metadata={metadata} />
-      <IonChannel channel="Kv34" metadata={metadata} />
-      <IonChannel channel="KCa11" metadata={metadata} />
-      <IonChannel channel="KCa31" metadata={metadata} />
-      <IonChannel channel="CLC2" metadata={metadata} />
-      <IonChannel channel="Task1" metadata={metadata} />
+      <IonChannel channel="Kv71" />
+      <IonChannel channel="CRACM1" />
+      <IonChannel channel="Kv13" />
+      <IonChannel channel="Kv31" />
+      <IonChannel channel="Kv34" />
+      <IonChannel channel="KCa11" />
+      <IonChannel channel="KCa31" />
+      <IonChannel channel="CLC2" />
+      <IonChannel channel="Task1" />
     </div>
     <Figure
       plot="fullSimulationCurrent"

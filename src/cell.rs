@@ -38,12 +38,14 @@ impl SimulationRecorder for TotalCurrentRecord {
   }
 }
 
-pub const N_CHANNEL_TYPES: usize = 9;
+pub const N_CHANNEL_TYPES: usize = 11;
 pub type ChannelCounts = [u32; N_CHANNEL_TYPES];
 
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct A549CancerCell {
   crac1_channel: channels::crac1::CRAC1IonChannelCat,
+  trpc6_channel: channels::trpc6::TRPC6IonChannelCat,
+  trpv3_channel: channels::trpv3::TRPV3IonChannelCat,
   kv13_channel: channels::kv13::KV13IonChannelCat,
   kv31_channel: channels::kv31::KV31IonChannelCat,
   kv34_channel: channels::kv34::KV34IonChannelCat,
@@ -58,6 +60,8 @@ impl A549CancerCell {
   pub fn channels(&self) -> Vec<&dyn IsChannel> {
     vec![
       &self.crac1_channel,
+      &self.trpc6_channel,
+      &self.trpv3_channel,
       &self.kv13_channel,
       &self.kv31_channel,
       &self.kv34_channel,
@@ -71,6 +75,8 @@ impl A549CancerCell {
   pub fn channels_mut(&mut self) -> Vec<&mut dyn IsChannel> {
     vec![
       &mut self.crac1_channel,
+      &mut self.trpc6_channel,
+      &mut self.trpv3_channel,
       &mut self.kv13_channel,
       &mut self.kv31_channel,
       &mut self.kv34_channel,
@@ -163,6 +169,8 @@ impl A549CancerCell {
   pub fn new() -> A549CancerCell {
     A549CancerCell {
       crac1_channel: channels::crac1::CRAC1IonChannelCat::new(),
+      trpc6_channel: channels::trpc6::TRPC6IonChannelCat::new(),
+      trpv3_channel: channels::trpv3::TRPV3IonChannelCat::new(),
       kv13_channel: channels::kv13::KV13IonChannelCat::new(),
       kv31_channel: channels::kv31::KV31IonChannelCat::new(),
       kv34_channel: channels::kv34::KV34IonChannelCat::new(),
@@ -183,16 +191,18 @@ impl A549CancerCell {
     self.kca31_channel.n_channels = counts[5];
     self.task1_channel.n_channels = counts[6];
     self.crac1_channel.n_channels = counts[7];
-    self.clc2_channel.n_channels = counts[8];
+    self.trpc6_channel.n_channels = counts[8];
+    self.trpv3_channel.n_channels = counts[9];
+    self.clc2_channel.n_channels = counts[10];
   }
 
   pub fn set_langthaler_et_al_channel_counts(&mut self, phase: CellPhase) {
     match phase {
       CellPhase::G0 => {
-        self.set_channel_counts([22, 78, 5, 1350, 40, 77, 19, 200, 13].into());
+        self.set_channel_counts([22, 78, 5, 1350, 40, 77, 19, 200, 17, 12, 13].into());
       }
       CellPhase::G1 => {
-        self.set_channel_counts([20, 90, 54, 558, 15, 63, 10, 200, 11].into());
+        self.set_channel_counts([20, 90, 54, 558, 15, 63, 10, 200, 12, 13, 11].into());
       }
     }
   }

@@ -72,7 +72,7 @@ impl PatchClampData {
       let mut current = DVector::from_vec(real.to_vec());
       match (&phase, &protocol) {
         (CellPhase::G0, PatchClampProtocol::Activation) => {
-          current *= 1e9;
+          current *= 1e11;
         }
         _ => {}
       }

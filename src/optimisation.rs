@@ -15,7 +15,7 @@ pub struct SingleChannelCurrentRecord {
 impl SingleChannelCurrentRecord {
   pub fn empty() -> Self {
     Self {
-      currents: [1; 9].map(|_| vec![]),
+      currents: [1; N_CHANNEL_TYPES].map(|_| vec![]),
     }
   }
 }
@@ -105,10 +105,7 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
   match using {
     InSilicoOptimiser::ParticleSwarm => {
       let solver = argmin::solver::particleswarm::ParticleSwarm::new(
-        (
-          [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0].into(),
-          [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0].into(),
-        ),
+        ([0.0; N_CHANNEL_TYPES].into(), [1350.0; N_CHANNEL_TYPES].into()),
         200,
       );
       let result = Executor::new(problem, solver)

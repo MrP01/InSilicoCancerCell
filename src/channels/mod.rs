@@ -8,3 +8,5 @@ pub mod kv31;
 pub mod kv34;
 pub mod kv71;
 pub mod task1;
+pub mod trpc6;
+pub mod trpv3;

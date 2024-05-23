@@ -20,7 +20,7 @@ function fullSimulationCurrent({}, interactive = false) {
       }),
       // @ts-ignore
       Plot.lineY(patchclampdata.current[0], {
-        y: (y) => y * 100,
+        y: (y) => y,
         z: null,
         tip: interactive ? "x" : undefined,
       }),

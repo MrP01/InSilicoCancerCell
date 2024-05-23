@@ -1,7 +1,15 @@
 use nalgebra::SMatrix;
 
+use crate::constants;
+
 pub trait HasTransitionMatrix<const N_STATES: usize> {
   fn transition_matrix(&self, voltage: f64) -> SMatrix<f64, N_STATES, N_STATES>;
+}
+
+pub struct ChannelMetadata {
+  pub n_states: usize,
+  pub n_channels: u32,
+  pub ion_type: constants::IonType,
 }
 
 pub trait IsChannel {
@@ -11,6 +19,7 @@ pub trait IsChannel {
   fn internal_state(&self) -> Vec<f64>;
   fn display_name(&self) -> String;
   fn display_me(&self) -> String;
+  fn metadata(&self) -> ChannelMetadata;
 }
 
 #[macro_export]
@@ -67,11 +76,19 @@ macro_rules! define_ion_channel {
       }
       fn display_me(&self) -> String {
         format!(
-          "Simulating {} ({} states) with {} channels.",
+          "Simulating {} ({} states, conductance {}) with {} channel(s)",
           Self::display_name(),
           Self::n_states,
+          Self::conductance,
           self.n_channels
         )
+      }
+      fn metadata(&self) -> crate::channels::base::ChannelMetadata {
+        crate::channels::base::ChannelMetadata {
+          n_channels: self.n_channels,
+          n_states: Self::n_states,
+          ion_type: $iontype,
+        }
       }
     }
     impl Default for $name {

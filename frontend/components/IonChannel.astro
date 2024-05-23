@@ -1,11 +1,14 @@
 ---
 import Figure from "./Figure.astro";
 
-const { channel } = Astro.props;
+const { channel, metadata } = Astro.props;
 ---
 
 <div class="ion-channel">
-  <h2>{channel} Channel</h2>
+  <h2>
+    {channel} Channel
+    <small>({metadata.get(channel).n_states} states, {metadata.get(channel).n_channels} channels)</small>
+  </h2>
   <Figure plot="channelCurrent" args={{ channel }} />
   <Figure plot="channelState" args={{ channel }} />
 </div>

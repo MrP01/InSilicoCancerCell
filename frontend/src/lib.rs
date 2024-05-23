@@ -76,6 +76,30 @@ pub fn run() -> JsValue {
   return serde_wasm_bindgen::to_value(&recorded).unwrap();
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct SerializableChannelMetadata {
+  pub n_states: usize,
+  pub n_channels: u32,
+}
+
+#[wasm_bindgen]
+pub fn get_cell_metadata() -> JsValue {
+  let mut cell = A549CancerCell::new();
+  cell.set_langthaler_et_al_channel_counts(CellPhase::G0);
+  let mut channels: HashMap<String, SerializableChannelMetadata> = HashMap::new();
+  for channel in cell.channels() {
+    let md = channel.metadata();
+    channels.insert(
+      channel.display_name(),
+      SerializableChannelMetadata {
+        n_channels: md.n_channels,
+        n_states: md.n_states,
+      },
+    );
+  }
+  return serde_wasm_bindgen::to_value(&channels).unwrap();
+}
+
 // This is like the `main` function, except for JavaScript.
 #[wasm_bindgen(start)]
 pub fn main_js() -> Result<(), JsValue> {

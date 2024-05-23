@@ -38,7 +38,7 @@ impl fmt::Display for CellPhase {
   }
 }
 
-#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize, Clone))]
 pub struct PatchClampData {
   pub protocol: PatchClampProtocol,
   pub phase: CellPhase,

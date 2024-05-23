@@ -37,7 +37,7 @@ impl ProtocolGenerator for DefaultPulseProtocol {
       #[coroutine]
       || {
         let mut v_test = -0.04;
-        while v_test <= 0.04 {
+        while v_test <= 0.05 {
           yield PulseProtocolStep {
             label: String::from("hold"),
             voltage: -100e-3,

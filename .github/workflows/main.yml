@@ -22,6 +22,7 @@ jobs:
       # builds main.rs
       - name: Build project
         run: cargo build --release --target=${{ matrix.target }}
+      - run: cargo run --release --target=${{ matrix.target }} save-patch-clamp-data 225
 
       # builds frontend with wasm-pack
       - uses: bahmutov/npm-install@v1

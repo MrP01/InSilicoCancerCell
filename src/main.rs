@@ -9,10 +9,13 @@ mod patchclampdata;
 mod pulseprotocol;
 mod utils;
 
+use std::usize;
+
 use cell::evaluate_match;
 use cell::A549CancerCell;
 use cell::TotalCurrentRecord;
 use clap::{Parser, Subcommand};
+use nalgebra::DVector;
 use patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol};
 use pulseprotocol::DefaultPulseProtocol;
 
@@ -48,7 +51,7 @@ enum Command {
   #[command(about = "Perform a large-scale optimisation on the number of channels per type")]
   Optimise,
   #[command(about = "Save patch clamp data (measurements) to a JSON file")]
-  SavePatchClampData,
+  SavePatchClampData { subsampling: Option<usize> },
 }
 
 fn main() {
@@ -62,15 +65,27 @@ fn main() {
     Command::Optimise => {
       optimisation::find_best_fit_for(measurements, optimisation::InSilicoOptimiser::ParticleSwarm);
     }
-    Command::SavePatchClampData => {
+    Command::SavePatchClampData { subsampling } => {
       let path = format!(
-        "frontend/pkg/patchclampdata-{}-{}.json",
+        "frontend/pkg/patchclampdata-{}-{}{}.json",
         measurements.phase.to_string().to_lowercase(),
-        measurements.protocol.to_string().to_lowercase()
+        measurements.protocol.to_string().to_lowercase(),
+        match subsampling {
+          Some(subsamp) => format!("-sub{}", subsamp),
+          None => String::from(""),
+        }
       );
+      let mut subsampled_measurements = measurements.clone();
+      match subsampling {
+        Some(subsamp) => {
+          subsampled_measurements.current =
+            DVector::from_vec(measurements.current.iter().cloned().step_by(subsamp).collect())
+        }
+        None => {}
+      };
       let file = std::fs::File::create(&path).unwrap();
       let writer = std::io::BufWriter::new(file);
-      serde_json::to_writer(writer, &measurements).unwrap();
+      serde_json::to_writer(writer, &subsampled_measurements).unwrap();
       log::info!("Wrote to {}", &path);
     }
   }

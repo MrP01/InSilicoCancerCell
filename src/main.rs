@@ -73,7 +73,7 @@ enum Command {
   #[command(about = "Evaluate the model on the parameters supplied by Langthaler et al.")]
   RunSingle,
   #[command(about = "Perform a large-scale optimisation on the number of channels per type")]
-  Optimise,
+  Fit { using: optimisation::InSilicoMethod },
   #[command(about = "Save patch clamp data (measurements) to a JSON file")]
   SavePatchClampData { subsampling: Option<usize> },
 }
@@ -86,8 +86,8 @@ fn main() {
     Command::RunSingle => {
       evaluate_on_langthaler_et_al_counts(measurements);
     }
-    Command::Optimise => {
-      optimisation::find_best_fit_for(measurements, optimisation::InSilicoOptimiser::ParticleSwarm);
+    Command::Fit { using } => {
+      optimisation::find_best_fit_for(measurements, using);
     }
     Command::SavePatchClampData { subsampling } => {
       save_to_json(measurements, subsampling);

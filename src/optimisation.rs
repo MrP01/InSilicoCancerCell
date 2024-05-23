@@ -51,9 +51,15 @@ impl ChannelCountsProblem {
     log::info!("Finished pre-computation of single-channel currents.");
   }
   fn solve_through_projection(&self) -> ChannelCounts {
-    let qr = self.current_basis.clone().unwrap().qr(); // computes A = QR
+    let qr = self
+      .current_basis
+      .clone()
+      .unwrap()
+      .rows(0, self.fit_to.current.len())
+      .qr(); // computes A = QR
     let mut transformed = self.fit_to.current.clone();
-    qr.q_tr_mul(&mut transformed); // computes Q^T I_m
+    // qr.q_tr_mul(&mut transformed); // computes Q^T I_m
+    transformed = qr.q().transpose() * transformed;
     let r_inv = qr.unpack_r().inv().expect("R matrix should be invertible");
     // then finally computes R^(-1) Q^T I_m, the solution of the least-squares problem
     let solution = r_inv * transformed;
@@ -93,17 +99,23 @@ impl Gradient for ChannelCountsProblem {
   }
 }
 
-pub enum InSilicoOptimiser {
+#[derive(Clone, clap::ValueEnum)]
+pub enum InSilicoMethod {
+  Projection,
   ParticleSwarm,
   SteepestDescent,
   LBFGS,
 }
 
-pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
+pub fn find_best_fit_for(data: PatchClampData, using: InSilicoMethod) {
   let mut problem = ChannelCountsProblem::new(data);
   problem.precompute_single_channel_currents();
   match using {
-    InSilicoOptimiser::ParticleSwarm => {
+    InSilicoMethod::Projection => {
+      let solution = problem.solve_through_projection();
+      println!("Solution: {:?}", solution);
+    }
+    InSilicoMethod::ParticleSwarm => {
       let solver = argmin::solver::particleswarm::ParticleSwarm::new(
         ([0.0; N_CHANNEL_TYPES].into(), [1350.0; N_CHANNEL_TYPES].into()),
         200,
@@ -114,7 +126,7 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
         .unwrap();
       println!("{}", result);
     }
-    InSilicoOptimiser::SteepestDescent => {
+    InSilicoMethod::SteepestDescent => {
       let linesearch =
         argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
       let solver = argmin::solver::gradientdescent::SteepestDescent::new(linesearch);
@@ -124,7 +136,7 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoOptimiser) {
         .unwrap();
       println!("{}", result);
     }
-    InSilicoOptimiser::LBFGS => {
+    InSilicoMethod::LBFGS => {
       let linesearch =
         argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
       let solver = argmin::solver::quasinewton::LBFGS::new(linesearch, 200);

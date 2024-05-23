@@ -7,7 +7,7 @@ define_ion_channel!(
   "CLC2",
   12,                           // number of states
   constants::IonType::Chlorine, // ion type
-  2.8e-12,                      // conductance
+  2.8e-3,                       // conductance
   (3, 6, 7, 9, 11)              // states which count towards the current
 );
 

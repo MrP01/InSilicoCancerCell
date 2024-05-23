@@ -76,7 +76,7 @@ macro_rules! define_ion_channel {
       }
       fn display_me(&self) -> String {
         format!(
-          "Simulating {} ({} states, conductance {}) with {} channel(s)",
+          "Simulating {} ({} states, conductance {:e}) with {} channel(s)",
           Self::display_name(),
           Self::n_states,
           Self::conductance,

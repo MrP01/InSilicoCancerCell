@@ -13,7 +13,7 @@ function fullSimulationCurrent({}, interactive = false) {
       //   tip: interactive ? "x" : undefined,
       // }),
       Plot.lineY(simulation.total_current, {
-        y: (y) => y * 1e9,
+        y: (y) => y,
         z: null,
         stroke: (y) => y,
         tip: interactive ? "x" : undefined,
@@ -32,7 +32,7 @@ function channelCurrent({ channel }, interactive = false) {
   return {
     marks: [
       Plot.lineY(simulation.channels.get(channel).current, {
-        y: (y) => y * 1e12,
+        y: (y) => y,
         z: null,
         stroke: (y) => y,
         tip: interactive ? "x" : undefined,

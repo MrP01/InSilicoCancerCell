@@ -7,6 +7,7 @@ define_ion_channel!(
   KCa11IonChannelCat,
   "KCa11",
   10,              // number of states
+  constants::IonType::Kalium, // ion type
   250e-12,         // conductance
   (5, 6, 7, 8, 9)  // states which count towards the current
 );

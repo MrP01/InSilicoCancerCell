@@ -7,6 +7,7 @@ define_ion_channel!(
   KV31IonChannelCat,
   "Kv31",
   6,      // number of states
+  constants::IonType::Kalium, // ion type
   40e-12, // conductance
   (5)     // states which count towards the current
 );

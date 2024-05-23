@@ -6,9 +6,10 @@ use crate::{constants, define_ion_channel};
 define_ion_channel!(
   Task1IonChannelCat,
   "Task1",
-  3,      // number of states
-  16e-12, // conductance
-  (2)     // states which count towards the current
+  3,                          // number of states
+  constants::IonType::Kalium, // ion type
+  16e-12,                     // conductance
+  (2)                         // states which count towards the current
 );
 
 impl HasTransitionMatrix<3> for Task1IonChannelCat {

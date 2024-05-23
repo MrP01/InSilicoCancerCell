@@ -28,6 +28,30 @@ fn evaluate_on_langthaler_et_al_counts(measurements: PatchClampData) {
   evaluate_match(&measurements, recorded);
 }
 
+fn save_to_json(measurements: PatchClampData, subsampling: Option<usize>) {
+  let path = format!(
+    "frontend/pkg/patchclampdata-{}-{}{}.json",
+    measurements.phase.to_string().to_lowercase(),
+    measurements.protocol.to_string().to_lowercase(),
+    match subsampling {
+      Some(subsamp) => format!("-sub{}", subsamp),
+      None => String::from(""),
+    }
+  );
+  let mut subsampled_measurements = measurements.clone();
+  match subsampling {
+    Some(subsamp) => {
+      subsampled_measurements.current =
+        DVector::from_vec(measurements.current.iter().cloned().step_by(subsamp).collect())
+    }
+    None => {}
+  };
+  let file = std::fs::File::create(&path).unwrap();
+  let writer = std::io::BufWriter::new(file);
+  serde_json::to_writer(writer, &subsampled_measurements).unwrap();
+  log::info!("Wrote to {}", &path);
+}
+
 #[derive(Parser)]
 #[clap(arg_required_else_help = true)]
 #[command(
@@ -66,27 +90,7 @@ fn main() {
       optimisation::find_best_fit_for(measurements, optimisation::InSilicoOptimiser::ParticleSwarm);
     }
     Command::SavePatchClampData { subsampling } => {
-      let path = format!(
-        "frontend/pkg/patchclampdata-{}-{}{}.json",
-        measurements.phase.to_string().to_lowercase(),
-        measurements.protocol.to_string().to_lowercase(),
-        match subsampling {
-          Some(subsamp) => format!("-sub{}", subsamp),
-          None => String::from(""),
-        }
-      );
-      let mut subsampled_measurements = measurements.clone();
-      match subsampling {
-        Some(subsamp) => {
-          subsampled_measurements.current =
-            DVector::from_vec(measurements.current.iter().cloned().step_by(subsamp).collect())
-        }
-        None => {}
-      };
-      let file = std::fs::File::create(&path).unwrap();
-      let writer = std::io::BufWriter::new(file);
-      serde_json::to_writer(writer, &subsampled_measurements).unwrap();
-      log::info!("Wrote to {}", &path);
+      save_to_json(measurements, subsampling);
     }
   }
 }

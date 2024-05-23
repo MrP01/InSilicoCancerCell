@@ -19,6 +19,7 @@ macro_rules! define_ion_channel {
     $name: ident,
     $display_name: expr,
     $n_states: expr,
+    $iontype: expr,
     $conductance: expr,
     ($($states_responsible_for_current: expr), *)
   ) => {
@@ -53,7 +54,7 @@ macro_rules! define_ion_channel {
       fn single_channel_current(&self, voltage: f64) -> f64 {
         let mut open = 0.0;
         $(open += self.state[$states_responsible_for_current];)+
-        Self::conductance * open * (self.n_channels as f64) * (voltage - constants::EvK)
+        Self::conductance * open * (self.n_channels as f64) * (voltage - constants::reversal_potential($iontype))
       }
       fn current(&self, voltage: f64) -> f64 {
         (self.n_channels as f64) * self.single_channel_current(voltage)

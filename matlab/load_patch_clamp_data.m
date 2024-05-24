@@ -22,15 +22,15 @@ function [time_vector_measure, total_curr_meas, total_curr_meas_all] = load_patc
   %% Activation G0 phase
   switch choose_data_flag
     case 1
-      load('patch_clamp_data_activation')
+      load('../data/provision/patch_clamp_data_activation')
       num_of_voltage_levels = 9;
 
       mean_data = zeros(length(mG0_1), num_of_voltage_levels);
 
       for sweep_number = 1:num_of_voltage_levels
         curr_data = [mG0_1(:, sweep_number), mG0_2(:, sweep_number), mG0_3(:, sweep_number), ...
-                       mG0_4(:, sweep_number), mG0_5(:, sweep_number), mG0_6(:, sweep_number), mG0_7(:, sweep_number), ...
-                       mG0_8(:, sweep_number), mG0_9(:, sweep_number), mG0_10(:, sweep_number), mG0_11(:, sweep_number)];
+                    mG0_4(:, sweep_number), mG0_5(:, sweep_number), mG0_6(:, sweep_number), mG0_7(:, sweep_number), ...
+                    mG0_8(:, sweep_number), mG0_9(:, sweep_number), mG0_10(:, sweep_number), mG0_11(:, sweep_number)];
         mean_data(:, sweep_number) = mean(curr_data * 1e9, 2);
       end
 
@@ -47,14 +47,14 @@ function [time_vector_measure, total_curr_meas, total_curr_meas_all] = load_patc
       %% Activation G1 phase
 
     case 2
-      load('patch_clamp_data_activation')
+      load('../data/provision/patch_clamp_data_activation')
 
       num_of_voltage_levels = 9;
       mean_data = zeros(length(mG1_1), num_of_voltage_levels);
 
       for sweep_number = 1:num_of_voltage_levels
         curr_data = [mG1_1(:, sweep_number), mG1_2(:, sweep_number), mG1_3(:, sweep_number), ...
-                       mG1_4(:, sweep_number), mG1_5(:, sweep_number)];
+                    mG1_4(:, sweep_number), mG1_5(:, sweep_number)];
         mean_data(:, sweep_number) = mean(curr_data * 1e9, 2);
       end
 
@@ -72,14 +72,14 @@ function [time_vector_measure, total_curr_meas, total_curr_meas_all] = load_patc
       %% Deactivation G0 phase
 
     case 3
-      load('patch_clamp_data_deactivation')
+      load('../data/provision/patch_clamp_data_deactivation')
 
       num_of_voltage_levels = 7;
       mean_data = zeros(length(mG0_2_deact), num_of_voltage_levels);
 
       for sweep_number = 1:num_of_voltage_levels
         curr_data = [mG0_2_deact(:, sweep_number), mG0_3_deact(:, sweep_number), mG0_7_deact(:, sweep_number), ...
-                       mG0_8_deact(:, sweep_number), mG0_10_deact(:, sweep_number)];
+                    mG0_8_deact(:, sweep_number), mG0_10_deact(:, sweep_number)];
         mean_data(:, sweep_number) = mean(curr_data, 2);
       end
 
@@ -96,14 +96,14 @@ function [time_vector_measure, total_curr_meas, total_curr_meas_all] = load_patc
       %% Deactivation G1 phase
 
     case 4
-      load('patch_clamp_data_deactivation')
+      load('../data/provision/patch_clamp_data_deactivation')
 
       num_of_voltage_levels = 7;
       mean_data = zeros(length(mG1_1_deact), num_of_voltage_levels);
 
       for sweep_number = 1:num_of_voltage_levels
         curr_data = [mG1_1_deact(:, sweep_number), mG1_2_deact(:, sweep_number), ...
-                       mG1_3_deact(:, sweep_number)];
+                    mG1_3_deact(:, sweep_number)];
         mean_data(:, sweep_number) = mean(curr_data, 2);
       end
 
@@ -120,7 +120,7 @@ function [time_vector_measure, total_curr_meas, total_curr_meas_all] = load_patc
       %% Ramp G0 phase
 
     case 5
-      load('patch_clamp_data_ramp')
+      load('../data/provision/patch_clamp_data_ramp')
 
       data_mat_ramp20(:, 1:9) = [mG0_1_ramp20(:, 1), mG0_2_ramp20(:, 1), mG0_3_ramp20(:, 1), mG0_4_ramp20(:, 1), mG0_6_ramp20(:, 1), mG0_7_ramp20(:, 1), mG0_8_ramp20(:, 1), mG0_10_ramp20(:, 1), mG0_11_ramp20(:, 1)]; %,...
       mean_ramp20 = mean(data_mat_ramp20 * 1e9, 2);
@@ -140,7 +140,7 @@ function [time_vector_measure, total_curr_meas, total_curr_meas_all] = load_patc
 
     case 6
 
-      load('patch_clamp_data_ramp')
+      load('../data/provision/patch_clamp_data_ramp')
 
       data_mat_ramp20(:, 1:4) = [mG1_1_ramp20(:, 1), mG1_3_ramp20(:, 1), mG1_4_ramp20(:, 1), mG1_5_ramp20(:, 1)]; %,...
       mean_ramp20 = mean(data_mat_ramp20 * 1e9, 2);
@@ -158,3 +158,5 @@ function [time_vector_measure, total_curr_meas, total_curr_meas_all] = load_patc
     otherwise
       error('Please provide a number between 1 and 6.')
   end
+
+end

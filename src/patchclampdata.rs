@@ -80,16 +80,20 @@ impl PatchClampData {
         return Err(Box::new(matfile::Error::ConversionError));
       }
     }
+    current = Some(current.unwrap() / (raw_data.len() as f64));
     match (&phase, &protocol) {
       (CellPhase::G0, PatchClampProtocol::Activation) => {
-        current = Some(current.unwrap() * 1e11);
+        let scaled = current.unwrap() * 1e11;
+        current = Some(DVector::from_vec(
+          scaled.iter().cloned().map(|x| x.max(-24.0)).collect::<Vec<f64>>(),
+        ));
       }
       _ => {}
     }
     Ok(PatchClampData {
       protocol,
       phase,
-      current: current.unwrap() / (raw_data.len() as f64),
+      current: current.unwrap(),
     })
   }
 

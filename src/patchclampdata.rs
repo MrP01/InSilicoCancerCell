@@ -67,23 +67,30 @@ impl PatchClampData {
       .iter()
       .filter(|array| array_name_regex.is_match(array.name()))
       .collect();
+    log::info!("Found {} measurements for phase {}", raw_data.len(), phase);
     assert!(!raw_data.is_empty());
-    if let matfile::NumericData::Double { real, imag: _ } = raw_data.first().expect("msg").data() {
-      let mut current = DVector::from_vec(real.to_vec());
-      match (&phase, &protocol) {
-        (CellPhase::G0, PatchClampProtocol::Activation) => {
-          current *= 1e11;
+    let mut current: Option<nalgebra::DVector<f64>> = None;
+    for measurement in &raw_data {
+      if let matfile::NumericData::Double { real, imag: _ } = measurement.data() {
+        match current {
+          Some(curr) => current = Some(curr + DVector::from_vec(real.to_vec())),
+          None => current = Some(DVector::from_vec(real.to_vec())),
         }
-        _ => {}
+      } else {
+        return Err(Box::new(matfile::Error::ConversionError));
       }
-      Ok(PatchClampData {
-        protocol,
-        phase,
-        current,
-      })
-    } else {
-      Err(Box::new(matfile::Error::ConversionError))
     }
+    match (&phase, &protocol) {
+      (CellPhase::G0, PatchClampProtocol::Activation) => {
+        current = Some(current.unwrap() * 1e11);
+      }
+      _ => {}
+    }
+    Ok(PatchClampData {
+      protocol,
+      phase,
+      current: current.unwrap() / (raw_data.len() as f64),
+    })
   }
 
   #[cfg(feature = "default")]

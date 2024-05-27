@@ -5,6 +5,7 @@ use nalgebra::DVector;
 
 use crate::{
   channels::{self, base::IsChannel},
+  constants,
   patchclampdata::{CellPhase, PatchClampData},
   pulseprotocol::{ProtocolGenerator, RepeatingGenerator},
 };
@@ -87,56 +88,74 @@ impl A549CancerCell {
     ]
   }
 
+  pub fn adapt_timestep(&self, current_dt: f64, state_delta: f64) -> f64 {
+    f64::max(
+      current_dt * (constants::delta_tolerance / state_delta).powf(0.5),
+      constants::slowest_dt,
+    )
+  }
+
   pub fn simulate(
     &mut self,
     pulse_protocol: impl ProtocolGenerator + RepeatingGenerator,
     recorder: &mut impl SimulationRecorder,
     min_points: usize,
   ) {
-    let mut dt = 5e-6;
     let total_duration = pulse_protocol.single_duration();
-    let steps_per_measurement = ((total_duration / dt) / (min_points as f64)).floor() as usize;
-    if steps_per_measurement == 0 {
-      panic!("dt is too small for the supplied amount of minimum record points!");
-    }
+    let measurements_dt = total_duration / (min_points as f64);
+    // let steps_per_measurement = ((total_duration / constants::slowest_dt) / (min_points as f64)).floor() as usize;
+    // if steps_per_measurement == 0 {
+    //   panic!("dt is too small for the supplied amount of minimum record points!");
+    // }
     log::info!(
-      "Starting simulation. Duration according to pulse protocol: {:.3} s. Recording every {} iterations.",
+      "Starting simulation. Duration according to pulse protocol: {:.3} s. Recording at least {} times.",
       total_duration,
-      steps_per_measurement
+      min_points
     );
     let mut n = 0;
     let mut total_time = 0.0;
+    let mut t_next_measurement = 0.0;
     for channel in self.channels_mut() {
       log::info!("{}", channel.display_me());
     }
     #[cfg(not(target_arch = "wasm32"))]
     let start = std::time::Instant::now();
     for step in pulse_protocol.generator() {
-      log::info!(
-        "Pulse protocol step {:7} ({:6.3} V) for {:.3} s -> {:8.0} iterations",
-        step.label,
-        step.voltage,
-        step.duration,
-        step.duration / dt
-      );
-      let mut time: f64 = 0.0;
-      while time < step.duration {
+      let mut dt = constants::slowest_dt;
+      let mut step_time: f64 = 0.0;
+      while step_time < step.duration {
+        let mut state_delta = 0.0;
         for channel in self.channels_mut() {
-          channel.update_state(step.voltage, dt);
+          state_delta += channel.update_state(step.voltage, dt);
         }
-        if n % steps_per_measurement == 0 {
+        if total_time + step_time >= t_next_measurement {
           recorder.record(self, step.voltage);
+          t_next_measurement += measurements_dt;
         }
         n += 1;
-        time += dt;
+        step_time += dt;
+
+        #[cfg(feature = "adaptive-timestepping")]
+        {
+          dt = self.adapt_timestep(dt, state_delta);
+        }
+
         #[cfg(all(debug_assertions, feature = "pause-each-step"))]
         {
-          print!("Break (t = {time:.7}); press return to continue");
+          print!("Break (t = {step_time:.7}, dt = {dt:.3e}); press return to continue");
           std::io::stdout().flush().unwrap();
           std::io::stdin().lock().read_line(&mut String::new()).unwrap();
         }
       }
-      total_time += time;
+      total_time += step_time;
+
+      log::info!(
+        "Pulse protocol step {:7} ({:6.3} V) for {:.3} s done, overall average dt = {:.3e} s",
+        step.label,
+        step.voltage,
+        step.duration,
+        total_time / (n as f64)
+      );
     }
     log::info!("Total time passed from the cell perspective: {total_time:.3} s");
     #[cfg(not(target_arch = "wasm32"))]

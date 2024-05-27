@@ -17,9 +17,11 @@ default = [
   "dep:serde_json",
   "dep:clap",
   "nalgebra/serde-serialize",
+  "adaptive-timestepping",
 ]
 pyo3 = ["dep:pyo3"]
 pause-each-step = []
+adaptive-timestepping = []
 
 [dependencies]
 nalgebra = "0.32.5"

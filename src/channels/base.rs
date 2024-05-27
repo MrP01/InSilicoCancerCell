@@ -13,7 +13,7 @@ pub struct ChannelMetadata {
 }
 
 pub trait IsChannel {
-  fn update_state(&mut self, voltage: f64, dt: f64);
+  fn update_state(&mut self, voltage: f64, dt: f64) -> f64;
   fn single_channel_current(&self, voltage: f64) -> f64;
   fn current(&self, voltage: f64) -> f64;
   fn internal_state(&self) -> Vec<f64>;
@@ -54,13 +54,15 @@ macro_rules! define_ion_channel {
       }
     }
     impl $crate::channels::base::IsChannel for $name {
-      fn update_state(&mut self, voltage: f64, dt: f64) {
+      fn update_state(&mut self, voltage: f64, dt: f64) -> f64 {
         let transition = self.transition_matrix(voltage, dt);
         #[cfg(debug_assertions)]
         $crate::channels::base::validate_transition_matrix::<$n_states>(Self::display_name(), transition);
-        self.state = transition * self.state;
+        let previous = self.state.clone();
+        self.state = transition * previous;
         #[cfg(debug_assertions)]
-        $crate::channels::base::validate_state::<$n_states>(self.state);
+        $crate::channels::base::validate_state::<$n_states>(Self::display_name(), self.state);
+        return (self.state - previous).norm_squared();  // delta
       }
       fn single_channel_current(&self, voltage: f64) -> f64 {
         let mut open = 0.0;
@@ -127,10 +129,10 @@ pub fn validate_transition_matrix<const N_STATES: usize>(
 }
 
 #[cfg(debug_assertions)]
-pub fn validate_state<const N_STATES: usize>(state: nalgebra::SVector<f64, N_STATES>) {
+pub fn validate_state<const N_STATES: usize>(channel: String, state: nalgebra::SVector<f64, N_STATES>) {
   if (state.sum() - 1.0).abs() > 1e-8 {
     log::warn!(
-      "State (probability distribution) does not sum to 1! Instead: {}",
+      "State (probability distribution) of {channel} does not sum to 1! Instead: {}",
       state.sum()
     );
   }

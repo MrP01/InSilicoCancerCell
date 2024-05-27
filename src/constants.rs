@@ -1,6 +1,7 @@
 #![allow(non_upper_case_globals)]
 
-pub const dt: f64 = 5e-7; // timestep
+pub const slowest_dt: f64 = 5e-7; // initial timestep
+pub const delta_tolerance: f64 = 1e-7; // how much of a change in \Delta state the system is aiming for (squared)
 pub const Ca_i: f64 = 0.0647e-6; // initial calcium concentration
 pub const F: f64 = 96485.3329; // As/mol
 pub const R: f64 = 8.3144598; // kgm^2/s^2molK

@@ -14,6 +14,7 @@ fn get_log_level() -> log::LevelFilter {
   log_level
 }
 
+#[cfg_attr(feature = "pyo3", pyo3::pyfunction)]
 pub fn setup_logging() {
   let log_level = get_log_level();
   simplelog::CombinedLogger::init(vec![

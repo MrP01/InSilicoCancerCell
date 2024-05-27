@@ -38,6 +38,7 @@ impl fmt::Display for CellPhase {
   }
 }
 
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize, Clone))]
 pub struct PatchClampData {
   pub protocol: PatchClampProtocol,
@@ -96,12 +97,24 @@ impl PatchClampData {
       current: current.unwrap(),
     })
   }
+}
 
-  #[cfg(feature = "default")]
-  pub fn to_json(&self) -> Result<String, serde_json::Error> {
-    serde_json::to_string(self)
+#[cfg_eval]
+#[cfg_attr(feature = "pyo3", pyo3::pymethods)]
+impl PatchClampData {
+  #[cfg(feature = "pyo3")]
+  #[cfg_attr(feature = "pyo3", staticmethod)]
+  pub fn pyload(protocol: PatchClampProtocol, phase: CellPhase) -> pyo3::PyResult<PatchClampData> {
+    match Self::load(protocol, phase) {
+      Ok(data) => Ok(data),
+      Err(err) => Err(pyo3::exceptions::PyRuntimeError::new_err(format!(
+        "Cannot load data: {}",
+        err
+      ))),
+    }
   }
 
+  #[cfg_attr(feature = "pyo3", staticmethod)]
   pub fn demo() -> PatchClampData {
     let mut c = DVector::zeros(100);
     for i in 0..c.len() {

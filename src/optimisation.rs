@@ -1,8 +1,9 @@
+use argmin::core::State;
 use argmin::core::{CostFunction, Error, Executor, Gradient};
 use argmin_math::ArgminInv;
-use in_silico_cancer_cell::cell::ChannelCounts;
 use nalgebra::SVector;
 
+use crate::cell::ChannelCounts;
 use crate::cell::SimulationRecorder;
 use crate::cell::N_CHANNEL_TYPES;
 use crate::cell::{evaluate_current_match, A549CancerCell};
@@ -27,13 +28,17 @@ impl SimulationRecorder for SingleChannelCurrentRecord {
   }
 }
 
-struct ChannelCountsProblem {
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+pub struct ChannelCountsProblem {
   fit_to: PatchClampData,
   current_basis: Option<nalgebra::DMatrix<f64>>,
 }
 type F64ChannelCounts = SVector<f64, N_CHANNEL_TYPES>;
 
+#[cfg_eval]
+#[cfg_attr(feature = "pyo3", pyo3::pymethods)]
 impl ChannelCountsProblem {
+  #[cfg_attr(feature = "pyo3", staticmethod)]
   fn new(fit_to: PatchClampData) -> Self {
     Self {
       fit_to,
@@ -99,6 +104,7 @@ impl Gradient for ChannelCountsProblem {
   }
 }
 
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[derive(Clone, clap::ValueEnum)]
 pub enum InSilicoMethod {
   Projection,
@@ -107,24 +113,36 @@ pub enum InSilicoMethod {
   LBFGS,
 }
 
-pub fn find_best_fit_for(data: PatchClampData, using: InSilicoMethod) {
+#[cfg_attr(feature = "pyo3", pyo3::pyfunction)]
+pub fn find_best_fit_for(data: PatchClampData, using: InSilicoMethod) -> ChannelCounts {
   let mut problem = ChannelCountsProblem::new(data);
   problem.precompute_single_channel_currents();
   match using {
     InSilicoMethod::Projection => {
       let solution = problem.solve_through_projection();
-      println!("Solution: {:?}", solution);
+      println!("Projection solution: {:?}", solution);
+      return solution;
     }
     InSilicoMethod::ParticleSwarm => {
       let solver = argmin::solver::particleswarm::ParticleSwarm::new(
         ([0.0; N_CHANNEL_TYPES].into(), [1350.0; N_CHANNEL_TYPES].into()),
-        200,
+        8,
       );
       let result = Executor::new(problem, solver)
         .configure(|state| state.max_iters(100))
         .run()
         .unwrap();
       println!("{}", result);
+      return result
+        .state()
+        .get_best_param()
+        .unwrap()
+        .position
+        .iter()
+        .map(|x| x.round() as u32)
+        .collect::<Vec<u32>>()
+        .try_into()
+        .unwrap();
     }
     InSilicoMethod::SteepestDescent => {
       let linesearch =
@@ -135,6 +153,15 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoMethod) {
         .run()
         .unwrap();
       println!("{}", result);
+      return result
+        .state()
+        .get_best_param()
+        .unwrap()
+        .iter()
+        .map(|x| x.round() as u32)
+        .collect::<Vec<u32>>()
+        .try_into()
+        .unwrap();
     }
     InSilicoMethod::LBFGS => {
       let linesearch =
@@ -145,6 +172,15 @@ pub fn find_best_fit_for(data: PatchClampData, using: InSilicoMethod) {
         .run()
         .unwrap();
       println!("{}", result);
+      return result
+        .state()
+        .get_best_param()
+        .unwrap()
+        .iter()
+        .map(|x| x.round() as u32)
+        .collect::<Vec<u32>>()
+        .try_into()
+        .unwrap();
     }
   };
   // TODO:

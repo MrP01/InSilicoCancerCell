@@ -36,8 +36,9 @@ impl ProtocolGenerator for DefaultPulseProtocol {
     std::iter::from_coroutine(
       #[coroutine]
       || {
-        let mut v_test = -0.04;
-        while v_test <= 0.05 {
+        let mut v_test = -40e-3; // -40 mV start
+        while v_test <= 50e-3 {
+          // increment to +50 mV
           yield PulseProtocolStep {
             label: String::from("hold"),
             voltage: -100e-3,
@@ -46,7 +47,7 @@ impl ProtocolGenerator for DefaultPulseProtocol {
           yield PulseProtocolStep {
             label: String::from("initial"),
             voltage: -80e-3,
-            duration: 115.6e-3,
+            duration: 100e-3,
           };
           yield PulseProtocolStep {
             label: String::from("test"),
@@ -56,9 +57,9 @@ impl ProtocolGenerator for DefaultPulseProtocol {
           yield PulseProtocolStep {
             label: String::from("post"),
             voltage: -80e-3,
-            duration: 84.4e-3,
+            duration: 100e-3,
           };
-          v_test += 0.01;
+          v_test += 10e-3;
         }
       },
     )

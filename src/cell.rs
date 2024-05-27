@@ -88,11 +88,12 @@ impl A549CancerCell {
     ]
   }
 
-  pub fn adapt_timestep(&self, current_dt: f64, state_delta: f64) -> f64 {
+  pub fn adapt_timestep(&self, current_dt: f64, state_delta: f64, max_dt: f64) -> f64 {
     f64::max(
       current_dt * (constants::delta_tolerance / state_delta).powf(0.5),
       constants::slowest_dt,
     )
+    .min(max_dt)
   }
 
   pub fn simulate(
@@ -103,10 +104,6 @@ impl A549CancerCell {
   ) {
     let total_duration = pulse_protocol.single_duration();
     let measurements_dt = total_duration / (min_points as f64);
-    // let steps_per_measurement = ((total_duration / constants::slowest_dt) / (min_points as f64)).floor() as usize;
-    // if steps_per_measurement == 0 {
-    //   panic!("dt is too small for the supplied amount of minimum record points!");
-    // }
     log::info!(
       "Starting simulation. Duration according to pulse protocol: {:.3} s. Recording at least {} times.",
       total_duration,
@@ -137,7 +134,7 @@ impl A549CancerCell {
 
         #[cfg(feature = "adaptive-timestepping")]
         {
-          dt = self.adapt_timestep(dt, state_delta);
+          dt = self.adapt_timestep(dt, state_delta, measurements_dt);
         }
 
         #[cfg(all(debug_assertions, feature = "pause-each-step"))]

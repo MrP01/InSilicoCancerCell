@@ -48,17 +48,18 @@ impl HasTransitionMatrix<10> for KCa11IonChannelCat {
     let j_rate = a4 * (v * 1e3 / b).exp();
 
     // Transition probability alpha = rate constants * ms
-    // TODO: I removed the * 1e3 here (compare the KCa_1_1.m file), which is correct?
-    let a = a_rate * dt;
-    let b = b_rate * dt;
-    let c = c_rate * dt;
-    let d = d_rate * dt;
-    let e = e_rate * dt;
-    let f = f_rate * dt;
-    let g = g_rate * dt;
-    let h = h_rate * dt;
-    let i = i_rate * dt;
-    let j = j_rate * dt;
+    // is 1e3 (compare the KCa_1_1.m file) correct?
+    let mille_dt = dt * 1e3;
+    let a = a_rate * mille_dt;
+    let b = b_rate * mille_dt;
+    let c = c_rate * mille_dt;
+    let d = d_rate * mille_dt;
+    let e = e_rate * mille_dt;
+    let f = f_rate * mille_dt;
+    let g = g_rate * mille_dt;
+    let h = h_rate * mille_dt;
+    let i = i_rate * mille_dt;
+    let j = j_rate * mille_dt;
 
     let ko = ko_u * dt;
     let kc = kc_u * dt;

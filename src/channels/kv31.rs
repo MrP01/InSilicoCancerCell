@@ -35,11 +35,12 @@ impl HasTransitionMatrix<6> for KV31IonChannelCat {
     let c_rate = c * (-v * 1e3 / d).exp();
 
     // Transition probabilities
-    // TODO: I removed the 1e3 factor
-    let a_prob = a_rate * dt;
-    let c_prob = c_rate * dt;
-    let alpha = alpha_rate * dt;
-    let beta = beta_rate * dt;
+    // 1e3 factor correct?
+    let mille_dt = dt * 1e3;
+    let a_prob = a_rate * mille_dt;
+    let c_prob = c_rate * mille_dt;
+    let alpha = alpha_rate * mille_dt;
+    let beta = beta_rate * mille_dt;
 
     #[rustfmt::skip]
     return Matrix6::from_row_slice(&[

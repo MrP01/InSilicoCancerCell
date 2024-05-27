@@ -12,7 +12,7 @@ define_ion_channel!(
 );
 
 impl HasTransitionMatrix<7> for KV13IonChannelCat {
-  fn transition_matrix(&self, v: f64) -> Matrix7<f64> {
+  fn transition_matrix(&self, v: f64, dt: f64) -> Matrix7<f64> {
     // Constants
     let a = 0.488;
     let b = 0.043;
@@ -33,12 +33,12 @@ impl HasTransitionMatrix<7> for KV13IonChannelCat {
 
     // Transition probabilities = rate constants * ms
     // TODO: I removed the * 1e3 here (compare the Kv_1_3.m file), which is correct?
-    let alpha = alpha_rate * constants::dt;
-    let beta = beta_rate * constants::dt;
-    let gamma = gamma_rate * constants::dt;
-    let phi = phi_rate * constants::dt;
-    let a_prob = const_a * constants::dt;
-    let b_prob = const_b * constants::dt;
+    let alpha = alpha_rate * dt;
+    let beta = beta_rate * dt;
+    let gamma = gamma_rate * dt;
+    let phi = phi_rate * dt;
+    let a_prob = const_a * dt;
+    let b_prob = const_b * dt;
 
     #[rustfmt::skip]
     return Matrix7::from_row_slice(&[

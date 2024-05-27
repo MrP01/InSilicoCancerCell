@@ -12,7 +12,7 @@ define_ion_channel!(
 );
 
 impl HasTransitionMatrix<12> for CLC2IonChannelCat {
-  fn transition_matrix(&self, v: f64) -> Matrix12<f64> {
+  fn transition_matrix(&self, v: f64, dt: f64) -> Matrix12<f64> {
     // Constants
     let factor = v * constants::F / (constants::R * constants::T);
     let a1 = 4.1 * (-0.57 * factor).exp();
@@ -23,12 +23,12 @@ impl HasTransitionMatrix<12> for CLC2IonChannelCat {
     let u = 4.9 * (0.18 * factor).exp();
 
     // Transition probabilities
-    let a1 = a1 * constants::dt;
-    let b1 = b1 * constants::dt;
-    let a2 = a2 * constants::dt;
-    let b2 = b2 * constants::dt;
-    let u = u * constants::dt;
-    let l = l * constants::dt;
+    let a1 = a1 * dt;
+    let b1 = b1 * dt;
+    let a2 = a2 * dt;
+    let b2 = b2 * dt;
+    let u = u * dt;
+    let l = l * dt;
 
     #[rustfmt::skip]
     return Matrix12::from_row_slice(&[

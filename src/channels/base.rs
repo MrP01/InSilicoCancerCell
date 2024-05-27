@@ -3,7 +3,7 @@ use nalgebra::SMatrix;
 use crate::constants;
 
 pub trait HasTransitionMatrix<const N_STATES: usize> {
-  fn transition_matrix(&self, voltage: f64) -> SMatrix<f64, N_STATES, N_STATES>;
+  fn transition_matrix(&self, voltage: f64, dt: f64) -> SMatrix<f64, N_STATES, N_STATES>;
 }
 
 pub struct ChannelMetadata {
@@ -13,7 +13,7 @@ pub struct ChannelMetadata {
 }
 
 pub trait IsChannel {
-  fn update_state(&mut self, voltage: f64);
+  fn update_state(&mut self, voltage: f64, dt: f64);
   fn single_channel_current(&self, voltage: f64) -> f64;
   fn current(&self, voltage: f64) -> f64;
   fn internal_state(&self) -> Vec<f64>;
@@ -54,8 +54,8 @@ macro_rules! define_ion_channel {
       }
     }
     impl $crate::channels::base::IsChannel for $name {
-      fn update_state(&mut self, voltage: f64) {
-        let transition = self.transition_matrix(voltage);
+      fn update_state(&mut self, voltage: f64, dt: f64) {
+        let transition = self.transition_matrix(voltage, dt);
         #[cfg(debug_assertions)]
         $crate::channels::base::validate_transition_matrix::<$n_states>(Self::display_name(), transition);
         self.state = transition * self.state;

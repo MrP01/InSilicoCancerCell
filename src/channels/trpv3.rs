@@ -13,7 +13,7 @@ define_ion_channel!(
 );
 
 impl HasTransitionMatrix<1> for TRPV3IonChannelCat {
-  fn transition_matrix(&self, _v: f64) -> Matrix1<f64> {
+  fn transition_matrix(&self, _v: f64, _dt: f64) -> Matrix1<f64> {
     Matrix1::new(1.0)
   }
 }

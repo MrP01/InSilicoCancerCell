@@ -5,7 +5,6 @@ use nalgebra::DVector;
 
 use crate::{
   channels::{self, base::IsChannel},
-  constants,
   patchclampdata::{CellPhase, PatchClampData},
   pulseprotocol::{ProtocolGenerator, RepeatingGenerator},
 };
@@ -94,10 +93,11 @@ impl A549CancerCell {
     recorder: &mut impl SimulationRecorder,
     min_points: usize,
   ) {
+    let mut dt = 5e-6;
     let total_duration = pulse_protocol.single_duration();
-    let steps_per_measurement = ((total_duration / constants::dt) / (min_points as f64)).floor() as usize;
+    let steps_per_measurement = ((total_duration / dt) / (min_points as f64)).floor() as usize;
     if steps_per_measurement == 0 {
-      panic!("constants::dt is too small for the supplied amount of minimum record points!");
+      panic!("dt is too small for the supplied amount of minimum record points!");
     }
     log::info!(
       "Starting simulation. Duration according to pulse protocol: {:.3} s. Recording every {} iterations.",
@@ -117,18 +117,18 @@ impl A549CancerCell {
         step.label,
         step.voltage,
         step.duration,
-        step.duration / constants::dt
+        step.duration / dt
       );
       let mut time: f64 = 0.0;
       while time < step.duration {
         for channel in self.channels_mut() {
-          channel.update_state(step.voltage);
+          channel.update_state(step.voltage, dt);
         }
         if n % steps_per_measurement == 0 {
           recorder.record(self, step.voltage);
         }
         n += 1;
-        time += constants::dt;
+        time += dt;
         #[cfg(all(debug_assertions, feature = "pause-each-step"))]
         {
           print!("Break (t = {time:.7}); press return to continue");

@@ -6,14 +6,14 @@ pub type Matrix10<T> = nalgebra::Matrix<T, nalgebra::U10, nalgebra::U10, nalgebr
 define_ion_channel!(
   KCa11IonChannelCat,
   "KCa11",
-  10,              // number of states
+  10,                         // number of states
   constants::IonType::Kalium, // ion type
-  250e-3,         // conductance
-  (5, 6, 7, 8, 9)  // states which count towards the current
+  250e-3,                     // conductance
+  (5, 6, 7, 8, 9)             // states which count towards the current
 );
 
 impl HasTransitionMatrix<10> for KCa11IonChannelCat {
-  fn transition_matrix(&self, v: f64) -> Matrix10<f64> {
+  fn transition_matrix(&self, v: f64, dt: f64) -> Matrix10<f64> {
     // Constants
     let on_rate = 1000.0; // Mol^-1s^1
     let ca_i = constants::Ca_i * 1e6 * on_rate;
@@ -46,20 +46,20 @@ impl HasTransitionMatrix<10> for KCa11IonChannelCat {
 
     // Transition probability alpha = rate constants * ms
     // TODO: I removed the * 1e3 here (compare the KCa_1_1.m file), which is correct?
-    let a = a_rate * constants::dt;
-    let b = b_rate * constants::dt;
-    let c = c_rate * constants::dt;
-    let d = d_rate * constants::dt;
-    let e = e_rate * constants::dt;
-    let f = f_rate * constants::dt;
-    let g = g_rate * constants::dt;
-    let h = h_rate * constants::dt;
-    let i = i_rate * constants::dt;
-    let j = j_rate * constants::dt;
+    let a = a_rate * dt;
+    let b = b_rate * dt;
+    let c = c_rate * dt;
+    let d = d_rate * dt;
+    let e = e_rate * dt;
+    let f = f_rate * dt;
+    let g = g_rate * dt;
+    let h = h_rate * dt;
+    let i = i_rate * dt;
+    let j = j_rate * dt;
 
-    let ko = ko_u * constants::dt;
-    let kc = kc_u * constants::dt;
-    let ca_i_dt = ca_i * constants::dt;
+    let ko = ko_u * dt;
+    let kc = kc_u * dt;
+    let ca_i_dt = ca_i * dt;
 
     #[rustfmt::skip]
     return Matrix10::from_row_slice(&[

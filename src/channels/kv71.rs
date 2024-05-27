@@ -6,14 +6,14 @@ use crate::{constants, define_ion_channel};
 define_ion_channel!(
   KV71IonChannelCat,
   "Kv71",
-  5,       // number of states
+  5,                          // number of states
   constants::IonType::Kalium, // ion type
-  3.2e-3, // conductance
-  (2, 3)   // states which count towards the current
+  3.2e-3,                     // conductance
+  (2, 3)                      // states which count towards the current
 );
 
 impl HasTransitionMatrix<5> for KV71IonChannelCat {
-  fn transition_matrix(&self, v: f64) -> Matrix5<f64> {
+  fn transition_matrix(&self, v: f64, dt: f64) -> Matrix5<f64> {
     // Constants
     let factor = v * constants::F / (constants::R * constants::T);
     let a_rate = 4.6 * (0.47 * factor).exp();
@@ -26,14 +26,14 @@ impl HasTransitionMatrix<5> for KV71IonChannelCat {
     let micro = 52.0;
 
     // Transition probabilities
-    let a_prob = a_rate * constants::dt;
-    let b_prob = b_rate * constants::dt;
-    let a2_prob = a2_rate * constants::dt;
-    let b2_prob = b2_rate * constants::dt;
-    let eps_prob = eps_rate * constants::dt;
-    let delta_prob = delta_rate * constants::dt;
-    let lambda_prob = lambda * constants::dt;
-    let micro_prob = micro * constants::dt;
+    let a_prob = a_rate * dt;
+    let b_prob = b_rate * dt;
+    let a2_prob = a2_rate * dt;
+    let b2_prob = b2_rate * dt;
+    let eps_prob = eps_rate * dt;
+    let delta_prob = delta_rate * dt;
+    let lambda_prob = lambda * dt;
+    let micro_prob = micro * dt;
 
     #[rustfmt::skip]
     return Matrix5::from_row_slice(&[

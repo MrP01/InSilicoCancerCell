@@ -6,14 +6,14 @@ use crate::{constants, define_ion_channel};
 define_ion_channel!(
   KV31IonChannelCat,
   "Kv31",
-  6,      // number of states
+  6,                          // number of states
   constants::IonType::Kalium, // ion type
-  40e-3, // conductance
-  (5)     // states which count towards the current
+  40e-3,                      // conductance
+  (5)                         // states which count towards the current
 );
 
 impl HasTransitionMatrix<6> for KV31IonChannelCat {
-  fn transition_matrix(&self, v: f64) -> Matrix6<f64> {
+  fn transition_matrix(&self, v: f64, dt: f64) -> Matrix6<f64> {
     // TODO: why are these re-evaluated below? Cf. Kv_3_1.m
     // a = 0.925973;
     // b = 35.893170;
@@ -36,10 +36,10 @@ impl HasTransitionMatrix<6> for KV31IonChannelCat {
 
     // Transition probabilities
     // TODO: I removed the 1e3 factor
-    let a_prob = a_rate * constants::dt;
-    let c_prob = c_rate * constants::dt;
-    let alpha = alpha_rate * constants::dt;
-    let beta = beta_rate * constants::dt;
+    let a_prob = a_rate * dt;
+    let c_prob = c_rate * dt;
+    let alpha = alpha_rate * dt;
+    let beta = beta_rate * dt;
 
     #[rustfmt::skip]
     return Matrix6::from_row_slice(&[

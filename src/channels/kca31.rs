@@ -6,14 +6,14 @@ use crate::{constants, define_ion_channel};
 define_ion_channel!(
   KCa31IonChannelCat,
   "KCa31",
-  4,      // number of states
+  4,                          // number of states
   constants::IonType::Kalium, // ion type
-  11e-3, // conductance
-  (3)     // states which count towards the current
+  11e-3,                      // conductance
+  (3)                         // states which count towards the current
 );
 
 impl HasTransitionMatrix<4> for KCa31IonChannelCat {
-  fn transition_matrix(&self, _v: f64) -> Matrix4<f64> {
+  fn transition_matrix(&self, _v: f64, dt: f64) -> Matrix4<f64> {
     // Constants
     let k12 = 27.0;
     let k23 = 5425.0;
@@ -31,12 +31,12 @@ impl HasTransitionMatrix<4> for KCa31IonChannelCat {
     let k53_rate = k53;
 
     // % transition probability = rate constants * s
-    let k12_prob = k12_rate * constants::dt;
-    let k23_prob = k23_rate * constants::dt;
-    let k21_prob = k21_rate * constants::dt;
-    let k35_prob = k35_rate * constants::dt;
-    let k32_prob = k32_rate * constants::dt;
-    let k53_prob = k53_rate * constants::dt;
+    let k12_prob = k12_rate * dt;
+    let k23_prob = k23_rate * dt;
+    let k21_prob = k21_rate * dt;
+    let k35_prob = k35_rate * dt;
+    let k32_prob = k32_rate * dt;
+    let k53_prob = k53_rate * dt;
 
     #[rustfmt::skip]
     return Matrix4::from_row_slice(&[

@@ -5,14 +5,14 @@ pub type Matrix7<T> = nalgebra::Matrix<T, nalgebra::U7, nalgebra::U7, nalgebra::
 define_ion_channel!(
   KV34IonChannelCat,
   "Kv34",
-  7,      // number of states
+  7,                          // number of states
   constants::IonType::Kalium, // ion type
-  14e-3, // conductance
-  (5)     // states which count towards the current
+  14e-3,                      // conductance
+  (5)                         // states which count towards the current
 );
 
 impl HasTransitionMatrix<7> for KV34IonChannelCat {
-  fn transition_matrix(&self, v: f64) -> Matrix7<f64> {
+  fn transition_matrix(&self, v: f64, dt: f64) -> Matrix7<f64> {
     // Constants
     let a = 3352.0;
     let za = 0.06;
@@ -34,12 +34,12 @@ impl HasTransitionMatrix<7> for KV34IonChannelCat {
 
     // Transition probabilities
     // transition probability = rate constants * ms
-    let a_prob = a_rate * constants::dt;
-    let b_prob = b_rate * constants::dt;
-    let eps_prob = eps_rate * constants::dt;
-    let phi_prob = phi_rate * constants::dt;
-    let k1_prob = k1 * constants::dt;
-    let l1_prob = l1 * constants::dt;
+    let a_prob = a_rate * dt;
+    let b_prob = b_rate * dt;
+    let eps_prob = eps_rate * dt;
+    let phi_prob = phi_rate * dt;
+    let k1_prob = k1 * dt;
+    let l1_prob = l1 * dt;
 
     #[rustfmt::skip]
     return Matrix7::from_row_slice(&[

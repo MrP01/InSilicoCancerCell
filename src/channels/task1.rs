@@ -13,7 +13,7 @@ define_ion_channel!(
 );
 
 impl HasTransitionMatrix<3> for Task1IonChannelCat {
-  fn transition_matrix(&self, v: f64) -> Matrix3<f64> {
+  fn transition_matrix(&self, v: f64, dt: f64) -> Matrix3<f64> {
     // Constants - given in s^-1
     let a0 = 13.3;
     let za = -0.106;
@@ -32,10 +32,10 @@ impl HasTransitionMatrix<3> for Task1IonChannelCat {
     let d_rate = d0 * (-zd * factor).exp();
 
     // Transition probabilities
-    let a_prob = a_rate * constants::dt;
-    let b_prob = b_rate * constants::dt;
-    let x_prob = x_rate * constants::dt;
-    let d_prob = d_rate * constants::dt;
+    let a_prob = a_rate * dt;
+    let b_prob = b_rate * dt;
+    let x_prob = x_rate * dt;
+    let d_prob = d_rate * dt;
 
     #[rustfmt::skip]
     return Matrix3::from_row_slice(&[

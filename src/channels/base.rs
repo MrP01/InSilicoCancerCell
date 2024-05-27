@@ -14,6 +14,7 @@ pub struct ChannelMetadata {
 
 pub trait IsChannel {
   fn update_state(&mut self, voltage: f64, dt: f64) -> f64;
+  fn reset_state(&mut self);
   fn single_channel_current(&self, voltage: f64) -> f64;
   fn current(&self, voltage: f64) -> f64;
   fn internal_state(&self) -> Vec<f64>;
@@ -44,12 +45,15 @@ macro_rules! define_ion_channel {
       pub fn display_name() -> String {
         return String::from($display_name);
       }
-      pub fn new() -> Self {
+      pub fn initial_state() -> nalgebra::SVector::<f64, $n_states> {
         let mut x0 = nalgebra::SVector::<f64, $n_states>::from_vec(vec![0.0; $n_states]);
         x0[0] = 1.0;
+        x0
+      }
+      pub fn new() -> Self {
         return $name {
           n_channels: 1,
-          state: x0,
+          state: Self::initial_state(),
         };
       }
     }
@@ -62,7 +66,10 @@ macro_rules! define_ion_channel {
         self.state = transition * previous;
         #[cfg(debug_assertions)]
         $crate::channels::base::validate_state::<$n_states>(Self::display_name(), self.state);
-        return (self.state - previous).norm_squared();  // delta
+        return (self.state - previous).norm_squared() * (self.n_channels as f64);  // delta
+      }
+      fn reset_state(&mut self) {
+        self.state = Self::initial_state();
       }
       fn single_channel_current(&self, voltage: f64) -> f64 {
         let mut open = 0.0;

@@ -120,6 +120,11 @@ impl A549CancerCell {
     for step in pulse_protocol.generator() {
       let mut dt = constants::slowest_dt;
       let mut step_time: f64 = 0.0;
+      if step.label == "hold" {
+        for channel in self.channels_mut() {
+          channel.reset_state();
+        }
+      }
       while step_time < step.duration {
         let mut state_delta = 0.0;
         for channel in self.channels_mut() {
@@ -154,6 +159,7 @@ impl A549CancerCell {
         total_time / (n as f64)
       );
     }
+    log::info!("Ran ~{}k iterations in total.", n / 1000);
     log::info!("Total time passed from the cell perspective: {total_time:.3} s");
     #[cfg(not(target_arch = "wasm32"))]
     {

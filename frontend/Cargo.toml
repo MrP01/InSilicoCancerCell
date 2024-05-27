@@ -12,7 +12,7 @@ in_silico_cancer_cell = { path = "../", default-features = false }
 wasm-bindgen = "0.2.92"
 console_error_panic_hook = "0.1.7"
 wee_alloc = { version = "0.4.5", optional = true }
-serde = { version = "1.0.202", features = ["derive"] }
+serde = { version = "1.0.203", features = ["derive"] }
 serde-wasm-bindgen = "0.6.5"
 
 [features]

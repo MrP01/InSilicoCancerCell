@@ -59,6 +59,8 @@ macro_rules! define_ion_channel {
         #[cfg(debug_assertions)]
         $crate::channels::base::validate_transition_matrix::<$n_states>(Self::display_name(), transition);
         self.state = transition * self.state;
+        #[cfg(debug_assertions)]
+        $crate::channels::base::validate_state::<$n_states>(self.state);
       }
       fn single_channel_current(&self, voltage: f64) -> f64 {
         let mut open = 0.0;
@@ -121,5 +123,15 @@ pub fn validate_transition_matrix<const N_STATES: usize>(
     log::debug!("Matrix: {}", matrix);
     log::debug!("Row sum: {}", matrix.row_sum(),);
     log::debug!("Column sum: {}", matrix.column_sum());
+  }
+}
+
+#[cfg(debug_assertions)]
+pub fn validate_state<const N_STATES: usize>(state: nalgebra::SVector<f64, N_STATES>) {
+  if (state.sum() - 1.0).abs() > 1e-8 {
+    log::warn!(
+      "State (probability distribution) does not sum to 1! Instead: {}",
+      state.sum()
+    );
   }
 }

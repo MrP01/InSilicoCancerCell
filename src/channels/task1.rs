@@ -1,15 +1,18 @@
 use nalgebra::Matrix3;
 
 use super::base::HasTransitionMatrix;
-use crate::{constants, define_ion_channel};
+use crate::{
+  constants::{self, IonType},
+  define_ion_channel,
+};
 
 define_ion_channel!(
   Task1IonChannelCat,
   "Task1",
-  3,                          // number of states
-  constants::IonType::Kalium, // ion type
-  16e-3,                      // conductance
-  (2)                         // states which count towards the current
+  3,               // number of states
+  IonType::Kalium, // ion type
+  16e-3,           // conductance
+  (2)              // states which count towards the current
 );
 
 impl HasTransitionMatrix<3> for Task1IonChannelCat {

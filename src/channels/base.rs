@@ -1,6 +1,6 @@
 use nalgebra::SMatrix;
 
-use crate::constants;
+use crate::constants::IonType;
 
 pub trait HasTransitionMatrix<const N_STATES: usize> {
   fn transition_matrix(&self, voltage: f64, dt: f64) -> SMatrix<f64, N_STATES, N_STATES>;
@@ -9,7 +9,7 @@ pub trait HasTransitionMatrix<const N_STATES: usize> {
 pub struct ChannelMetadata {
   pub n_states: usize,
   pub n_channels: u32,
-  pub ion_type: constants::IonType,
+  pub ion_type: IonType,
 }
 
 pub trait IsChannel {
@@ -65,7 +65,7 @@ macro_rules! define_ion_channel {
       fn single_channel_current(&self, voltage: f64) -> f64 {
         let mut open = 0.0;
         $(open += self.state[$states_responsible_for_current];)+
-        Self::conductance * open * (self.n_channels as f64) * (voltage - constants::reversal_potential($iontype))
+        Self::conductance * open * (self.n_channels as f64) * (voltage - $crate::constants::reversal_potential($iontype))
       }
       fn current(&self, voltage: f64) -> f64 {
         (self.n_channels as f64) * self.single_channel_current(voltage)

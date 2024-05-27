@@ -1,15 +1,15 @@
 use nalgebra::Matrix2;
 
 use super::base::HasTransitionMatrix;
-use crate::{constants, define_ion_channel};
+use crate::{constants::IonType, define_ion_channel};
 
 define_ion_channel!(
   CRAC1IonChannelCat,
   "CRACM1",
-  2,                           // number of states
-  constants::IonType::Calcium, // ion type
-  24e-6,                       // conductance
-  (1)                          // states which count towards the current
+  2,                // number of states
+  IonType::Calcium, // ion type
+  24e-6,            // conductance
+  (1)               // states which count towards the current
 );
 
 impl HasTransitionMatrix<2> for CRAC1IonChannelCat {

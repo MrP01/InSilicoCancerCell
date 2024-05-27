@@ -1,14 +1,17 @@
 use super::base::HasTransitionMatrix;
-use crate::{constants, define_ion_channel};
+use crate::{
+  constants::{self, IonType},
+  define_ion_channel,
+};
 pub type Matrix12<T> = nalgebra::Matrix<T, nalgebra::U12, nalgebra::U12, nalgebra::ArrayStorage<T, 12, 12>>;
 
 define_ion_channel!(
   CLC2IonChannelCat,
   "CLC2",
-  12,                           // number of states
-  constants::IonType::Chlorine, // ion type
-  2.8e-3,                       // conductance
-  (3, 6, 7, 9, 11)              // states which count towards the current
+  12,                // number of states
+  IonType::Chlorine, // ion type
+  2.8e-3,            // conductance
+  (3, 6, 7, 9, 11)   // states which count towards the current
 );
 
 impl HasTransitionMatrix<12> for CLC2IonChannelCat {

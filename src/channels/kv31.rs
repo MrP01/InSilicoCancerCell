@@ -1,15 +1,15 @@
 use nalgebra::Matrix6;
 
 use super::base::HasTransitionMatrix;
-use crate::{constants, define_ion_channel};
+use crate::{constants::IonType, define_ion_channel};
 
 define_ion_channel!(
   KV31IonChannelCat,
   "Kv31",
-  6,                          // number of states
-  constants::IonType::Kalium, // ion type
-  40e-3,                      // conductance
-  (5)                         // states which count towards the current
+  6,               // number of states
+  IonType::Kalium, // ion type
+  40e-3,           // conductance
+  (5)              // states which count towards the current
 );
 
 impl HasTransitionMatrix<6> for KV31IonChannelCat {

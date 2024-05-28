@@ -2,9 +2,10 @@ import pathlib
 
 import matplotlib.axes
 import matplotlib.pyplot as plt
+import numpy as np
+import scipy.optimize
 
 from in_silico_cancer_cell import CellPhase, ChannelCountsProblem, PatchClampData, PatchClampProtocol, setup_logging
-import numpy as np
 
 RESULTS = pathlib.Path.cwd()
 setup_logging()
@@ -20,13 +21,16 @@ def plot_measurement():
     fig.savefig(str(RESULTS / "plot.pdf"))
 
 
-def plot_full_comparison():
+def plot_full_comparison(method="nnls"):
     measurements = PatchClampData.pyload(PatchClampProtocol.Activation, CellPhase.G0)
     data = np.array(measurements.to_list())
     problem = ChannelCountsProblem.new(measurements)
     problem.precompute_single_channel_currents()
     single_channels = np.array(problem.get_current_basis())
-    channel_counts, res, rank, s = np.linalg.lstsq(single_channels[: len(data), :], data, rcond=None)
+    if method == "lstsq":
+        channel_counts, res, rank, s = np.linalg.lstsq(single_channels[: len(data), :], data, rcond=None)
+    elif method == "nnls":
+        channel_counts, rnorm = scipy.optimize.nnls(single_channels[: len(data), :], data)
     channel_counts = channel_counts.astype(int)
     time = np.linspace(0, 9.901, single_channels.shape[0])
     print(f"Best fit: {channel_counts}")

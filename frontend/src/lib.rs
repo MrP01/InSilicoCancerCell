@@ -4,6 +4,7 @@ use in_silico_cancer_cell::{
   cell::{A549CancerCell, SimulationRecorder},
   patchclampdata::CellPhase,
   pulseprotocol::DefaultPulseProtocol,
+  utils,
 };
 use wasm_bindgen::prelude::*;
 use web_sys::console;
@@ -108,5 +109,6 @@ pub fn main_js() -> Result<(), JsValue> {
   #[cfg(debug_assertions)]
   console_error_panic_hook::set_once();
   console::log_1(&JsValue::from_str("Hello from the in-silico Rust library!"));
+  utils::setup_logging();
   Ok(())
 }

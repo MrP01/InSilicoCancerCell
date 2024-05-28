@@ -2,11 +2,15 @@ from in_silico_cancer_cell import (
     A549CancerCell,
     CellPhase,
     InSilicoMethod,
+    ChannelCountsProblem,
     PatchClampProtocol,
     PatchClampData,
     find_best_fit_for,
     setup_logging,
 )
+
+
+setup_logging()
 
 
 def test_ramp_simulation():
@@ -17,6 +21,12 @@ def test_ramp_simulation():
 
 def test_projection_solver():
     measurements = PatchClampData.pyload(PatchClampProtocol.Activation, CellPhase.G0)
-    setup_logging()
     solution = find_best_fit_for(measurements, InSilicoMethod.Projection)
     print("Found solution", solution)
+
+
+def test_current_basis_matrix():
+    measurements = PatchClampData.pyload(PatchClampProtocol.Activation, CellPhase.G0)
+    problem = ChannelCountsProblem.new(measurements)
+    problem.precompute_single_channel_currents()
+    print("Matrix", problem.get_current_basis())

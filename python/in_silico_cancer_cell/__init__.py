@@ -26,4 +26,5 @@ __all__ = [
     "PatchClampData",
     "find_best_fit_for",
     "setup_logging",
+    "useless_python_function",
 ]

@@ -63,6 +63,16 @@ impl Gradient for ChannelCountsProblem {
   }
 }
 
+pub fn to_channel_counts(
+  v: nalgebra::Matrix<f64, nalgebra::Const<11>, nalgebra::Const<1>, nalgebra::ArrayStorage<f64, 11, 1>>,
+) -> ChannelCounts {
+  v.iter()
+    .map(|x| x.round() as u32)
+    .collect::<Vec<u32>>()
+    .try_into()
+    .unwrap()
+}
+
 #[cfg_eval]
 #[cfg_attr(feature = "pyo3", pyo3::pymethods)]
 impl ChannelCountsProblem {
@@ -138,16 +148,7 @@ impl ChannelCountsProblem {
           .run()
           .unwrap();
         println!("{}", result);
-        return result
-          .state()
-          .get_best_param()
-          .unwrap()
-          .position
-          .iter()
-          .map(|x| x.round() as u32)
-          .collect::<Vec<u32>>()
-          .try_into()
-          .unwrap();
+        return to_channel_counts(result.state().get_best_param().unwrap().position);
       }
       InSilicoMethod::SteepestDescent => {
         let linesearch =
@@ -158,15 +159,7 @@ impl ChannelCountsProblem {
           .run()
           .unwrap();
         println!("{}", result);
-        return result
-          .state()
-          .get_best_param()
-          .unwrap()
-          .iter()
-          .map(|x| x.round() as u32)
-          .collect::<Vec<u32>>()
-          .try_into()
-          .unwrap();
+        return to_channel_counts(*result.state().get_best_param().unwrap());
       }
       InSilicoMethod::LBFGS => {
         let linesearch =
@@ -177,23 +170,13 @@ impl ChannelCountsProblem {
           .run()
           .unwrap();
         println!("{}", result);
-        return result
-          .state()
-          .get_best_param()
-          .unwrap()
-          .iter()
-          .map(|x| x.round() as u32)
-          .collect::<Vec<u32>>()
-          .try_into()
-          .unwrap();
+        return to_channel_counts(*result.state().get_best_param().unwrap());
       }
     };
-    // TODO:
     // executor.add_observer(
     //   argmin::core::observers::Observers::new(),
     //   argmin::core::observers::ObserverMode::Every(4),
     // )
-    // let _best = result.state().get_best_param().unwrap();
     // let _best_cost = result.state().get_best_cost();
   }
 }

@@ -8,7 +8,7 @@ from in_silico_cancer_cell import (
     find_best_fit_for,
     setup_logging,
 )
-
+import numpy as np
 
 setup_logging()
 
@@ -29,4 +29,4 @@ def test_current_basis_matrix():
     measurements = PatchClampData.pyload(PatchClampProtocol.Activation, CellPhase.G0)
     problem = ChannelCountsProblem.new(measurements)
     problem.precompute_single_channel_currents()
-    print("Matrix", problem.get_current_basis())
+    print("Matrix", np.array(problem.get_current_basis()))

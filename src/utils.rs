@@ -17,10 +17,13 @@ fn get_log_level() -> log::LevelFilter {
 #[cfg_attr(feature = "pyo3", pyo3::pyfunction)]
 pub fn setup_logging() {
   let log_level = get_log_level();
+  let mut config_builder = simplelog::ConfigBuilder::new();
+  #[cfg(target_arch = "wasm32")]
+  config_builder.set_time_level(simplelog::LevelFilter::Off);
   simplelog::CombinedLogger::init(vec![
     simplelog::TermLogger::new(
       log_level,
-      simplelog::Config::default(),
+      config_builder.build(),
       simplelog::TerminalMode::Mixed,
       simplelog::ColorChoice::Auto,
     ),

@@ -1,5 +1,7 @@
 # Electrophysiological Cancer Cell Model
 
+![PyPI - Version](https://img.shields.io/pypi/v/in-silico-cancer-cell)
+
 Attempt to model an A549 cancer cell's ion channels using an HMM (Hidden Markov Model) and simulation of voltage + current development accross the membrane of the cell.
 
 This software comes in three flavours:

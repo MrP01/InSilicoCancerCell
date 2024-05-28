@@ -43,48 +43,48 @@ pub type ChannelCounts = [u32; N_CHANNEL_TYPES];
 
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct A549CancerCell {
-  crac1_channel: channels::crac1::CRAC1IonChannelCat,
-  trpc6_channel: channels::trpc6::TRPC6IonChannelCat,
-  trpv3_channel: channels::trpv3::TRPV3IonChannelCat,
   kv13_channel: channels::kv13::KV13IonChannelCat,
   kv31_channel: channels::kv31::KV31IonChannelCat,
   kv34_channel: channels::kv34::KV34IonChannelCat,
   kv71_channel: channels::kv71::KV71IonChannelCat,
   kca11_channel: channels::kca11::KCa11IonChannelCat,
   kca31_channel: channels::kca31::KCa31IonChannelCat,
-  clc2_channel: channels::clc2::CLC2IonChannelCat,
   task1_channel: channels::task1::Task1IonChannelCat,
+  crac1_channel: channels::crac1::CRAC1IonChannelCat,
+  trpc6_channel: channels::trpc6::TRPC6IonChannelCat,
+  trpv3_channel: channels::trpv3::TRPV3IonChannelCat,
+  clc2_channel: channels::clc2::CLC2IonChannelCat,
 }
 
 impl A549CancerCell {
   pub fn channels(&self) -> Vec<&dyn IsChannel> {
     vec![
-      &self.crac1_channel,
-      &self.trpc6_channel,
-      &self.trpv3_channel,
       &self.kv13_channel,
       &self.kv31_channel,
       &self.kv34_channel,
       &self.kv71_channel,
       &self.kca11_channel,
       &self.kca31_channel,
-      &self.clc2_channel,
       &self.task1_channel,
+      &self.crac1_channel,
+      &self.trpc6_channel,
+      &self.trpv3_channel,
+      &self.clc2_channel,
     ]
   }
   pub fn channels_mut(&mut self) -> Vec<&mut dyn IsChannel> {
     vec![
-      &mut self.crac1_channel,
-      &mut self.trpc6_channel,
-      &mut self.trpv3_channel,
       &mut self.kv13_channel,
       &mut self.kv31_channel,
       &mut self.kv34_channel,
       &mut self.kv71_channel,
       &mut self.kca11_channel,
       &mut self.kca31_channel,
-      &mut self.clc2_channel,
       &mut self.task1_channel,
+      &mut self.crac1_channel,
+      &mut self.trpc6_channel,
+      &mut self.trpv3_channel,
+      &mut self.clc2_channel,
     ]
   }
 
@@ -190,32 +190,24 @@ impl A549CancerCell {
   #[cfg_attr(feature = "pyo3", staticmethod)]
   pub fn new() -> A549CancerCell {
     A549CancerCell {
-      crac1_channel: channels::crac1::CRAC1IonChannelCat::new(),
-      trpc6_channel: channels::trpc6::TRPC6IonChannelCat::new(),
-      trpv3_channel: channels::trpv3::TRPV3IonChannelCat::new(),
       kv13_channel: channels::kv13::KV13IonChannelCat::new(),
       kv31_channel: channels::kv31::KV31IonChannelCat::new(),
       kv34_channel: channels::kv34::KV34IonChannelCat::new(),
       kv71_channel: channels::kv71::KV71IonChannelCat::new(),
       kca11_channel: channels::kca11::KCa11IonChannelCat::new(),
       kca31_channel: channels::kca31::KCa31IonChannelCat::new(),
-      clc2_channel: channels::clc2::CLC2IonChannelCat::new(),
       task1_channel: channels::task1::Task1IonChannelCat::new(),
+      crac1_channel: channels::crac1::CRAC1IonChannelCat::new(),
+      trpc6_channel: channels::trpc6::TRPC6IonChannelCat::new(),
+      trpv3_channel: channels::trpv3::TRPV3IonChannelCat::new(),
+      clc2_channel: channels::clc2::CLC2IonChannelCat::new(),
     }
   }
 
   pub fn set_channel_counts(&mut self, counts: ChannelCounts) {
-    self.kv13_channel.n_channels = counts[0];
-    self.kv31_channel.n_channels = counts[1];
-    self.kv34_channel.n_channels = counts[2];
-    self.kv71_channel.n_channels = counts[3];
-    self.kca11_channel.n_channels = counts[4];
-    self.kca31_channel.n_channels = counts[5];
-    self.task1_channel.n_channels = counts[6];
-    self.crac1_channel.n_channels = counts[7];
-    self.trpc6_channel.n_channels = counts[8];
-    self.trpv3_channel.n_channels = counts[9];
-    self.clc2_channel.n_channels = counts[10];
+    for (channel, count) in self.channels_mut().iter_mut().zip(counts) {
+      channel.set_n_channels(count);
+    }
   }
 
   pub fn set_langthaler_et_al_channel_counts(&mut self, phase: CellPhase) {

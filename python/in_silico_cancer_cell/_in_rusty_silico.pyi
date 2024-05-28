@@ -21,10 +21,8 @@ class ChannelCountsProblem:
     @staticmethod
     def new(data: PatchClampData) -> ChannelCountsProblem:
         pass
-
     def precompute_single_channel_currents(self):
         pass
-
     def get_current_basis(self) -> list[list[float]]:
         pass
 
@@ -37,6 +35,8 @@ class InSilicoMethod(enum.Enum):
 class PatchClampData:
     @staticmethod
     def pyload(protocol: PatchClampProtocol, phase: CellPhase) -> PatchClampData:
+        pass
+    def to_list(self) -> list[float]:
         pass
 
 def find_best_fit_for(data: PatchClampData, using: InSilicoMethod) -> list[float]:

@@ -96,9 +96,8 @@ impl ChannelCountsProblem {
   }
 
   #[cfg(feature = "pyo3")]
-  fn get_current_basis(slf: pyo3::PyRef<'_, Self>) -> pyo3::PyObject {
-    use pyo3::IntoPy;
-    let matrix = slf.current_basis.clone().unwrap();
+  fn get_current_basis(&self) -> Vec<Vec<f64>> {
+    let matrix = self.current_basis.clone().unwrap();
     let mut list_of_lists = Vec::new();
     for row in matrix.row_iter() {
       let mut row_vector = Vec::new();
@@ -107,7 +106,7 @@ impl ChannelCountsProblem {
       }
       list_of_lists.push(row_vector);
     }
-    list_of_lists.into_py(slf.py())
+    list_of_lists
   }
 
   fn solve_through_projection(&self) -> ChannelCounts {

@@ -114,6 +114,10 @@ impl PatchClampData {
     }
   }
 
+  pub fn to_list(&self) -> Vec<f64> {
+    self.current.iter().cloned().collect::<Vec<f64>>()
+  }
+
   #[cfg_attr(feature = "pyo3", staticmethod)]
   pub fn demo() -> PatchClampData {
     let mut c = DVector::zeros(100);

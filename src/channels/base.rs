@@ -21,6 +21,7 @@ pub trait IsChannel {
   fn display_name(&self) -> String;
   fn display_me(&self) -> String;
   fn metadata(&self) -> ChannelMetadata;
+  fn set_n_channels(&mut self, n_channels: u32);
 }
 
 #[macro_export]
@@ -70,6 +71,9 @@ macro_rules! define_ion_channel {
       }
       fn reset_state(&mut self) {
         self.state = Self::initial_state();
+      }
+      fn set_n_channels(&mut self, n_channels: u32) {
+        self.n_channels = n_channels;
       }
       fn single_channel_current(&self, voltage: f64) -> f64 {
         let mut open = 0.0;

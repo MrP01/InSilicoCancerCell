@@ -3,10 +3,12 @@
 pub mod cell;
 pub mod channels;
 pub mod constants;
-pub mod optimisation;
 pub mod patchclampdata;
 pub mod pulseprotocol;
 pub mod utils;
+
+#[cfg(feature = "pyo3")]
+pub mod optimisation;
 
 /// A Python module implemented in Rust.
 #[cfg(feature = "pyo3")]

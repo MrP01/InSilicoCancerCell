@@ -8,7 +8,7 @@ define_ion_channel!(
   "CRACM1",
   2,                // number of states
   IonType::Calcium, // ion type
-  24e-6,            // conductance
+  24e-3,            // conductance (pS)
   (1)               // states which count towards the current
 );
 

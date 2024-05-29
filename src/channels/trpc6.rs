@@ -8,7 +8,7 @@ define_ion_channel!(
   "TRPC6",
   1,                // number of states
   IonType::Calcium, // ion type
-  35e-3,            // conductance
+  35.0,            // conductance (pS)
   (0)               // states which count towards the current
 );
 

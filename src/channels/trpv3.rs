@@ -6,10 +6,10 @@ use crate::{constants::IonType, define_ion_channel};
 define_ion_channel!(
   TRPV3IonChannelCat,
   "TRPV3",
-  1,                           // number of states
+  1,                // number of states
   IonType::Calcium, // ion type
-  48e-3,                       // conductance
-  (0)                          // states which count towards the current
+  48.0,             // conductance (pS)
+  (0)               // states which count towards the current
 );
 
 impl HasTransitionMatrix<1> for TRPV3IonChannelCat {

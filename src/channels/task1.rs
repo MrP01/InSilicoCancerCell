@@ -11,7 +11,7 @@ define_ion_channel!(
   "Task1",
   3,               // number of states
   IonType::Kalium, // ion type
-  16e-3,           // conductance
+  16.0,           // conductance (pS)
   (2)              // states which count towards the current
 );
 

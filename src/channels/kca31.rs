@@ -11,7 +11,7 @@ define_ion_channel!(
   "KCa31",
   4,               // number of states
   IonType::Kalium, // ion type
-  11e-3,           // conductance
+  11.0,            // conductance (pS)
   (3)              // states which count towards the current
 );
 

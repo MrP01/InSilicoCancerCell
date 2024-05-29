@@ -6,6 +6,7 @@ use crate::{
 
 pub type Matrix10<T> = nalgebra::Matrix<T, nalgebra::U10, nalgebra::U10, nalgebra::ArrayStorage<T, 10, 10>>;
 
+// TODO: channel current does not match paper
 define_ion_channel!(
   KCa11IonChannelCat,
   "KCa11",
@@ -67,7 +68,7 @@ impl HasTransitionMatrix<10> for KCa11IonChannelCat {
 
     #[rustfmt::skip]
     return Matrix10::from_row_slice(&[
-      1.0-4.0 * ca_i_dt - b, kc, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, a,
+      1.0 - 4.0 * ca_i_dt - b, kc, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, a,
       4.0 * ca_i_dt, 1.0- kc -3.0 * ca_i_dt - d, 2.0 * kc, 0.0, 0.0, 0.0, 0.0, 0.0, c, 0.0,
       0.0, 3.0 * ca_i_dt, 1.0-2.0 * kc -2.0 * ca_i_dt - f, 3.0 * kc, 0.0, 0.0, 0.0, e, 0.0, 0.0,
       0.0, 0.0, 2.0 * ca_i_dt, 1.0-3.0 * kc - ca_i_dt - h, 4.0 * kc, 0.0, g, 0.0, 0.0, 0.0,

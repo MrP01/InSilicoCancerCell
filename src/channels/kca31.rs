@@ -6,6 +6,7 @@ use crate::{
   define_ion_channel,
 };
 
+// TODO: channel current does not match paper
 define_ion_channel!(
   KCa31IonChannelCat,
   "KCa31",

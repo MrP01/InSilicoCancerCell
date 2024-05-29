@@ -21,16 +21,20 @@ def plot_measurement():
     fig.savefig(str(RESULTS / "plot.pdf"))
 
 
-def plot_full_comparison(method="nnls"):
+def plot_full_comparison(method="langthaler"):
     measurements = PatchClampData.pyload(PatchClampProtocol.Activation, CellPhase.G0)
-    data = np.array(measurements.to_list())
+    data = np.array(measurements.to_list()) + 22
     problem = ChannelCountsProblem.new(measurements)
     problem.precompute_single_channel_currents()
     single_channels = np.array(problem.get_current_basis())
+    # single_channels = np.array(problem.get_current_basis())[:, (3,)]
+    # single_channels = np.concatenate([single_channels, np.ones((single_channels.shape[0], 1))], axis=1)
     if method == "lstsq":
         channel_counts, res, rank, s = np.linalg.lstsq(single_channels[: len(data), :], data, rcond=None)
     elif method == "nnls":
         channel_counts, rnorm = scipy.optimize.nnls(single_channels[: len(data), :], data)
+    elif method == "langthaler":
+        channel_counts = np.array([22, 78, 5, 1350, 40, 77, 19, 200, 17, 12, 13])
     channel_counts = channel_counts.astype(int)
     time = np.linspace(0, 9.901, single_channels.shape[0])
     print(f"Best fit: {channel_counts}")

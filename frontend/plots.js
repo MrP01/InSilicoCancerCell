@@ -7,6 +7,7 @@ const simulation = run();
 function fullSimulationCurrent({}, interactive = false) {
   return {
     marks: [
+      Plot.axisY({ label: "Current / pA" }),
       // Plot.lineY(simulation.voltage, {
       //   y: (y) => y * 1e3,
       //   z: null,
@@ -31,6 +32,7 @@ function fullSimulationCurrent({}, interactive = false) {
 function channelCurrent({ channel }, interactive = false) {
   return {
     marks: [
+      Plot.axisY({ label: "Current / pA" }),
       Plot.lineY(simulation.channels.get(channel).current, {
         y: (y) => y,
         z: null,
@@ -39,7 +41,7 @@ function channelCurrent({ channel }, interactive = false) {
       }),
     ],
     width: 600,
-    height: 300,
+    height: 240,
   };
 }
 
@@ -61,7 +63,7 @@ function channelState({ channel }, interactive = false) {
       Plot.areaY(tidy, { x: "step", y: "value", fill: "state", reverse: true, tip: interactive ? "xy" : undefined }),
     ],
     width: 600,
-    height: 300,
+    height: 240,
   };
 }
 

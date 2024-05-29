@@ -57,7 +57,7 @@ fn save_to_json(measurements: PatchClampData, subsampling: Option<usize>) {
 #[command(
   about = "In-Silico Cancer Cell Model Simulator",
   author = "Peter Waldert <peter@waldert.at>",
-  version = "0.1.0"
+  version = "0.2.0"
 )]
 struct Cli {
   /// Turn debugging information on

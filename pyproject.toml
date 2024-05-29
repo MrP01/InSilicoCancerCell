@@ -19,7 +19,7 @@ features = ["pyo3/extension-module"]
 
 [tool.poetry]
 name = "in_silico_cancer_cell"
-version = "0.1.0"
+version = "0.2.0"
 description = "Electrophysiological model of an A549 cancer cell"
 authors = ["MrP01 <peter@waldert.at>"]
 license = "MIT"

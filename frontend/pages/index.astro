@@ -8,7 +8,22 @@ import IonChannel from "../components/IonChannel.astro";
 <Layout title="Elecrophysiological Model of a Cancer Cell">
   <main>
     <h1><span class="text-gradient">In-Silico</span> Cancer Cell</h1>
-    <!-- <p class="instructions">Welcome! 🚀 This is the full simulation output:</p> -->
+    <p>
+      Welcome! 🚀 This is the full current through an A549 cancer cell's membrane for a given voltage protocol (voltage
+      accross the membrane).
+    </p>
+    <Figure
+      plot="fullSimulationCurrent"
+      extra={{
+        width: 1800,
+        height: 300,
+      }}
+    />
+    <h2>Individual <span class="text-gradient">Channel Contributions</span></h2>
+    <p>
+      The entire cell's membrane is composed of many individual ion channels, which we classify into 11 different types
+      so far. The contributions per ion channel type are listed below:
+    </p>
     <div class="channel-grid">
       <IonChannel channel="Kv13" />
       <IonChannel channel="Kv31" />
@@ -22,13 +37,17 @@ import IonChannel from "../components/IonChannel.astro";
       <IonChannel channel="TRPV3" />
       <IonChannel channel="CLC2" />
     </div>
-    <Figure
-      plot="fullSimulationCurrent"
-      extra={{
-        width: 1800,
-        height: 300,
-      }}
-    />
+    <h2>Fundamental <span class="text-gradient">Research Background</span></h2>
+    <p>
+      The electrophysiological research and all individual models backing this simulation are documented in
+      <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009091"
+        >A549 in-silico 1.0: A first computational model to simulate cell cycle dependent ion current modulation in the
+        human lung adenocarcinoma</a
+      >
+      by Langthaler et al. The simulation was later ported to Rust, making it much more efficient. <br />
+      Rust's WASM compilation is also what allows you to run it in a browser! The interface and visualisations are done with
+      Astro and d3.
+    </p>
     <!-- <img
       src="https://journals.plos.org/ploscompbiol/article/figure/image?size=large&download=&id=10.1371/journal.pcbi.1009091.g002"
       width="100%"
@@ -47,10 +66,22 @@ import IonChannel from "../components/IonChannel.astro";
       />
       <Card href="https://www.tugraz.at/" title="Place: TU Graz" body="Part of the Technical University of Graz." />
     </ul>
+    <p style="text-align: right">&copy; Peter Waldert, 2024.</p>
   </main>
 </Layout>
 
 <style>
+  h1,
+  h2 {
+    margin-bottom: 0.2em;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 1.5em;
+  }
+  a {
+    color: #3ca951;
+  }
   .instructions {
     margin-bottom: 2rem;
     border: 1px solid rgba(var(--accent-light), 25%);

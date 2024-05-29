@@ -5,8 +5,12 @@ import patchclampdata from "./pkg/patchclampdata-g0-activation-sub225.json";
 const simulation = run();
 
 function fullSimulationCurrent({}, interactive = false) {
+  const sharedX = [...Array(simulation.total_current.length).keys()].map(
+    (x) => x * (9.901 / simulation.total_current.length)
+  );
   return {
     marks: [
+      Plot.axisX({ label: "Time / s" }),
       Plot.axisY({ label: "Current / pA" }),
       // Plot.lineY(simulation.voltage, {
       //   y: (y) => y * 1e3,
@@ -14,6 +18,7 @@ function fullSimulationCurrent({}, interactive = false) {
       //   tip: interactive ? "x" : undefined,
       // }),
       Plot.lineY(simulation.total_current, {
+        x: sharedX,
         y: (y) => y,
         z: null,
         stroke: (y) => y,
@@ -21,6 +26,7 @@ function fullSimulationCurrent({}, interactive = false) {
       }),
       // @ts-ignore
       Plot.lineY(patchclampdata.current[0], {
+        x: sharedX,
         y: (y) => y,
         z: null,
         tip: interactive ? "x" : undefined,
@@ -30,10 +36,13 @@ function fullSimulationCurrent({}, interactive = false) {
 }
 
 function channelCurrent({ channel }, interactive = false) {
+  const current = simulation.channels.get(channel).current;
   return {
     marks: [
+      Plot.axisX({ label: "Time / s" }),
       Plot.axisY({ label: "Current / pA" }),
-      Plot.lineY(simulation.channels.get(channel).current, {
+      Plot.lineY(current, {
+        x: [...Array(current.length).keys()].map((x) => x * (9.901 / current.length)),
         y: (y) => y,
         z: null,
         stroke: (y) => y,
@@ -60,7 +69,15 @@ function channelState({ channel }, interactive = false) {
       scheme: "observable10",
     },
     marks: [
-      Plot.areaY(tidy, { x: "step", y: "value", fill: "state", reverse: true, tip: interactive ? "xy" : undefined }),
+      Plot.axisX({ label: "Time / s" }),
+      Plot.axisY({ label: "State Composition" }),
+      Plot.areaY(tidy, {
+        x: (e) => e.step * (9.901 / 800),
+        y: "value",
+        fill: "state",
+        reverse: true,
+        tip: interactive ? "xy" : undefined,
+      }),
     ],
     width: 600,
     height: 240,

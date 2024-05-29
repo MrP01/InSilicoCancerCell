@@ -84,9 +84,9 @@ impl PatchClampData {
     current = Some(current.unwrap() / (raw_data.len() as f64));
     match (&phase, &protocol) {
       (CellPhase::G0, PatchClampProtocol::Activation) => {
-        let scaled = current.unwrap() * 1e11;
+        let scaled = current.unwrap() * 1e12; // in pico-Ampere
         current = Some(DVector::from_vec(
-          scaled.iter().cloned().map(|x| x.max(-24.0)).collect::<Vec<f64>>(),
+          scaled.iter().cloned().map(|x| x.max(-240.0)).collect::<Vec<f64>>(),
         ));
       }
       _ => {}

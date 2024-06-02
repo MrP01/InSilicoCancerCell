@@ -16,3 +16,7 @@ This software comes in three flavours:
 (Image source: [here](https://doi.org/10.1371/journal.pcbi.1009091.g002)).
 
 This computational model is based on [Langthaler et al., 2021](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009091): **A549 in-silico 1.0: A first computational model to simulate cell cycle dependent ion current modulation in the human lung adenocarcinoma**.
+
+## The Simulation Dashboard
+
+![Screenshot of the User Interface](./figures/screenshot.png)

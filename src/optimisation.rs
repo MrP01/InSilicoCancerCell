@@ -122,6 +122,7 @@ impl ChannelCountsProblem {
     let r_inv = qr.unpack_r().inv().expect("R matrix should be invertible");
     // then finally computes R^(-1) Q^T I_m, the solution of the least-squares problem
     let solution = r_inv * transformed;
+    log::info!("Num. solution: {}", solution);
     return solution
       .iter()
       .map(|x| x.round() as u32)

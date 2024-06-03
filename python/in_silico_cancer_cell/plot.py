@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize
 
-from in_silico_cancer_cell import CellPhase, ChannelCountsProblem, PatchClampData, PatchClampProtocol, setup_logging
+from . import CellPhase, ChannelCountsProblem, PatchClampData, PatchClampProtocol, setup_logging
+from .utils import moving_average
 
 RESULTS = pathlib.Path.cwd()
 setup_logging()
@@ -23,7 +24,8 @@ def plot_measurement():
 
 def plot_full_comparison(method="langthaler"):
     measurements = PatchClampData.pyload(PatchClampProtocol.Activation, CellPhase.G0)
-    data = np.array(measurements.to_list()) + 22
+    data = moving_average(np.array(measurements.to_list()), n=12)
+    # data = np.array(measurements.to_list())[::12]
     problem = ChannelCountsProblem.new(measurements)
     problem.precompute_single_channel_currents()
     single_channels = np.array(problem.get_current_basis())

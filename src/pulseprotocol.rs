@@ -47,12 +47,12 @@ impl ProtocolGenerator for DefaultPulseProtocol {
           yield PulseProtocolStep {
             label: String::from("initial"),
             voltage: -80e-3,
-            duration: 100e-3,
+            duration: 30e-3,
           };
           yield PulseProtocolStep {
             label: String::from("test"),
             voltage: v_test,
-            duration: 800e-3,
+            duration: 870e-3,
           };
           yield PulseProtocolStep {
             label: String::from("post"),

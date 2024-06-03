@@ -1,8 +1,12 @@
 \documentclass[USenglish,twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[big,online]{dgruyter}
-\usepackage[sort&compress,square,numbers]{natbib}
+% \usepackage[sort&compress,square,numbers]{natbib}
+\usepackage[backend=biber, citestyle=numeric, bibstyle=authoryear, hyperref=true, sorting=none, maxbibnames=99]{biblatex}
+\usepackage{csquotes}
 \usepackage{times}
+
+\addbibresource{../literature/sources.bib}
 
 % TODO: https://en.wikipedia.org/wiki/Non-negative_least_squares
 
@@ -17,22 +21,22 @@
   \pagenumbering{gobble}
   %%%--------------------------------------------%%%
 
-  \title{Insert your title here}
-  \runningtitle{Short title}
+  \title{Performance optimization of the A549 electrophysiological cancer cell model and live simulation dashboard}
+  \runningtitle{Computational model of ion channel current}
   %\subtitle{Insert subtitle if needed}
 
-  \author*[1]{Corresponding Author (Name Surname)}
-  \author[2]{Second Author (Name Surname)}
-  \author[2]{Third Author (Name Surname)}
-  \author[3]{Fourth Author (Name Surname)}
-  \runningauthor{F.~Author et al.}
+  \author*[1]{Peter Waldert}
+  \author[1]{Sonja Langthaler}
+  % \author[2]{Third Author (Name Surname)}
+  % \author[3]{Fourth Author (Name Surname)}
+  \runningauthor{P.~Waldert et al.}
 
   \affil[1]{\protect\raggedright
-    Institution, street, city, country, e-mail: author\_one@rmi.ge}
-  \affil[2]{\protect\raggedright
-    Institution (if same for both authors), city, country}
-  \affil[3]{\protect\raggedright
-    Institution, city, country}
+    Institute of Health Care Engineering with European Testing Center for Medical Devices, Graz University of Technology, Graz, Austria, e-mail: peter.waldert@tugraz.at}
+  % \affil[2]{\protect\raggedright
+  %   Institution (if same for both authors), city, country}
+  % \affil[3]{\protect\raggedright
+  %   Institution, city, country}
 
   \abstract{Please insert your abstract here. Remember that online
     systems rely heavily on the content of titles and abstracts to
@@ -45,64 +49,9 @@
 
   \section{Headline 1st level}
 
-  Please insert your manuscript here. \textit{Please insert your manuscript here}. Please insert your manuscript here. Please insert your manuscript here. \textbf{Please insert your manuscript here}. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
+  Please insert your manuscript here \cite{2021-A549-model}.
 
-  New paragraph: Please insert your manuscript here in \citep{2,3,4,5}. Please insert your manuscript here in \cite{1}. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-
-  \subsection{Headline 2nd level}
-  Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-
-  New paragraph: Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here, see Table \ref{tab:Table1}. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-
-  \begin{table}
-    \caption{Please insert your table caption here.}
-    \begin{tabular}{llr}
-      Table head 1     & Table head 2     & Table head 3     \\ \midrule
-      Table content 1a & Table content 2a & Table content 3a \\
-      Table content 1b & Table content 2b & 0.1111           \\
-      Table content 1c & Table content 2c & 0.3333           \\
-    \end{tabular}
-    \label{tab:Table1}
-  \end{table}
-
-  \subsubsection{Headline 3rd level}
-  Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-
-  New paragraph: Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-  Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-
-  \begin{itemize}
-    \item Item 1
-    \item Item 2
-  \end{itemize}
-
-  New paragraph: Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here (see Figure \ref{img:Figure1}).
-
-  New paragraph: Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-
-  %If possible, please provide figures in the grayscale or CMYK color mode rather than the RGB mode%
-  \begin{figure}
-    \includegraphics[width=\columnwidth]{graphics/sample-figure1}
-    \caption{Please insert your figure caption here.}
-    \label{img:Figure1}
-  \end{figure}
-
-  \paragraph{Headline 4th level}
-  Please insert your manuscript here: $a^2+b^2=c^2$. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-
-  New paragraph: Please insert your manuscript here (see \ref{eq:1}). Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-
-  \begin{equation}
-    (a+b)^n=\sum_{k=0}^n \binom{n}{k}a^{n-k}b^k\,.
-    \label{eq:1}
-  \end{equation}
-
-  New paragraph: Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here. Please insert your manuscript here.
-
-  \begin{enumerate}
-    \item Item 1
-    \item Item 2
-  \end{enumerate}
+  \vspace{1cm}
 
   %\begin{acknowledgement}
   %\end{acknowledgement}
@@ -110,33 +59,5 @@
   \textsf{\textbf{Author Statement}}\\
   Research funding: The author state no funding involved. Conflict of interest: Authors state no conflict of interest. Informed consent: Informed consent has been obtained from all individuals included in this study. Ethical approval: The research related to human use complies with all the relevant national regulations, institutional policies and was performed in accordance with the tenets of the Helsinki Declaration, and has been approved by the authors' institutional review board or equivalent committee.
 
-  %\bibliographystyle{...}
-  %\bibliography{...}
-
-  \begin{thebibliography}{99}
-    %---------------------------------------------------------------------------------------------------------------------%
-    % The Reference list at the end of the manuscript should be in alphanumerical order (see samples below).							%
-    %---------------------------------------------------------------------------------------------------------------------%
-
-    % Books
-    \bibitem{1}
-    Dössel O, Buzug TM. Biomedizinische Technik: Medizinische Bildgebung. 1st ed. Berlin: De Gruyter; 2014.
-
-    % Institutional publications:
-    \bibitem{2}
-    Institute of Medicine (US). Looking at the future of the Medicaid
-    program. Washington: The Institute 1999.
-
-    % Chapters in books:
-    \bibitem{3}
-    Aigner C, Klepetko W. Lung transplantation. In: Petersen C, Ure BM, editors. Thoracic Surgery in Children and Adolescents. Berlin: De Gruyter; 2017:117-27.
-
-    % Articles in journals with up to 6 authors:
-    \bibitem{4}
-    Schilling T, Bauer M, Biskup C, Haverich A, Hassel T. Engineering of beiodegradable magnesium alloy scaffolds to stabilize biological myocardial grafts. Biomed Eng-Biomed Tech 2017;62:493–504.
-
-    % Articles in journals with more than 6 authors:
-    \bibitem{5}
-    Birkholz MN, Agrawal G, Bergmann C, Schröder R, Lechner SJ, Pich A, et al. Calcium phosphate/microgel composites for 3D powderbed printing of ceramic materials. Biomed Eng-Biomed Tech 2016;61:267–279.
-  \end{thebibliography}
+  \printbibliography
 \end{document}

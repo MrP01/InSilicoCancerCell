@@ -41,12 +41,13 @@ def plot_full_comparison(method="langthaler"):
     time = np.linspace(0, 9.901, single_channels.shape[0])
     print(f"Best fit: {channel_counts}")
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8, 4))
     axes: matplotlib.axes.Axes = fig.add_subplot(1, 1, 1)
-    axes.plot(time[: len(data)], data)
-    axes.plot(time, (single_channels * channel_counts).sum(axis=1))
+    axes.plot(time[: len(data)], data, label="Measurements")
+    axes.plot(time, (single_channels * channel_counts).sum(axis=1), label="Simulation")
     axes.set_xlabel("Time $t$ / s")
-    axes.set_ylabel("Current $I$ / nA")
+    axes.set_ylabel("Current $I$ / pA")
+    axes.legend()
     fig.savefig(str(RESULTS / "data-vs-simulation.pdf"))
 
 

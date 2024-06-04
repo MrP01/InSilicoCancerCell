@@ -36,6 +36,8 @@ argmin-math = { version = "0.4.0", features = ["nalgebra_latest"], optional = tr
 serde = { version = "1.0.203", features = ["derive"], optional = true }
 serde_json = { version = "1.0.117", optional = true }
 clap = { version = "4.5.4", features = ["derive"], optional = true }
+rand = "0.8.5"
+getrandom = { version = "0.2.15", features = ["js"] }
 
 [workspace]
 members = [".", "frontend"]

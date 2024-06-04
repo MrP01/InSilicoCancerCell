@@ -2,6 +2,13 @@ use nalgebra::SMatrix;
 
 use crate::constants::IonType;
 
+pub enum StateSimulationMethod {
+  Floating,
+  Rounding,
+  Individual,
+}
+pub const SIMULATION_METHOD: StateSimulationMethod = StateSimulationMethod::Floating;
+
 pub trait HasTransitionMatrix<const N_STATES: usize> {
   fn transition_matrix(&self, voltage: f64, dt: f64) -> SMatrix<f64, N_STATES, N_STATES>;
 }
@@ -34,6 +41,7 @@ macro_rules! define_ion_channel {
     $conductance: expr,
     ($($states_responsible_for_current: expr), *)
   ) => {
+    use $crate::channels::base::*;
     pub struct $name {
       pub state: nalgebra::SVector<f64, $n_states>,
       pub n_channels: u32,
@@ -58,17 +66,45 @@ macro_rules! define_ion_channel {
         };
       }
     }
-    impl $crate::channels::base::IsChannel for $name {
+    impl IsChannel for $name {
       fn update_state(&mut self, voltage: f64, dt: f64) -> f64 {
         let transition = self.transition_matrix(voltage, dt);
         #[cfg(debug_assertions)]
-        $crate::channels::base::validate_transition_matrix::<$n_states>(Self::display_name(), transition);
+        validate_transition_matrix::<$n_states>(Self::display_name(), transition);
         let previous = self.state.clone();
-        // use $crate::utils::{Roundable,Cappable};
-        // self.state = (((transition * previous) * (self.n_channels as f64)).round() / (self.n_channels as f64)).cap_all_values_to(1.0).lower_cap_all_values_to(0.0);
-        self.state = transition * previous;
+
+        match SIMULATION_METHOD {
+          StateSimulationMethod::Floating => {
+            self.state = transition * previous;
+          }
+          StateSimulationMethod::Rounding => {
+            use $crate::utils::{Roundable,Cappable};
+            self.state = (((transition * previous) * (self.n_channels as f64)).round() / (self.n_channels as f64))
+              .cap_all_values_to(1.0).lower_cap_all_values_to(0.0);
+          }
+          StateSimulationMethod::Individual => {
+            let state_scaled_up: [u32; $n_states] = (previous * (self.n_channels as f64)).iter().cloned()
+              .map(|x| x as u32).collect::<Vec<u32>>().try_into().unwrap();
+            let mut new_state_scaled_up = [0; $n_states];
+            let mut individual_state: usize = 0;
+            for individual in 0..self.n_channels {
+              while individual_state < $n_states - 1 && individual >= state_scaled_up[individual_state] {
+                individual_state += 1;
+              }
+              for other_state in 0..Self::n_states {
+                if rand::random::<f64>() < transition[(individual_state, other_state)] {
+                  new_state_scaled_up[other_state] += 1;  // switch to other state
+                  break;
+                }
+              }
+            }
+            self.state = nalgebra::SVector::<f64, $n_states>::from_iterator(
+              new_state_scaled_up.iter().cloned().map(|x| x as f64)) / (self.n_channels as f64);
+          }
+        }
+
         #[cfg(debug_assertions)]
-        $crate::channels::base::validate_state::<$n_states>(Self::display_name(), self.state);
+        validate_state::<$n_states>(Self::display_name(), self.state);
         return (self.state - previous).norm_squared() * (self.n_channels as f64);  // delta
       }
       fn reset_state(&mut self) {

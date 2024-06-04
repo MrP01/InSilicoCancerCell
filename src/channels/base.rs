@@ -64,8 +64,9 @@ macro_rules! define_ion_channel {
         #[cfg(debug_assertions)]
         $crate::channels::base::validate_transition_matrix::<$n_states>(Self::display_name(), transition);
         let previous = self.state.clone();
-        use $crate::utils::{Roundable,Cappable};
-        self.state = (((transition * previous) * (self.n_channels as f64)).round() / (self.n_channels as f64)).cap_all_values_to(1.0).lower_cap_all_values_to(0.0);
+        // use $crate::utils::{Roundable,Cappable};
+        // self.state = (((transition * previous) * (self.n_channels as f64)).round() / (self.n_channels as f64)).cap_all_values_to(1.0).lower_cap_all_values_to(0.0);
+        self.state = transition * previous;
         #[cfg(debug_assertions)]
         $crate::channels::base::validate_state::<$n_states>(Self::display_name(), self.state);
         return (self.state - previous).norm_squared() * (self.n_channels as f64);  // delta

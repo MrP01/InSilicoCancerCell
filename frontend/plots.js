@@ -86,7 +86,23 @@ function channelState({ channel }, interactive = false) {
   };
 }
 
-const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState };
+function protocol({ protocol }) {
+  return {
+    marks: [
+      Plot.axisX({ label: "Time / s" }),
+      Plot.axisY({ label: "Voltage / V" }),
+      Plot.lineY(simulation.voltage.slice(0, (800 / 9) * 3), {
+        y: (y) => y * 1e3,
+        z: null,
+        // stroke: (y) => y,
+      }),
+    ],
+    width: 180,
+    height: 150,
+  };
+}
+
+const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState, protocol };
 export function generatePlot(name, args = {}, interactive = false) {
   console.log(name, "args", args);
   return ALL_PLOT_GENERATORS[name](args, (interactive = interactive));

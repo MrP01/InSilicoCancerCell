@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 import Figure from "../components/Figure.astro";
 import IonChannel from "../components/IonChannel.astro";
+import DataSelector from "../components/DataSelector.astro";
 ---
 
 <Layout title="Elecrophysiological Model of a Cancer Cell">
@@ -12,19 +13,20 @@ import IonChannel from "../components/IonChannel.astro";
       Welcome! 🔬 This is a full current measurement + simulation through an A549 cancer cell's membrane for a given
       voltage protocol (voltage accross the membrane).
     </p>
-    <Figure
+    <DataSelector />
+    <!-- <Figure
       plot="fullSimulationCurrent"
       extra={{
         width: 1800,
         height: 300,
       }}
-    />
+    /> -->
     <h2>Individual <span class="text-gradient">Channel Contributions</span></h2>
     <p>
       The entire cell's membrane is composed of many individual ion channels, which we classify into 11 different types
       so far. The contributions per ion channel type are listed below:
     </p>
-    <div class="channel-grid">
+    <!-- <div class="channel-grid">
       <IonChannel channel="Kv13" />
       <IonChannel channel="Kv31" />
       <IonChannel channel="Kv34" />
@@ -36,7 +38,7 @@ import IonChannel from "../components/IonChannel.astro";
       <IonChannel channel="TRPC6" />
       <IonChannel channel="TRPV3" />
       <IonChannel channel="CLC2" />
-    </div>
+    </div> -->
     <h2>Fundamental <span class="text-gradient">Research Background</span></h2>
     <p>
       The electrophysiological research and all individual models backing this simulation are documented in

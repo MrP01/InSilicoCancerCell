@@ -1,0 +1,117 @@
+---
+import Figure from "./Figure.astro";
+---
+
+<div class="outer-container">
+  <div class="container phase-selector">
+    <button class="data-selection selected"><div class="text">G0</div></button>
+    <button class="data-selection"><div class="text">G1</div></button>
+  </div>
+
+  <div class="container protocol-selector">
+    <button class="data-selection selected">
+      <Figure plot="protocol" args={{ protocol: "activation" }} />
+      Activation
+    </button>
+    <button class="data-selection">
+      <Figure plot="protocol" args={{ protocol: "deactivation" }} />
+      Deactivation
+    </button>
+    <button class="data-selection">
+      <Figure plot="protocol" args={{ protocol: "ramp" }} />
+      Ramp
+    </button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".protocol-selector .data-selection").forEach((button) => {
+    button.addEventListener("click", (ev) => {
+      button.parentElement?.querySelectorAll(".data-selection").forEach((other) => other.classList.remove("selected"));
+      button.classList.add("selected");
+    });
+  });
+  const phaseSelect = document.querySelector(".phase-selector");
+  phaseSelect?.addEventListener("click", (ev) => {
+    phaseSelect.classList.toggle("g1");
+    phaseSelect.querySelectorAll(".data-selection").forEach((other) => other.classList.toggle("selected"));
+  });
+</script>
+
+<style lang="scss">
+  .outer-container {
+    display: flex;
+    width: 100%;
+  }
+  .container {
+    position: relative;
+    margin: 40px;
+  }
+  .phase-selector {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+
+    transition: transform 0.5s;
+    transform: rotate(40deg);
+    &.g1 {
+      transform: rotate(220deg);
+      .data-selection .text {
+        transform: rotate(-220deg);
+      }
+    }
+
+    &::before {
+      position: absolute;
+      left: -3px;
+      content: "";
+      width: 100%;
+      height: 100%;
+      border: 3px solid white;
+      border-radius: 50%;
+    }
+    .data-selection {
+      position: absolute;
+      top: calc(50% - 24px);
+
+      .text {
+        transition: transform 0.5s;
+        transform: rotate(-40deg);
+      }
+    }
+    .data-selection:first-child {
+      left: -40px;
+    }
+    .data-selection:last-child {
+      right: -40px;
+    }
+    > div {
+      text-align: center;
+      height: 100%;
+      padding-top: 14px;
+    }
+  }
+  .data-selection {
+    margin: 5px 16px;
+    padding: 12px;
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 22px;
+    color: white;
+    cursor: pointer;
+    font-size: 17px;
+    transition: transform 0.2s;
+    &:hover {
+      box-shadow: 0 0 0 4px rgb(var(--accent));
+    }
+    &.selected {
+      transform: scale(1.25);
+      box-shadow: 0 0 0 4px rgb(var(--accent));
+    }
+  }
+  .protocol-selector {
+    .data-selection {
+      margin: 15px 20px;
+    }
+  }
+</style>

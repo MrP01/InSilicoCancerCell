@@ -71,7 +71,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Command {
   #[command(about = "Evaluate the model on the parameters supplied by Langthaler et al.")]
-  RunSingle,
+  Single,
   #[command(about = "Perform a large-scale optimisation on the number of channels per type")]
   Fit { using: optimisation::InSilicoMethod },
   #[command(about = "Save patch clamp data (measurements) to a JSON file")]
@@ -83,7 +83,7 @@ fn main() {
   let measurements = PatchClampData::load(PatchClampProtocol::Activation, CellPhase::G0).unwrap();
   let cli = Cli::parse();
   match cli.command {
-    Command::RunSingle => {
+    Command::Single => {
       evaluate_on_langthaler_et_al_counts(measurements);
     }
     Command::Fit { using } => {

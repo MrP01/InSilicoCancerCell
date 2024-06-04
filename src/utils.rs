@@ -35,3 +35,27 @@ pub fn setup_logging() {
   ])
   .unwrap();
 }
+
+pub trait Roundable {
+  fn round(&self) -> Self;
+}
+
+impl<const D: usize> Roundable for nalgebra::SVector<f64, D> {
+  fn round(&self) -> Self {
+    nalgebra::SVector::<f64, D>::from_vec(self.iter().cloned().map(|x| x.round()).collect::<Vec<f64>>())
+  }
+}
+
+pub trait Cappable {
+  fn cap_all_values_to(&self, val: f64) -> Self;
+  fn lower_cap_all_values_to(&self, val: f64) -> Self;
+}
+
+impl<const D: usize> Cappable for nalgebra::SVector<f64, D> {
+  fn cap_all_values_to(&self, val: f64) -> Self {
+    nalgebra::SVector::<f64, D>::from_vec(self.iter().cloned().map(|x| x.min(val)).collect::<Vec<f64>>())
+  }
+  fn lower_cap_all_values_to(&self, val: f64) -> Self {
+    nalgebra::SVector::<f64, D>::from_vec(self.iter().cloned().map(|x| x.max(val)).collect::<Vec<f64>>())
+  }
+}

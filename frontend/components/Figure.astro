@@ -5,9 +5,11 @@ import { generatePlot } from "../plots";
 
 const { plot, args, extra } = Astro.props;
 const jsdom = new JSDOM();
+const fontSize = extra ? extra["fontSize"] || false : false;
 const staticPlot = Plot.plot({
   ...generatePlot(plot, args),
   ...extra,
+  style: "--plot-background: black; " + (fontSize ? `font-size: ${fontSize}px` : ""),
   document: jsdom.window._document,
 });
 ---
@@ -23,12 +25,14 @@ const staticPlot = Plot.plot({
   class AstroFigure extends HTMLElement {
     constructor() {
       super();
+      const extras = JSON.parse(this.dataset.extra || "{}");
+      const fontSize = extras["fontSize"] || false;
       this.innerHTML = "";
       this.appendChild(
         Plot.plot({
           ...generatePlot(this.dataset.plot, JSON.parse(this.dataset.args || "[]"), true),
-          ...JSON.parse(this.dataset.extra || "{}"),
-          style: "--plot-background: black",
+          ...extras,
+          style: "--plot-background: black; " + (fontSize ? `font-size: ${fontSize}px` : ""),
         })
       );
       console.log(`In-place replacement of ${this.dataset.plot} succeeded.`);

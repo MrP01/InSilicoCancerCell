@@ -9,6 +9,10 @@ html {
   background: #13151a;
   background-size: 224px;
 }
+body {
+  margin: 0;
+  width: 100%;
+}
 code {
   font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New,
     monospace;
@@ -20,7 +24,6 @@ main {
   color: white;
   font-size: 20px;
   line-height: 1.6;
-  width: 100%;
 
   @media (min-width: 768px) {
     width: 1800px;

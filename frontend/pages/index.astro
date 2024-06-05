@@ -13,20 +13,23 @@ import DataSelector from "../components/DataSelector.astro";
       Welcome! 🔬 This is a full current measurement + simulation through an A549 cancer cell's membrane for a given
       voltage protocol (voltage accross the membrane).
     </p>
+    <h2>Voltage <span class="text-gradient">Protocol & Phase</span></h2>
     <DataSelector />
-    <!-- <Figure
+    <h2>Full Simulation + Measurement <span class="text-gradient">Current</span></h2>
+    <Figure
       plot="fullSimulationCurrent"
       extra={{
         width: 1800,
         height: 300,
+        fontSize: 18,
       }}
-    /> -->
+    />
     <h2>Individual <span class="text-gradient">Channel Contributions</span></h2>
     <p>
       The entire cell's membrane is composed of many individual ion channels, which we classify into 11 different types
       so far. The contributions per ion channel type are listed below:
     </p>
-    <!-- <div class="channel-grid">
+    <div class="channel-grid">
       <IonChannel channel="Kv13" />
       <IonChannel channel="Kv31" />
       <IonChannel channel="Kv34" />
@@ -38,7 +41,7 @@ import DataSelector from "../components/DataSelector.astro";
       <IonChannel channel="TRPC6" />
       <IonChannel channel="TRPV3" />
       <IonChannel channel="CLC2" />
-    </div> -->
+    </div>
     <h2>Fundamental <span class="text-gradient">Research Background</span></h2>
     <p>
       The electrophysiological research and all individual models backing this simulation are documented in

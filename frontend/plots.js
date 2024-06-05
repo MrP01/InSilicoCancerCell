@@ -97,8 +97,8 @@ function protocol({ protocol }) {
         // stroke: (y) => y,
       }),
     ],
-    width: 180,
-    height: 150,
+    width: 150,
+    height: 120,
   };
 }
 

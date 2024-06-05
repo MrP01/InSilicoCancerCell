@@ -3,11 +3,6 @@ import Figure from "./Figure.astro";
 ---
 
 <div class="outer-container">
-  <div class="container phase-selector">
-    <button class="data-selection selected"><div class="text">G0</div></button>
-    <button class="data-selection"><div class="text">G1</div></button>
-  </div>
-
   <div class="container protocol-selector">
     <button class="data-selection selected">
       <Figure plot="protocol" args={{ protocol: "activation" }} />
@@ -21,6 +16,11 @@ import Figure from "./Figure.astro";
       <Figure plot="protocol" args={{ protocol: "ramp" }} />
       Ramp
     </button>
+  </div>
+
+  <div class="container phase-selector">
+    <button class="data-selection selected"><div class="text">G0</div></button>
+    <button class="data-selection"><div class="text">G1</div></button>
   </div>
 </div>
 
@@ -42,15 +42,49 @@ import Figure from "./Figure.astro";
   .outer-container {
     display: flex;
     width: 100%;
+    margin: 0 auto;
+    justify-content: left;
+    flex-wrap: wrap;
+    gap: 55px;
   }
   .container {
+    display: flex;
+    justify-content: right;
+    gap: 10px;
     position: relative;
-    margin: 40px;
+    margin: 20px 0;
+    height: 100%;
+  }
+  .data-selection {
+    margin: 5px 16px;
+    padding: 12px;
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    font-size: 17px;
+    transition: transform 0.2s;
+    &:hover {
+      transform: scale(1.2);
+      // box-shadow: 0 0 0 4px rgb(var(--accent));
+    }
+    &.selected {
+      box-shadow: 0 0 0 4px rgb(var(--accent));
+    }
+  }
+  .protocol-selector {
+    // width: calc(100% - 500px);
+    .data-selection {
+      margin: 0 4px;
+    }
   }
   .phase-selector {
     width: 100px;
     height: 100px;
     cursor: pointer;
+    margin-top: 52px;
+    // margin-right: 40px;
 
     transition: transform 0.5s;
     transform: rotate(40deg);
@@ -74,6 +108,10 @@ import Figure from "./Figure.astro";
       position: absolute;
       top: calc(50% - 24px);
 
+      &.selected {
+        transform: scale(1.35);
+      }
+
       .text {
         transition: transform 0.5s;
         transform: rotate(-40deg);
@@ -91,27 +129,19 @@ import Figure from "./Figure.astro";
       padding-top: 14px;
     }
   }
-  .data-selection {
-    margin: 5px 16px;
-    padding: 12px;
-    background-color: black;
-    border: 1px solid white;
-    border-radius: 22px;
-    color: white;
-    cursor: pointer;
-    font-size: 17px;
-    transition: transform 0.2s;
-    &:hover {
-      box-shadow: 0 0 0 4px rgb(var(--accent));
+
+  @media (max-width: 760px) {
+    .protocol-selector {
+      margin-bottom: 0;
     }
-    &.selected {
-      transform: scale(1.25);
-      box-shadow: 0 0 0 4px rgb(var(--accent));
+    .phase-selector {
+      margin-top: 0;
     }
   }
-  .protocol-selector {
-    .data-selection {
-      margin: 15px 20px;
+
+  @media (max-width: 800px) {
+    .outer-container {
+      justify-content: center;
     }
   }
 </style>

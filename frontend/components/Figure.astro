@@ -7,7 +7,7 @@ const { plot, args, extra } = Astro.props;
 const jsdom = new JSDOM();
 const fontSize = extra ? extra["fontSize"] || false : false;
 const staticPlot = Plot.plot({
-  ...generatePlot(plot, args),
+  ...(await generatePlot(plot, args)),
   ...extra,
   style: "--plot-background: black; " + (fontSize ? `font-size: ${fontSize}px` : ""),
   document: jsdom.window._document,
@@ -27,14 +27,17 @@ const staticPlot = Plot.plot({
       super();
       const extras = JSON.parse(this.dataset.extra || "{}");
       const fontSize = extras["fontSize"] || false;
-      this.innerHTML = "";
-      this.appendChild(
-        Plot.plot({
-          ...generatePlot(this.dataset.plot, JSON.parse(this.dataset.args || "[]"), true),
-          ...extras,
-          style: "--plot-background: black; " + (fontSize ? `font-size: ${fontSize}px` : ""),
-        })
-      );
+      // this.innerHTML = "Loading...";
+      generatePlot(this.dataset.plot, JSON.parse(this.dataset.args || "[]"), true).then((generatedPlot) => {
+        this.innerHTML = "";
+        this.appendChild(
+          Plot.plot({
+            ...generatedPlot,
+            ...extras,
+            style: "--plot-background: black; " + (fontSize ? `font-size: ${fontSize}px` : ""),
+          })
+        );
+      });
       console.log(`In-place replacement of ${this.dataset.plot} succeeded.`);
     }
   }

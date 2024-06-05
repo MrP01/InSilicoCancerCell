@@ -1,13 +1,20 @@
 import { run } from "./pkg/in_silico_frontend";
 import * as Plot from "@observablehq/plot";
-import patchclampdata from "./pkg/patchclampdata-g0-activation-sub225.json";
 
-const simulation = run();
+const simulation = run("activation", "g0");
 
-function fullSimulationCurrent({}, interactive = false) {
+async function getMeasurements() {
+  const { protocol, phase } = { protocol: "activation", phase: "g0" };
+  let i = await import(`./pkg/patchclampdata-${phase}-${protocol}-sub225.json`);
+  console.log(i);
+  return i;
+}
+
+async function fullSimulationCurrent({}, interactive = false) {
   const sharedX = [...Array(simulation.total_current.length).keys()].map(
     (x) => x * (9.901 / simulation.total_current.length)
   );
+  const measurements = await getMeasurements();
   return {
     marks: [
       Plot.axisX({ label: "Time / s" }),
@@ -27,7 +34,7 @@ function fullSimulationCurrent({}, interactive = false) {
         tip: interactive ? "x" : undefined,
       }),
       // @ts-ignore
-      Plot.lineY(patchclampdata.current[0], {
+      Plot.lineY(measurements.current[0], {
         x: sharedX,
         y: (y) => y,
         z: null,
@@ -37,7 +44,7 @@ function fullSimulationCurrent({}, interactive = false) {
   };
 }
 
-function channelCurrent({ channel }, interactive = false) {
+async function channelCurrent({ channel }, interactive = false) {
   const current = simulation.channels.get(channel).current;
   return {
     marks: [
@@ -56,7 +63,7 @@ function channelCurrent({ channel }, interactive = false) {
   };
 }
 
-function channelState({ channel }, interactive = false) {
+async function channelState({ channel }, interactive = false) {
   let record = simulation.channels.get(channel).states;
   let n_states = record[0].length;
   console.log("channel", channel, interactive, "has", n_states);
@@ -86,7 +93,7 @@ function channelState({ channel }, interactive = false) {
   };
 }
 
-function protocol({ protocol }) {
+async function protocol({ protocol }) {
   return {
     marks: [
       Plot.axisX({ label: "Time / s" }),
@@ -103,7 +110,7 @@ function protocol({ protocol }) {
 }
 
 const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState, protocol };
-export function generatePlot(name, args = {}, interactive = false) {
+export async function generatePlot(name, args = {}, interactive = false) {
   console.log(name, "args", args);
-  return ALL_PLOT_GENERATORS[name](args, (interactive = interactive));
+  return await ALL_PLOT_GENERATORS[name](args, (interactive = interactive));
 }

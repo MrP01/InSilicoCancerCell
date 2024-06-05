@@ -66,7 +66,7 @@ impl SimulationRecorder for FullRecorder {
 }
 
 #[wasm_bindgen]
-pub fn run() -> JsValue {
+pub fn run(protocol: String, phase: String) -> JsValue {
   console::log_1(&JsValue::from_str("Simulating now..."));
   // let measurements = PatchClampData::demo();
   let pulse_protocol = DefaultPulseProtocol {};

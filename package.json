@@ -16,6 +16,7 @@
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
     "astro": "^4.9.2",
     "jsdom": "^24.1.0",
+    "nanostores": "^0.10.3",
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {

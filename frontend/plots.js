@@ -1,12 +1,17 @@
 import { run } from "./pkg/in_silico_frontend";
 import * as Plot from "@observablehq/plot";
+import { selector } from "./store";
 
-const simulation = run("activation", "g0");
+var simulation;
+selector.subscribe((value) => {
+  simulation = run(value.protocol, value.phase);
+  console.log("Simulation done", value);
+});
 
 async function getMeasurements() {
-  const { protocol, phase } = { protocol: "activation", phase: "g0" };
-  let i = await import(`./pkg/patchclampdata-${phase}-${protocol}-sub225.json`);
-  console.log(i);
+  const { protocol, phase } = selector.get();
+  let i = await import(`./pkg/patchclampdata-${phase}-${protocol}.json`);
+  // console.log(i);
   return i;
 }
 
@@ -31,14 +36,14 @@ async function fullSimulationCurrent({}, interactive = false) {
         y: (y) => y,
         z: null,
         stroke: (y) => y,
-        tip: interactive ? "x" : undefined,
+        // tip: interactive ? "x" : undefined,
       }),
       // @ts-ignore
       Plot.lineY(measurements.current[0], {
         x: sharedX,
         y: (y) => y,
         z: null,
-        // tip: interactive ? "x" : undefined,
+        tip: interactive ? "x" : undefined,
       }),
     ],
   };
@@ -111,6 +116,6 @@ async function protocol({ protocol }) {
 
 const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState, protocol };
 export async function generatePlot(name, args = {}, interactive = false) {
-  console.log(name, "args", args);
+  // console.log(name, "args", args);
   return await ALL_PLOT_GENERATORS[name](args, (interactive = interactive));
 }

@@ -26,9 +26,14 @@ jobs:
       # builds frontend with wasm-pack
       - uses: bahmutov/npm-install@v1
       - run: yarn run wasm-pack build frontend --release
-      - run: cargo run --release --target=${{ matrix.target }} save-patch-clamp-data 225
+      - run: |
+          cargo run --release --target=${{ matrix.target }} -- --protocol activation --phase g0 save-patch-clamp-data
+          cargo run --release --target=${{ matrix.target }} -- --protocol deactivation --phase g0 save-patch-clamp-data
+          cargo run --release --target=${{ matrix.target }} -- --protocol ramp --phase g0 save-patch-clamp-data
+          cargo run --release --target=${{ matrix.target }} -- --protocol activation --phase g1 save-patch-clamp-data
+          cargo run --release --target=${{ matrix.target }} -- --protocol deactivation --phase g1 save-patch-clamp-data
+          cargo run --release --target=${{ matrix.target }} -- --protocol ramp --phase g1 save-patch-clamp-data
       - run: yarn run build
-
       # deploy
       - uses: jsmrcaga/action-netlify-deploy@master
         # if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux'

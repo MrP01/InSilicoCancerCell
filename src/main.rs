@@ -44,7 +44,11 @@ fn save_to_json(measurements: PatchClampData, subsampling: Option<usize>) {
       subsampled_measurements.current =
         DVector::from_vec(measurements.current.iter().cloned().step_by(subsamp).collect())
     }
-    None => {}
+    None => {
+      let subsamp = measurements.current.len() / 800;
+      subsampled_measurements.current =
+        DVector::from_vec(measurements.current.iter().cloned().step_by(subsamp).collect())
+    }
   };
   let file = std::fs::File::create(&path).unwrap();
   let writer = std::io::BufWriter::new(file);
@@ -64,6 +68,14 @@ struct Cli {
   #[arg(short, long, action = clap::ArgAction::Count)]
   debug: u8,
 
+  /// The voltage protocol
+  #[arg(long, default_value = "activation")]
+  protocol: PatchClampProtocol,
+
+  /// The cell cycle phase
+  #[arg(long, default_value = "g0")]
+  phase: CellPhase,
+
   #[command(subcommand)]
   command: Command,
 }
@@ -80,8 +92,8 @@ enum Command {
 
 fn main() {
   utils::setup_logging();
-  let measurements = PatchClampData::load(PatchClampProtocol::Activation, CellPhase::G0).unwrap();
   let cli = Cli::parse();
+  let measurements = PatchClampData::load(cli.protocol, cli.phase).unwrap();
   match cli.command {
     Command::Single => {
       evaluate_on_langthaler_et_al_counts(measurements);

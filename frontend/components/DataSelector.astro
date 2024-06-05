@@ -4,37 +4,64 @@ import Figure from "./Figure.astro";
 
 <div class="outer-container">
   <div class="container protocol-selector">
-    <button class="data-selection selected">
+    <button class="data-selection selected" data-protocol="activation">
       <Figure plot="protocol" args={{ protocol: "activation" }} />
       Activation
     </button>
-    <button class="data-selection">
+    <button class="data-selection" data-protocol="deactivation">
       <Figure plot="protocol" args={{ protocol: "deactivation" }} />
       Deactivation
     </button>
-    <button class="data-selection">
+    <button class="data-selection" data-protocol="ramp">
       <Figure plot="protocol" args={{ protocol: "ramp" }} />
       Ramp
     </button>
   </div>
 
   <div class="container phase-selector">
-    <button class="data-selection selected"><div class="text">G0</div></button>
-    <button class="data-selection"><div class="text">G1</div></button>
+    <button class="data-selection selected" data-phase="g0"><div class="text">G0</div></button>
+    <button class="data-selection" data-phase="g1"><div class="text">G1</div></button>
   </div>
 </div>
 
 <script>
+  // @ts-nocheck
+  import { selector } from "../store";
+
+  function startProgress() {
+    document.getElementById("progress-meter").style.display = "block";
+    document.getElementById("progress-meter").style.width = "30vw";
+  }
+  startProgress(); // once at the start
+
+  function endProgress() {
+    document.getElementById("progress-meter").style.width = "100vw";
+    setTimeout(() => (document.getElementById("progress-meter").style.display = "none"), 500);
+  }
+  setTimeout(endProgress, 800);
+
   document.querySelectorAll(".protocol-selector .data-selection").forEach((button) => {
     button.addEventListener("click", (ev) => {
       button.parentElement?.querySelectorAll(".data-selection").forEach((other) => other.classList.remove("selected"));
       button.classList.add("selected");
+      let protocol = button.attributes.getNamedItem("data-protocol")?.value || "hmm";
+      startProgress();
+      setTimeout(() => {
+        selector.set({ protocol, phase: selector.get().phase });
+        endProgress();
+      }, 20);
     });
   });
   const phaseSelect = document.querySelector(".phase-selector");
   phaseSelect?.addEventListener("click", (ev) => {
     phaseSelect.classList.toggle("g1");
     phaseSelect.querySelectorAll(".data-selection").forEach((other) => other.classList.toggle("selected"));
+    let phase = phaseSelect.classList.contains("g1") ? "g1" : "g0";
+    startProgress();
+    setTimeout(() => {
+      selector.set({ protocol: selector.get().protocol, phase });
+      endProgress();
+    }, 20);
   });
 </script>
 
@@ -155,6 +182,7 @@ import Figure from "./Figure.astro";
     }
     .container {
       flex-direction: column;
+      margin: 0;
     }
     .data-selection {
       max-width: 180px;

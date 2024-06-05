@@ -5,7 +5,7 @@ use nalgebra::DVector;
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[derive(Clone)]
-#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize, clap::ValueEnum))]
 pub enum PatchClampProtocol {
   Activation,
   Deactivation,
@@ -24,7 +24,7 @@ impl fmt::Display for PatchClampProtocol {
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[derive(Clone)]
-#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize, clap::ValueEnum))]
 pub enum CellPhase {
   G0,
   G1,
@@ -83,13 +83,24 @@ impl PatchClampData {
     }
     current = Some(current.unwrap() / (raw_data.len() as f64));
     match (&phase, &protocol) {
-      (CellPhase::G0, PatchClampProtocol::Activation) => {
+      (_, PatchClampProtocol::Activation) => {
         let scaled = current.unwrap() * 1e12; // in pico-Ampere
         current = Some(DVector::from_vec(
           scaled.iter().cloned().map(|x| x.max(-240.0)).collect::<Vec<f64>>(),
         ));
       }
-      _ => {}
+      (_, PatchClampProtocol::Deactivation) => {
+        let scaled = current.unwrap() * 1e3; // in pico-Ampere
+        current = Some(DVector::from_vec(
+          scaled.iter().cloned().map(|x| x.max(-240.0)).collect::<Vec<f64>>(),
+        ));
+      }
+      (_, PatchClampProtocol::Ramp) => {
+        let scaled = current.unwrap() * 1e3; // in pico-Ampere
+        current = Some(DVector::from_vec(
+          scaled.iter().cloned().map(|x| x.max(-240.0)).collect::<Vec<f64>>(),
+        ));
+      }
     }
     Ok(PatchClampData {
       protocol,

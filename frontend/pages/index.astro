@@ -22,6 +22,7 @@ import DataSelector from "../components/DataSelector.astro";
         width: 1800,
         height: 300,
         fontSize: 18,
+        updateOnResim: true,
       }}
     />
     <h2>Individual <span class="text-gradient">Channel Contributions</span></h2>
@@ -73,6 +74,7 @@ import DataSelector from "../components/DataSelector.astro";
     </ul>
     <p style="text-align: right">&copy; Peter Waldert, 2024.</p>
   </main>
+  <div id="progress-meter"></div>
 </Layout>
 
 <style>
@@ -106,5 +108,18 @@ import DataSelector from "../components/DataSelector.astro";
   .channel-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(40ch, 2fr));
+  }
+
+  #progress-meter {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 30vw;
+    background-color: rgb(var(--accent));
+    /* background-color: white; */
+    /* color: white;
+    font-size: 1.5em; */
+    transition: width 0.3s;
   }
 </style>

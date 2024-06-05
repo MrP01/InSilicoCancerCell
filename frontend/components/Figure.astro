@@ -21,24 +21,31 @@ const staticPlot = Plot.plot({
 <script>
   import * as Plot from "@observablehq/plot";
   import { generatePlot } from "../plots";
+  import { selector } from "../store";
 
   class AstroFigure extends HTMLElement {
     constructor() {
       super();
       const extras = JSON.parse(this.dataset.extra || "{}");
-      const fontSize = extras["fontSize"] || false;
-      // this.innerHTML = "Loading...";
-      generatePlot(this.dataset.plot, JSON.parse(this.dataset.args || "[]"), true).then((generatedPlot) => {
-        this.innerHTML = "";
-        this.appendChild(
-          Plot.plot({
-            ...generatedPlot,
-            ...extras,
-            style: "--plot-background: black; " + (fontSize ? `font-size: ${fontSize}px` : ""),
-          })
-        );
-      });
-      console.log(`In-place replacement of ${this.dataset.plot} succeeded.`);
+      const setPlot = () => {
+        const fontSize = extras["fontSize"] || false;
+        generatePlot(this.dataset.plot, JSON.parse(this.dataset.args || "[]"), true).then((generatedPlot) => {
+          this.innerHTML = "";
+          this.appendChild(
+            Plot.plot({
+              ...generatedPlot,
+              ...extras,
+              style: "--plot-background: black; " + (fontSize ? `font-size: ${fontSize}px` : ""),
+            })
+          );
+        });
+        // console.log(`In-place replacement of ${this.dataset.plot} succeeded.`);
+      };
+      if (extras.updateOnResim) {
+        selector.subscribe(setPlot);
+      } else {
+        setPlot();
+      }
     }
   }
   customElements.define("astro-figure", AstroFigure);

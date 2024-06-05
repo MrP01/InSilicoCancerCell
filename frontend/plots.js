@@ -31,7 +31,7 @@ function fullSimulationCurrent({}, interactive = false) {
         x: sharedX,
         y: (y) => y,
         z: null,
-        tip: interactive ? "x" : undefined,
+        // tip: interactive ? "x" : undefined,
       }),
     ],
   };

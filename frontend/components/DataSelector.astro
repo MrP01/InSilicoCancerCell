@@ -144,4 +144,24 @@ import Figure from "./Figure.astro";
       justify-content: center;
     }
   }
+
+  @media (min-width: 1250px) {
+    .outer-container {
+      position: fixed;
+      left: 15px;
+      top: 20px;
+      flex-direction: column;
+      width: 220px;
+    }
+    .container {
+      flex-direction: column;
+    }
+    .data-selection {
+      max-width: 180px;
+    }
+    .phase-selector {
+      margin-top: 0;
+      margin-left: 50px;
+    }
+  }
 </style>

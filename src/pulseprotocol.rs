@@ -43,8 +43,8 @@ impl ProtocolGenerator {
             }
           }
           PatchClampProtocol::Deactivation => {
-            let mut v_test = -40e-3; // -40 mV start
-            while v_test <= 50e-3 {
+            let mut v_test = -100e-3; // -100 mV start
+            while v_test <= -40e-3 {
               // increment to +50 mV
               yield PulseProtocolStep {
                 label: String::from("hold"),
@@ -53,48 +53,55 @@ impl ProtocolGenerator {
               };
               yield PulseProtocolStep {
                 label: String::from("initial"),
-                voltage: -80e-3,
-                duration: 30e-3,
+                // V_initial = -40e-3;
+                // t_initial = 155e-3;
+                voltage: -40e-3,
+                duration: 155e-3,
+              };
+              yield PulseProtocolStep {
+                label: String::from("initial2"),
+                // V_initial_2 = 40e-3;
+                // t_initial_2 = 5000e-3;
+                voltage: 40e-3,
+                duration: 5000e-3,
               };
               yield PulseProtocolStep {
                 label: String::from("test"),
+                // t_test = 4920e-3;
+                // test_pulses = [-100e-3, -90e-3, -80e-3, -70e-3, -60e-3, -50e-3, -40e-3];
                 voltage: v_test,
-                duration: 870e-3,
+                duration: 4920e-3,
               };
               yield PulseProtocolStep {
                 label: String::from("post"),
-                voltage: -80e-3,
-                duration: 100e-3,
+                // V_post = -40e-3;
+                // t_post = 165e-3;
+                voltage: -40e-3,
+                duration: 165e-3,
               };
               v_test += 10e-3;
             }
           }
           PatchClampProtocol::Ramp => {
-            let mut v_test = -40e-3; // -40 mV start
-            while v_test <= 50e-3 {
-              // increment to +50 mV
+            yield PulseProtocolStep {
+              label: String::from("hold"),
+              voltage: -100e-3,
+              duration: 300e-3,
+            };
+            let mut v_test = -100e-3; // -40 mV start
+            while v_test <= 60e-3 {
               yield PulseProtocolStep {
-                label: String::from("hold"),
-                voltage: -100e-3,
-                duration: 100e-3,
-              };
-              yield PulseProtocolStep {
-                label: String::from("initial"),
-                voltage: -80e-3,
-                duration: 30e-3,
-              };
-              yield PulseProtocolStep {
-                label: String::from("test"),
+                label: String::from("ramp"),
                 voltage: v_test,
-                duration: 870e-3,
+                duration: 10e-3,
               };
-              yield PulseProtocolStep {
-                label: String::from("post"),
-                voltage: -80e-3,
-                duration: 100e-3,
-              };
-              v_test += 10e-3;
+              v_test += 0.00008;
             }
+            yield PulseProtocolStep {
+              label: String::from("post"),
+              voltage: -100e-3,
+              duration: 300e-3,
+            };
           }
         }
       },

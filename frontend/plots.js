@@ -71,7 +71,7 @@ async function channelCurrent({ channel }, interactive = false) {
 async function channelState({ channel }, interactive = false) {
   let record = simulation.channels.get(channel).states;
   let n_states = record[0].length;
-  console.log("channel", channel, interactive, "has", n_states);
+  // console.log("channel", channel, interactive, "has", n_states);
   let tidy = [];
   for (let step = 0; step < record.length; step++) {
     for (let state = 0; state < n_states; state++) {

@@ -24,13 +24,13 @@ async function fullSimulationCurrent({}, interactive = false) {
     marks: [
       Plot.axisX({ label: "Time / s" }),
       Plot.axisY({ label: "Current / pA" }),
-      // Plot.lineY(simulation.voltage, {
-      //   x: sharedX,
-      //   y: (y) => y * 1e3,
-      //   z: null,
-      //   stroke: "gray",
-      //   tip: interactive ? "x" : undefined,
-      // }),
+      Plot.lineY(simulation.voltage, {
+        x: sharedX,
+        y: (y) => y * 1e3,
+        z: null,
+        stroke: "gray",
+        tip: interactive ? "x" : undefined,
+      }),
       Plot.lineY(simulation.total_current, {
         x: sharedX,
         y: (y) => y,

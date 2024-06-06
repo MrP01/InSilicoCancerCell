@@ -69,13 +69,20 @@ impl SimulationRecorder for FullRecorder {
 pub fn run(protocol: String, phase: String) -> JsValue {
   console::log_1(&JsValue::from_str("Simulating now..."));
   // let measurements = PatchClampData::demo();
-  let pulse_protocol = ProtocolGenerator {
-    proto: PatchClampProtocol::from(protocol),
-  };
+  let proto = PatchClampProtocol::from(protocol);
+  let pulse_protocol = ProtocolGenerator { proto: proto.clone() };
   let mut cell = A549CancerCell::new();
   cell.set_langthaler_et_al_channel_counts(CellPhase::from(phase));
   let mut recorded = FullRecorder::new_for_cell(&cell);
-  cell.simulate(pulse_protocol, &mut recorded, 800);
+  cell.simulate(
+    pulse_protocol,
+    &mut recorded,
+    match proto {
+      PatchClampProtocol::Activation => 800,
+      PatchClampProtocol::Deactivation => 844,
+      PatchClampProtocol::Ramp => 1032,
+    },
+  );
   return serde_wasm_bindgen::to_value(&recorded).unwrap();
 }
 

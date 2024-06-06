@@ -10,8 +10,8 @@ const { channel } = Astro.props;
     {channel} Channel
     <small>({metadata.get(channel).n_states} states, {metadata.get(channel).n_channels} channels)</small>
   </h2>
-  <Figure plot="channelCurrent" args={{ channel, updateOnResim: true }} />
-  <Figure plot="channelState" args={{ channel, updateOnResim: true }} />
+  <Figure plot="channelCurrent" args={{ channel }} extra={{ updateOnResim: true }} />
+  <Figure plot="channelState" args={{ channel }} extra={{ updateOnResim: true }} />
 </div>
 
 <style>

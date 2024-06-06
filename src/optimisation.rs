@@ -8,7 +8,7 @@ use crate::cell::SimulationRecorder;
 use crate::cell::N_CHANNEL_TYPES;
 use crate::cell::{evaluate_current_match, A549CancerCell};
 use crate::patchclampdata::PatchClampData;
-use crate::pulseprotocol::DefaultPulseProtocol;
+use crate::pulseprotocol::ProtocolGenerator;
 
 pub struct SingleChannelCurrentRecord {
   pub currents: [Vec<f64>; N_CHANNEL_TYPES],
@@ -85,7 +85,9 @@ impl ChannelCountsProblem {
   }
 
   fn precompute_single_channel_currents(&mut self) {
-    let pulse_protocol = DefaultPulseProtocol {};
+    let pulse_protocol = ProtocolGenerator {
+      proto: self.fit_to.protocol.clone(),
+    };
     let mut cell = A549CancerCell::new();
     let mut recorded = SingleChannelCurrentRecord::empty();
     cell.simulate(pulse_protocol, &mut recorded, self.fit_to.current.len());

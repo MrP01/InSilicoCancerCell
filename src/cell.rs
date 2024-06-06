@@ -3,14 +3,14 @@ use std::io::{BufRead, Write};
 
 use nalgebra::DVector;
 
+#[cfg(feature = "default")]
+use crate::patchclampdata::PatchClampProtocol;
 use crate::{
   channels::{self, base::IsChannel},
   constants,
   patchclampdata::{CellPhase, PatchClampData},
-  pulseprotocol::{ProtocolGenerator, RepeatingGenerator},
+  pulseprotocol::ProtocolGenerator,
 };
-#[cfg(feature = "default")]
-use crate::{patchclampdata::PatchClampProtocol, pulseprotocol::DefaultPulseProtocol};
 
 pub trait SimulationRecorder {
   fn record(&mut self, cell: &A549CancerCell, voltage: f64);
@@ -98,7 +98,7 @@ impl A549CancerCell {
 
   pub fn simulate(
     &mut self,
-    pulse_protocol: impl ProtocolGenerator + RepeatingGenerator,
+    pulse_protocol: ProtocolGenerator,
     recorder: &mut impl SimulationRecorder,
     min_points: usize,
   ) {
@@ -223,8 +223,8 @@ impl A549CancerCell {
 
   #[cfg(feature = "default")]
   pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
-    let measurements = PatchClampData::load(protocol, phase).unwrap();
-    let pulse_protocol = DefaultPulseProtocol {};
+    let measurements = PatchClampData::load(protocol.clone(), phase).unwrap();
+    let pulse_protocol = ProtocolGenerator { proto: protocol };
     let mut recorded = TotalCurrentRecord::empty();
     self.simulate(pulse_protocol, &mut recorded, measurements.current.len());
     evaluate_match(&measurements, recorded)

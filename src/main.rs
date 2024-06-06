@@ -17,10 +17,12 @@ use cell::TotalCurrentRecord;
 use clap::{Parser, Subcommand};
 use nalgebra::DVector;
 use patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol};
-use pulseprotocol::DefaultPulseProtocol;
+use pulseprotocol::ProtocolGenerator;
 
 fn evaluate_on_langthaler_et_al_counts(measurements: PatchClampData) {
-  let pulse_protocol = DefaultPulseProtocol {};
+  let pulse_protocol = ProtocolGenerator {
+    proto: measurements.protocol.clone(),
+  };
   let mut cell = A549CancerCell::new();
   cell.set_langthaler_et_al_channel_counts(measurements.phase.clone());
   let mut recorded = TotalCurrentRecord::empty();

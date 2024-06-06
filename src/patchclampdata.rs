@@ -4,7 +4,7 @@ use nalgebra::DVector;
 
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 #[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize, clap::ValueEnum))]
 pub enum PatchClampProtocol {
   Activation,
@@ -17,6 +17,18 @@ impl fmt::Display for PatchClampProtocol {
       PatchClampProtocol::Activation => write!(f, "Activation"),
       PatchClampProtocol::Deactivation => write!(f, "Deactivation"),
       PatchClampProtocol::Ramp => write!(f, "Ramp"),
+    }
+  }
+}
+impl From<String> for PatchClampProtocol {
+  fn from(value: String) -> Self {
+    match value.to_ascii_lowercase().as_str() {
+      "activation" => PatchClampProtocol::Activation,
+      "deactivation" => PatchClampProtocol::Deactivation,
+      "ramp" => PatchClampProtocol::Ramp,
+      _ => {
+        panic!("Protocol doesn't exist");
+      }
     }
   }
 }
@@ -34,6 +46,17 @@ impl fmt::Display for CellPhase {
     match self {
       CellPhase::G0 => write!(f, "G0"),
       CellPhase::G1 => write!(f, "G1"),
+    }
+  }
+}
+impl From<String> for CellPhase {
+  fn from(value: String) -> Self {
+    match value.to_ascii_lowercase().as_str() {
+      "g0" => CellPhase::G0,
+      "g1" => CellPhase::G1,
+      _ => {
+        panic!("Cell Phase doesn't exist");
+      }
     }
   }
 }

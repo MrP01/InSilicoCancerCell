@@ -69,40 +69,43 @@
   \section{Introduction}
   Lung cancer is one of the most widespread pathologies worldwide and its internal workings, specifically those of individual A549 cells, are not well understood.
   Computational techniques can help with a better understanding of the behaviour of these cancer cells.
-  We work with the A549 model introduced in \cite{2021-A549-model}, together with a calcium channel extension introduced in \cite{2024-calcium-channels}, reimplementing the model in Rust and performing a number of numerical optimizations such as adaptive timestepping.
+  We work with the A549 model introduced in \cite{2021-A549-model}, together with a calcium channel extension introduced in \cite{2024-calcium-channels}, reimplementing the model in the Rust programming language and performing a number of numerical optimizations such as adaptive timestepping.
   We also verify the model's performance in \textit{Floating} mode, as compared to an individual simulation of the estimated number of channels.
   We introduce a visualisation approach of the entire model in the form of a live simulation dashboard\footnote{\url{https://in-silico-cancer-cell.waldert.at/}}.
   The entire source code behind this simulation is freely available on GitHub\footnote{\url{https://github.com/MrP01/InSilicoCancerCell}}, and reusable through three different channels: the simulation interface (powered by WebAssembly), the Rust linkable library implementation and a Python package.
   These three interfaces all originate from the same source code and our aim behind a distribution in this ways is to make the simulation as accessible as possible.
   In order to find appropriate parameters for the model, an optimization procedure is performed.
   Multiple optimization approaches for the solution of the corresponding inverse problem (fitting model parameters to measurement data) are put in comparison.
-  The measurements are obtained using a \textit{Patch-Clamp System}
+  The measurements are obtained using a \textit{Patch-Clamp System}.
 
   \section{Methods}
   The computational model is as follows:
   A cell's membrane consists of multiple ion channels, categorized into $M \in \N$ different types (and therefore, sub-models).
-  Each ion channel is represented in one of $N_{s, x} \in \N$ states, which, in physical terms, is related to a positional configuration of a protein within the ion channel.
+  Each ion channel is represented in one of $N_{s, k} \in \N$ states, which, in physical terms, is related to a positional configuration of a protein within the ion channel.
   Only some states can be observed directly, and progress only depends on the one previous state.
   Hence, we are working with a Hidden Markov Model (HMM) where transitions between states are modelled probabilistically.
   For many ion channel categories, their transition probabilities are voltage or ion-concentration dependent.
 
-  The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is then obtained as the sum of all individual channel contributions $I_x, x \in \{1, ..., M\}$ over $M \in \N$ channel types
+  The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is then obtained as the sum of all individual channel contributions $I_k, k \in \{1, ..., M\}$ over $M \in \N$ channel types
   \begin{equation}
-    I(t) := \sum_{x=1}^{M} N_x I_x(t) = \sum_{x=1}^{M} N_x g_x p_{o,x} (V(t)-E_x)\,,
+    I(t) := \sum_{k=1}^{M} N_k I_k(t) = \sum_{k=1}^{M} N_k g_k p_{o,k} \left(V(t)-E_k\right)\,,
   \end{equation}
-  where $N_x$ is the number of channels of type $x \in \{1, ..., M\}$, $g_x$ is the respective ion channel's conductivity, $p_{o, x} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_x \in \R^+$ the reversal potential.
+  where $N_k$ is the number of channels of type $k \in \{1, ..., M\}$, $g_k$ is the respective ion channel's conductivity, $p_{o, k} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_k \in \R^+$ the reversal potential.
 
   Within the simulation, we sample the state and current at discrete time points $T_{\rm meas} \subset T$, for example
-  $$T_{\rm meas} := \{n (\Delta t)_n | n \in \N_0 | n < N_t\}$$
+  $$T_{\rm meas} := \left\{\sum_{i=0}^n (\Delta t)_i \;\bigg|\; n \in \N_0 \;\bigg|\; n < N_t\right\}$$
   for $N_t$ measurements with step size $(\Delta t)_n$, which may be chosen equally large for all $n \in \{0, ..., N_t - 1\}$.
   We will later adapt this time interval $(\Delta t)_n \in \R^+$ per simulation step based on a state change heuristic.
 
   The current measurements are then simply $\vec{I} := \left(I(t_0), I(t_1), ..., I(t_{N_t})\right)^T \in \R^{N_t}$.
 
+  \subsection{Adaptive Timestepping}
+  A common method ...
+
   \subsection{Inverse Problem}
-  When regarding the cell model as a whole, the number of ion channels $N_x$ per type $x$ may be put into a configuration vector $\vec{N} := (N_1, ..., N_M)^T \in \N^M$ and then the total simulated current $I$ sampled at measurement points $T_{\rm meas}$ can be expressed as a matrix-vector product
+  When regarding the cell model as a whole, the number of ion channels $N_k$ per type $k$ may be put into a configuration vector $\vec{N} := (N_1, ..., N_M)^T \in \N^M$ and then the total simulated current $I$ sampled at measurement points $T_{\rm meas}$ can be expressed as a matrix-vector product
   \begin{equation}
-    \vec{I} = \sum_{x=1}^{M} N_x \vec{I_x} = A \vec{N}\,,
+    \vec{I} = \sum_{k=1}^{M} N_k \vec{I_k} = A \vec{N}\,,
     \label{eq:matrix-formulation}
   \end{equation}
   where $A \in \R^{N_t \times M}$ is the matrix of all current measurements per channel type.
@@ -132,6 +135,11 @@
     \label{table:channel-types}
   \end{table}
 
+  \subsection{Implementation Architecture}
+  Nice
+
+  \subsection{Live Simulation}
+
   \section{Results}
   \begin{figure}
     \includegraphics[width=\columnwidth]{../figures/results/voltage-protocol.pdf}
@@ -143,6 +151,17 @@
     \caption{Please insert your figure caption here.}
     \label{figure:full-simulation-current}
   \end{figure}
+  \begin{figure}
+    \includegraphics[width=\columnwidth]{../figures/results/simulation-error.pdf}
+    \caption{Please insert your figure caption here.}
+    \label{figure:simulation-error}
+  \end{figure}
+
+  \begin{figure*}
+    \includegraphics[width=2\columnwidth]{../figures/above-the-fold-screenshot.png}
+    \caption{Please insert your figure caption here.}
+    \label{figure:screenshot}
+  \end{figure*}
 
   \section{Future Perspectives}
 

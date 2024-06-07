@@ -9,6 +9,7 @@ const fontSize = extra ? extra["fontSize"] || false : false;
 const staticPlot = Plot.plot({
   ...(await generatePlot(plot, args)),
   ...extra,
+  grid: true,
   style: "--plot-background: black; " + (fontSize ? `font-size: ${fontSize}px` : ""),
   document: jsdom.window._document,
 });
@@ -41,6 +42,7 @@ const staticPlot = Plot.plot({
             Plot.plot({
               ...generatedPlot,
               ...extras,
+              grid: true,
               style: "--plot-background: black; " + (fontSize ? `font-size: ${fontSize}px` : ""),
             })
           );

@@ -49,6 +49,34 @@ async function fullSimulationCurrent({}, interactive = false) {
   };
 }
 
+async function simulationError({}, interactive = false) {
+  const sharedX = [...Array(simulation.total_current.length).keys()].map(
+    (x) => x * (9.901 / simulation.total_current.length)
+  );
+  const measurements = await getMeasurements();
+  const minLength = Math.min(simulation.total_current.length, measurements.current[0].length);
+  let diff = [];
+  for (let i = 0; i < minLength; i++) {
+    const delta = simulation.total_current[i] - measurements.current[0][i];
+    diff.push(Math.pow(delta, 2));
+  }
+  return {
+    y: { type: "log" },
+    marks: [
+      Plot.axisX({ label: "Time / s" }),
+      Plot.axisY({ label: "Squared Error / pA²" }),
+      // @ts-ignore
+      Plot.lineY(diff, {
+        x: sharedX,
+        y: (y) => y,
+        z: null,
+        stroke: (y) => y,
+        // tip: interactive ? "x" : undefined,
+      }),
+    ],
+  };
+}
+
 async function channelCurrent({ channel }, interactive = false) {
   const current = simulation.channels.get(channel).current;
   return {
@@ -98,12 +126,13 @@ async function channelState({ channel }, interactive = false) {
   };
 }
 
-async function protocol({ protocol }) {
+async function protocol({ protocol, cut = true }) {
+  const voltage = cut ? simulation.voltage.slice(0, (800 / 9) * 3) : simulation.voltage;
   return {
     marks: [
       Plot.axisX({ label: "Time / s" }),
       Plot.axisY({ label: "Voltage / V" }),
-      Plot.lineY(simulation.voltage.slice(0, (800 / 9) * 3), {
+      Plot.lineY(voltage, {
         y: (y) => y * 1e3,
         z: null,
         // stroke: (y) => y,
@@ -114,7 +143,7 @@ async function protocol({ protocol }) {
   };
 }
 
-const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState, protocol };
+const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState, protocol, simulationError };
 export async function generatePlot(name, args = {}, interactive = false) {
   // console.log(name, "args", args);
   return await ALL_PLOT_GENERATORS[name](args, (interactive = interactive));

@@ -100,7 +100,11 @@
   The current measurements are then simply $\vec{I} := \left(I(t_0), I(t_1), ..., I(t_{N_t})\right)^T \in \R^{N_t}$.
 
   \subsection{Adaptive Timestepping}
-  A common method ...
+  In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size based on
+  \begin{equation}
+    (\Delta t)_n = (\Delta t)_{n-1} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{s_{k,n} - s_{k,n-1}}_2}\right)^{1/2}\,,
+  \end{equation}
+  for all $n = 1, 2, ..., N_t - 1$.
 
   \subsection{Inverse Problem}
   When regarding the cell model as a whole, the number of ion channels $N_k$ per type $k$ may be put into a configuration vector $\vec{N} := (N_1, ..., N_M)^T \in \N^M$ and then the total simulated current $I$ sampled at measurement points $T_{\rm meas}$ can be expressed as a matrix-vector product
@@ -110,10 +114,10 @@
   \end{equation}
   where $A \in \R^{N_t \times M}$ is the matrix of all current measurements per channel type.
 
-  Given the individual ion channel type models' parameters, which we know from literature \Cref{table:channel-types}, the question that remains is how many channels there are of each type to fit the measurements.
+  Given the individual ion channel type models' parameters, which we know from literature (cf. \Cref{table:channel-types}), the question that remains is how many channels there are of each type to fit the measurements.
   This problem can be solved using a number of optimization approaches.
 
-  However, the formulation \Cref{eq:matrix-formulation} also gives rise to a least-squares formulation...
+  However, the formulation in \Cref{eq:matrix-formulation} also gives rise to a least-squares formulation, by projecting the measured current into the space of all individual channel currents.
 
   \begin{table}
     \caption{Ion Channel Types}
@@ -136,17 +140,19 @@
   \end{table}
 
   \subsection{Implementation Architecture}
-  Nice
+  tbd
 
   \subsection{Live Simulation}
+  tbd
 
-  \section{Results}
   \begin{figure}
     \includegraphics[width=\columnwidth]{../figures/results/voltage-protocol.pdf}
     \caption{Please insert your figure caption here.}
     \label{figure:voltage-protocol}
   \end{figure}
-  \begin{figure}
+
+  \section{Results}
+  \begin{figure}[h]
     \includegraphics[width=\columnwidth]{../figures/results/full-simulation-current.pdf}
     \caption{Please insert your figure caption here.}
     \label{figure:full-simulation-current}
@@ -157,6 +163,20 @@
     \label{figure:simulation-error}
   \end{figure}
 
+  \begin{table}
+    \caption{Comparison of Optimization Approaches}
+    \begin{tabular}{ll}
+      \textbf{Algorithm}          & \textbf{Accuracy} \\
+      \midrule
+      Particle Swarm Optimization & 1                 \\
+      Gradient Descent            & 2                 \\
+      LBFGS                       & 3                 \\
+      QR-based LSQ                & 4                 \\
+      NNLS                        & 5                 \\
+    \end{tabular}
+    \label{table:optimization-comparison}
+  \end{table}
+
   \begin{figure*}
     \includegraphics[width=2\columnwidth]{../figures/above-the-fold-screenshot.png}
     \caption{Please insert your figure caption here.}
@@ -164,6 +184,8 @@
   \end{figure*}
 
   \section{Future Perspectives}
+  Numerically, the stability of the simulation varies greatly with the time step state change tolerance $\Delta^{\rm tol}$, this could be improved using a higher-order integration scheme.
+  Regarding the simulation dashboard, there are still many adjustments that could improve and enable further usage perspectives.
 
   \vspace{1cm}
 

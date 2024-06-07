@@ -22,7 +22,7 @@ def save_d3_plots(ctx: invoke.context.Context):
 def save_screenshot(ctx: invoke.context.Context):
     out = "figures/above-the-fold-screenshot.png"
     url = "http://localhost:4321/"
-    size = "1800,1080"
+    size = "1920,1080"
     subprocess.run(f"chromium --headless --screenshot={out} --window-size={size} --hide-scrollbars {url}".split(" "))
 
 

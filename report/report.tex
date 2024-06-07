@@ -1,14 +1,26 @@
 \documentclass[USenglish,twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[big,online]{dgruyter}
+\usepackage{lmodern}
+\usepackage{anyfontsize}
 % \usepackage[sort&compress,square,numbers]{natbib}
 \usepackage[backend=biber, citestyle=numeric, bibstyle=authoryear, hyperref=true, sorting=none, maxbibnames=99]{biblatex}
 \usepackage{csquotes}
 \usepackage{times}
+\usepackage{bm}
+\usepackage[nameinlink]{cleveref}
+\input{macros.tex}
 
 \addbibresource{../literature/sources.bib}
 
 % TODO: https://en.wikipedia.org/wiki/Non-negative_least_squares
+
+% Report details: Max. 6 pages, composed of:
+% • Summary
+% • Introduction
+% • Methods
+% • Results
+% • Future perspectives
 
 \begin{document}
   %%%--------------------------------------------%%%
@@ -21,35 +33,118 @@
   \pagenumbering{gobble}
   %%%--------------------------------------------%%%
 
-  \title{Performance optimization of the A549 electrophysiological cancer cell model and live simulation dashboard}
+  % \title{Performance optimization of the A549 electrophysiological cancer cell model and live simulation dashboard}
+  \title{Improving runtime of the A549 electrophysiological cancer cell model from X to Y and live simulation dashboard}
   \runningtitle{Computational model of ion channel current}
   %\subtitle{Insert subtitle if needed}
 
   \author*[1]{Peter Waldert}
-  \author[1]{Sonja Langthaler}
+  \author[2]{Sonja Langthaler}
   % \author[2]{Third Author (Name Surname)}
   % \author[3]{Fourth Author (Name Surname)}
   \runningauthor{P.~Waldert et al.}
 
   \affil[1]{\protect\raggedright
     Institute of Health Care Engineering with European Testing Center for Medical Devices, Graz University of Technology, Graz, Austria, e-mail: peter.waldert@tugraz.at}
+  \affil[2]{\protect\raggedright
+    Institute of Health Care Engineering with European Testing Center for Medical Devices, Graz University of Technology, Graz, Austria}
   % \affil[2]{\protect\raggedright
   %   Institution (if same for both authors), city, country}
   % \affil[3]{\protect\raggedright
   %   Institution, city, country}
 
-  \abstract{Please insert your abstract here. Remember that online
-    systems rely heavily on the content of titles and abstracts to
-    identify articles in electronic bibliographic databases and search
-    engines. We ask you to take great care in preparing the abstract.}
+  \abstract{
+    Through a reimplementation in Rust and numerical optimization approaches we were able to reduce the runtime of the A549 electrophysiological cancer cell model \cite{2021-A549-model} from X to Y.
+
+    % Please insert your abstract here. Remember that online
+    % systems rely heavily on the content of titles and abstracts to
+    % identify articles in electronic bibliographic databases and search
+    % engines. We ask you to take great care in preparing the abstract.
+  }
 
   \keywords{Please insert your keywords here, separated by commas.}
 
   \maketitle
 
-  \section{Headline 1st level}
+  \section{Introduction}
+  Lung cancer is one of the most widespread pathologies worldwide and its internal workings, specifically those of individual A549 cells, are not well understood.
+  Computational techniques can help with a better understanding of the behaviour of these cancer cells.
+  We work with the A549 model introduced in \cite{2021-A549-model}, together with a calcium channel extension introduced in \cite{2024-calcium-channels}, reimplementing the model in Rust and performing a number of numerical optimizations such as adaptive timestepping.
+  We also verify the model's performance in \textit{Floating} mode, as compared to an individual simulation of the estimated number of channels.
+  We introduce a visualisation approach of the entire model in the form of a live simulation dashboard\footnote{\url{https://in-silico-cancer-cell.waldert.at/}}.
+  The entire source code behind this simulation is freely available on GitHub\footnote{\url{https://github.com/MrP01/InSilicoCancerCell}}, and reusable through three different channels: the simulation interface (powered by WebAssembly), the Rust linkable library implementation and a Python package.
+  These three interfaces all originate from the same source code and our aim behind a distribution in this ways is to make the simulation as accessible as possible.
+  In order to find appropriate parameters for the model, an optimization procedure is performed.
+  Multiple optimization approaches for the solution of the corresponding inverse problem (fitting model parameters to measurement data) are put in comparison.
+  The measurements are obtained using a \textit{Patch-Clamp System}
 
-  Please insert your manuscript here \cite{2021-A549-model}.
+  \section{Methods}
+  The computational model is as follows:
+  A cell's membrane consists of multiple ion channels, categorized into $M \in \N$ different types (and therefore, sub-models).
+  Each ion channel is represented in one of $N_{s, x} \in \N$ states, which, in physical terms, is related to a positional configuration of a protein within the ion channel.
+  Only some states can be observed directly, and progress only depends on the one previous state.
+  Hence, we are working with a Hidden Markov Model (HMM) where transitions between states are modelled probabilistically.
+  For many ion channel categories, their transition probabilities are voltage or ion-concentration dependent.
+
+  The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is then obtained as the sum of all individual channel contributions $I_x, x \in \{1, ..., M\}$ over $M \in \N$ channel types
+  \begin{equation}
+    I(t) := \sum_{x=1}^{M} N_x I_x(t) = \sum_{x=1}^{M} N_x g_x p_{o,x} (V(t)-E_x)\,,
+  \end{equation}
+  where $N_x$ is the number of channels of type $x \in \{1, ..., M\}$, $g_x$ is the respective ion channel's conductivity, $p_{o, x} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_x \in \R^+$ the reversal potential.
+
+  Within the simulation, we sample the state and current at discrete time points $T_{\rm meas} \subset T$, for example
+  $$T_{\rm meas} := \{n (\Delta t)_n | n \in \N_0 | n < N_t\}$$
+  for $N_t$ measurements with step size $(\Delta t)_n$, which may be chosen equally large for all $n \in \{0, ..., N_t - 1\}$.
+  We will later adapt this time interval $(\Delta t)_n \in \R^+$ per simulation step based on a state change heuristic.
+
+  The current measurements are then simply $\vec{I} := \left(I(t_0), I(t_1), ..., I(t_{N_t})\right)^T \in \R^{N_t}$.
+
+  \subsection{Inverse Problem}
+  When regarding the cell model as a whole, the number of ion channels $N_x$ per type $x$ may be put into a configuration vector $\vec{N} := (N_1, ..., N_M)^T \in \N^M$ and then the total simulated current $I$ sampled at measurement points $T_{\rm meas}$ can be expressed as a matrix-vector product
+  \begin{equation}
+    \vec{I} = \sum_{x=1}^{M} N_x \vec{I_x} = A \vec{N}\,,
+    \label{eq:matrix-formulation}
+  \end{equation}
+  where $A \in \R^{N_t \times M}$ is the matrix of all current measurements per channel type.
+
+  Given the individual ion channel type models' parameters, which we know from literature \Cref{table:channel-types}, the question that remains is how many channels there are of each type to fit the measurements.
+  This problem can be solved using a number of optimization approaches.
+
+  However, the formulation \Cref{eq:matrix-formulation} also gives rise to a least-squares formulation...
+
+  \begin{table}
+    \caption{Ion Channel Types}
+    \begin{tabular}{ll}
+      \textbf{Channel Type} & \textbf{Reference}            \\
+      \midrule
+      Kv13                  & \cite{1998-potassium-channel} \\
+      Kv31                  & \cite{1998-potassium-channel} \\
+      Kv34                  & \cite{1998-potassium-channel} \\
+      Kv71                  & \cite{1998-potassium-channel} \\
+      KCa11                 & \cite{1998-potassium-channel} \\
+      KCa31                 & \cite{1998-potassium-channel} \\
+      Task1                 & \cite{1998-potassium-channel} \\
+      CRAC1                 & \cite{1998-potassium-channel} \\
+      TRPC6                 & \cite{1998-potassium-channel} \\
+      TRPV3                 & \cite{1998-potassium-channel} \\
+      CLC2                  & \cite{1998-potassium-channel} \\
+    \end{tabular}
+    \label{table:channel-types}
+  \end{table}
+
+  \section{Results}
+  \begin{figure}
+    \includegraphics[width=\columnwidth]{../figures/results/voltage-protocol.pdf}
+    \caption{Please insert your figure caption here.}
+    \label{figure:voltage-protocol}
+  \end{figure}
+  \begin{figure}
+    \includegraphics[width=\columnwidth]{../figures/results/full-simulation-current.pdf}
+    \caption{Please insert your figure caption here.}
+    \label{figure:full-simulation-current}
+  \end{figure}
+
+  \section{Future Perspectives}
 
   \vspace{1cm}
 
@@ -57,7 +152,10 @@
   %\end{acknowledgement}
 
   \textsf{\textbf{Author Statement}}\\
-  Research funding: The author state no funding involved. Conflict of interest: Authors state no conflict of interest. Informed consent: Informed consent has been obtained from all individuals included in this study. Ethical approval: The research related to human use complies with all the relevant national regulations, institutional policies and was performed in accordance with the tenets of the Helsinki Declaration, and has been approved by the authors' institutional review board or equivalent committee.
+  Research funding: This work was funded through a BioTechMed-Graz Lab Rotation Research Fellowship.
+  Conflict of interest: Authors state no conflict of interest.
+  Informed consent: Informed consent has been obtained from all individuals included in this study.
+  Ethical approval: The research related to human use complies with all the relevant national regulations, institutional policies and was performed in accordance with the tenets of the Helsinki Declaration, and has been approved by the authors' institutional review board or equivalent committee.
 
   \printbibliography
 \end{document}

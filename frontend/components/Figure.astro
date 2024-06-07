@@ -3,7 +3,7 @@ import * as Plot from "@observablehq/plot";
 import { JSDOM } from "jsdom";
 import { generatePlot } from "../plots";
 
-const { plot, args, extra } = Astro.props;
+const { plot, args, extra, withoutContainer } = Astro.props;
 const jsdom = new JSDOM();
 const fontSize = extra ? extra["fontSize"] || false : false;
 const staticPlot = Plot.plot({
@@ -14,9 +14,15 @@ const staticPlot = Plot.plot({
 });
 ---
 
-<astro-figure data-plot={plot} data-args={JSON.stringify(args)} data-extra={JSON.stringify(extra)}>
-  <Fragment set:html={staticPlot.outerHTML} />
-</astro-figure>
+{
+  withoutContainer ? (
+    <Fragment set:html={staticPlot.outerHTML} />
+  ) : (
+    <astro-figure data-plot={plot} data-args={JSON.stringify(args)} data-extra={JSON.stringify(extra)}>
+      <Fragment set:html={staticPlot.outerHTML} />
+    </astro-figure>
+  )
+}
 
 <script>
   import * as Plot from "@observablehq/plot";

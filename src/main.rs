@@ -9,8 +9,6 @@ mod patchclampdata;
 mod pulseprotocol;
 mod utils;
 
-use std::usize;
-
 use cell::evaluate_match;
 use cell::A549CancerCell;
 use cell::TotalCurrentRecord;

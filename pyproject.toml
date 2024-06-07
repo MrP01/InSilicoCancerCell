@@ -34,6 +34,7 @@ numpy = "^1.26.4"
 ipython = "^8.23.0"
 pytest = "^8.1.1"
 scipy = "^1.13.1"
+invoke = "^2.2.0"
 
 [tool.ruff]
 line-length = 120

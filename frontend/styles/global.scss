@@ -47,6 +47,18 @@ h1 {
   background-position: 0%;
 }
 
+h1,
+h2 {
+  margin-bottom: 0.2em;
+}
+p {
+  margin-top: 0;
+  margin-bottom: 1.5em;
+}
+a {
+  color: #3ca951;
+}
+
 @media (min-width: 1250px) {
   main {
     margin-left: 220px;

@@ -90,7 +90,7 @@
   \begin{equation}
     I(t) := \sum_{k=1}^{M} N_k I_k(t) = \sum_{k=1}^{M} N_k g_k p_{o,k} \left(V(t)-E_k\right)\,,
   \end{equation}
-  where $N_k$ is the number of channels of type $k \in \{1, ..., M\}$, $g_k$ is the respective ion channel's conductivity, $p_{o, k} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_k \in \R^+$ the reversal potential.
+  where $N_k$ is the number of channels of type $k \in \{1, ..., M\}$, $g_k$ is the respective ion channel's conductivity, $p_{o, k} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_k \in \R$ the reversal potential.
 
   Within the simulation, we sample the state and current at discrete time points $T_{\rm meas} \subset T$, for example
   $$T_{\rm meas} := \left\{\sum_{i=0}^n (\Delta t)_i \;\bigg|\; n \in \N_0 \;\bigg|\; n < N_t\right\}$$
@@ -178,7 +178,7 @@
   \end{table}
 
   \begin{figure*}
-    \includegraphics[width=2\columnwidth]{../figures/above-the-fold-screenshot.png}
+    \includegraphics[width=\textwidth]{../figures/above-the-fold-screenshot.png}
     \caption{Please insert your figure caption here.}
     \label{figure:screenshot}
   \end{figure*}

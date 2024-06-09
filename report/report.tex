@@ -34,7 +34,7 @@
   %%%--------------------------------------------%%%
 
   % \title{Performance optimization of the A549 electrophysiological cancer cell model and live simulation dashboard}
-  \title{Improving runtime of the A549 electrophysiological cancer cell model from X to Y and live simulation dashboard}
+  \title{Reducing runtime of an electrophysiological cancer cell model from X to Y and live simulation dashboard}
   \runningtitle{Computational model of ion channel current}
   %\subtitle{Insert subtitle if needed}
 
@@ -67,47 +67,64 @@
   \maketitle
 
   \section{Introduction}
-  Lung cancer is one of the most widespread pathologies worldwide and its internal workings, specifically those of individual A549 cells, are not well understood.
+  Lung cancer is one of the most widespread pathologies worldwide and its mechanisms, specifically those of individual A549 cells, are not well understood.
   Computational techniques can help with a better understanding of the behaviour of these cancer cells.
   We work with the A549 model introduced in \cite{2021-A549-model}, together with a calcium channel extension introduced in \cite{2024-calcium-channels}, reimplementing the model in the Rust programming language and performing a number of numerical optimizations such as adaptive timestepping.
   We also verify the model's performance in \textit{Floating} mode, as compared to an individual simulation of the estimated number of channels.
   We introduce a visualisation approach of the entire model in the form of a live simulation dashboard\footnote{\url{https://in-silico-cancer-cell.waldert.at/}}.
   The entire source code behind this simulation is freely available on GitHub\footnote{\url{https://github.com/MrP01/InSilicoCancerCell}}, and reusable through three different channels: the simulation interface (powered by WebAssembly), the Rust linkable library implementation and a Python package.
-  These three interfaces all originate from the same source code and our aim behind a distribution in this ways is to make the simulation as accessible as possible.
+  These three interfaces all originate from the same source code and our aim behind a distribution in this way is to make the simulation as accessible as possible.
   In order to find appropriate parameters for the model, an optimization procedure is performed.
   Multiple optimization approaches for the solution of the corresponding inverse problem (fitting model parameters to measurement data) are put in comparison.
-  The measurements are obtained using a \textit{Patch-Clamp System}.
+  The measurements are obtained using a \textit{Patch-Clamp System}, where one records the current through the membrane given a voltage protocol.
 
   \section{Methods}
-  The computational model is as follows:
-  A cell's membrane consists of multiple ion channels, categorized into $M \in \N$ different types (and therefore, sub-models).
+  % The computational model is as follows:
+  A cell's membrane consists of multiple ion channels, categorized into $M \in \N$ different types.
   Each ion channel is represented in one of $N_{s, k} \in \N$ states, which, in physical terms, is related to a positional configuration of a protein within the ion channel.
-  Only some states can be observed directly, and progress only depends on the one previous state.
-  Hence, we are working with a Hidden Markov Model (HMM) where transitions between states are modelled probabilistically.
+  Only some states can be observed directly, and its development only depends on the one previous state.
+  Hence, we are working with a Hidden Markov Model (HMM).
+  % where transitions between states are modelled probabilistically.
   For many ion channel categories, their transition probabilities are voltage or ion-concentration dependent.
 
   The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is then obtained as the sum of all individual channel contributions $I_k, k \in \{1, ..., M\}$ over $M \in \N$ channel types
   \begin{equation}
     I(t) := \sum_{k=1}^{M} N_k I_k(t) = \sum_{k=1}^{M} N_k g_k p_{o,k} \left(V(t)-E_k\right)\,,
+    \label{eq:current}
   \end{equation}
   where $N_k$ is the number of channels of type $k \in \{1, ..., M\}$, $g_k$ is the respective ion channel's conductivity, $p_{o, k} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_k \in \R$ the reversal potential.
 
   Within the simulation, we sample the state and current at discrete time points $T_{\rm meas} \subset T$, for example
-  $$T_{\rm meas} := \left\{\sum_{i=0}^n (\Delta t)_i \;\bigg|\; n \in \N_0 \;\bigg|\; n < N_t\right\}$$
+  $$T_{\rm meas} := \left\{t_n := \sum_{i=0}^n (\Delta t)_i \;\bigg|\; n \in \N_0 \;\bigg|\; n < N_t\right\}$$
   for $N_t$ measurements with step size $(\Delta t)_n$, which may be chosen equally large for all $n \in \{0, ..., N_t - 1\}$.
-  We will later adapt this time interval $(\Delta t)_n \in \R^+$ per simulation step based on a state change heuristic.
+  We adapt this time interval $(\Delta t)_n \in \R^+$ per simulation step based on a state change heuristic, cf. \Cref{sec:adaptive-dt}.
 
-  The current measurements are then simply $\vec{I} := \left(I(t_0), I(t_1), ..., I(t_{N_t})\right)^T \in \R^{N_t}$.
+  At each time step,
+  \begin{equation}
+    \vec{s}_{k,n+1} = H_{k}\left(V(t_n), \vec{C}(t_n), t_n\right) \vec{s}_{k,n}
+  \end{equation}
+  where $\vec{s}_{k,n} \in \R^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in \R^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
+  We initialize the simulation at $t_0 = 0$ with $\vec{s}_{k,0} = (1, 0, ..., 0)^T$ for all $k$.
+
+  Given the state $\vec{s}_{k}$, current measurements are then simply
+  $$\vec{I} := \left(I(t_0), I(t_1), ..., I(t_{N_t-1})\right)^T \in \R^{N_t}\,,$$
+  with $I$ as stated above in \Cref{eq:current} and
+  $$p_{o,k} = \sum_{n_s \in \mathcal{S}_o} \{\vec{s}_{n,k}\}_{n_s}\,,$$
+  where $\mathcal{S}_o$ is the set of all states contributing to the ion channel current, the ``open states''.
 
   \subsection{Adaptive Timestepping}
+  \label{sec:adaptive-dt}
   In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size based on
   \begin{equation}
-    (\Delta t)_n = (\Delta t)_{n-1} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{s_{k,n} - s_{k,n-1}}_2}\right)^{1/2}\,,
+    (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n} - \vec{s}_{k,n-1}}_2}\right)^{1/2}\,,
   \end{equation}
-  for all $n = 1, 2, ..., N_t - 1$.
+  for all $n$, where $\Delta^{\rm tol} \in \R^+$ is a measure for the allowed state change in between steps.
+  When the state changes too quickly in between time steps, the above heuristic will decrease $(\Delta t)_{n+1}$ and vice-versa.
+  In principle, it would be feasible to apply the adaptive timestepping to each ion channel type individually, however this would make current sampling and data synchronization between channels hard to realize, considering the ion concentration dependence of $H_k$.
+  Within this paper, we set $\Delta^{\rm tol} = 2 \cdot 10^{-7}$.
 
   \subsection{Inverse Problem}
-  When regarding the cell model as a whole, the number of ion channels $N_k$ per type $k$ may be put into a configuration vector $\vec{N} := (N_1, ..., N_M)^T \in \N^M$ and then the total simulated current $I$ sampled at measurement points $T_{\rm meas}$ can be expressed as a matrix-vector product
+  When regarding the cell model as a whole, the number of ion channels $N_k$ per type $k$ may be put into a configuration vector $\vec{N} := (N_1, ..., N_M)^T \in \N_0^M$ and the total simulated current $I$ sampled at measurement points $T_{\rm meas}$ can be expressed as a matrix-vector product
   \begin{equation}
     \vec{I} = \sum_{k=1}^{M} N_k \vec{I_k} = A \vec{N}\,,
     \label{eq:matrix-formulation}
@@ -118,29 +135,36 @@
   This problem can be solved using a number of optimization approaches.
 
   However, the formulation in \Cref{eq:matrix-formulation} also gives rise to a least-squares formulation, by projecting the measured current into the space of all individual channel currents.
+  More specifically, we want to find
+  \begin{equation}
+    \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \norm{A \vec{N} - I_{\rm meas}}_2^2\,,
+    \label{eq:minimization}
+  \end{equation}
+  with $\vec{I}_{\rm meas} \in \R^{N_t}$ the experimentally measured current.
+  The most important constraint here is that of integer non-negativity, $\vec{N}_{\rm opt} \in \N_0^M$, which makes this problem hard to solve directly.
 
   \begin{table}
     \caption{Ion Channel Types}
-    \begin{tabular}{ll}
-      \textbf{Channel Type} & \textbf{Reference}            \\
+    \begin{tabular}{lll}
+      \textbf{Channel Type} & \textbf{Channel Count $N_k$} & \textbf{Reference}            \\
       \midrule
-      Kv13                  & \cite{1998-potassium-channel} \\
-      Kv31                  & \cite{1998-potassium-channel} \\
-      Kv34                  & \cite{1998-potassium-channel} \\
-      Kv71                  & \cite{1998-potassium-channel} \\
-      KCa11                 & \cite{1998-potassium-channel} \\
-      KCa31                 & \cite{1998-potassium-channel} \\
-      Task1                 & \cite{1998-potassium-channel} \\
-      CRAC1                 & \cite{1998-potassium-channel} \\
-      TRPC6                 & \cite{1998-potassium-channel} \\
-      TRPV3                 & \cite{1998-potassium-channel} \\
-      CLC2                  & \cite{1998-potassium-channel} \\
+      Kv13                  & 1                            & \cite{1998-potassium-channel} \\
+      Kv31                  & 1                            & \cite{1998-potassium-channel} \\
+      Kv34                  & 1                            & \cite{1998-potassium-channel} \\
+      Kv71                  & 1                            & \cite{1998-potassium-channel} \\
+      KCa11                 & 1                            & \cite{1998-potassium-channel} \\
+      KCa31                 & 1                            & \cite{1998-potassium-channel} \\
+      Task1                 & 1                            & \cite{1998-potassium-channel} \\
+      CRAC1                 & 1                            & \cite{1998-potassium-channel} \\
+      TRPC6                 & 1                            & \cite{1998-potassium-channel} \\
+      TRPV3                 & 1                            & \cite{1998-potassium-channel} \\
+      CLC2                  & 1                            & \cite{1998-potassium-channel} \\
     \end{tabular}
     \label{table:channel-types}
   \end{table}
 
   \subsection{Implementation Architecture}
-  tbd
+  The core simulation is implemented in the Rust programming language \cite{2014-rust}.
 
   \subsection{Live Simulation}
   tbd
@@ -183,7 +207,7 @@
     \label{figure:screenshot}
   \end{figure*}
 
-  \section{Future Perspectives}
+  \section{Outlook}
   Numerically, the stability of the simulation varies greatly with the time step state change tolerance $\Delta^{\rm tol}$, this could be improved using a higher-order integration scheme.
   Regarding the simulation dashboard, there are still many adjustments that could improve and enable further usage perspectives.
 

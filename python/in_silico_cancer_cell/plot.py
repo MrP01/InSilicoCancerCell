@@ -22,13 +22,13 @@ def plot_measurement():
     fig.savefig(str(RESULTS / "plot.pdf"))
 
 
-def plot_full_comparison(method="langthaler"):
+def plot_full_comparison(method="nnls", n=800):
     measurements = PatchClampData.pyload(PatchClampProtocol.Activation, CellPhase.G0)
-    data = moving_average(np.array(measurements.to_list()), n=12)
+    data = moving_average(np.array(measurements.to_list()), n)
     # data = np.array(measurements.to_list())[::12]
     problem = ChannelCountsProblem.new(measurements)
     problem.precompute_single_channel_currents()
-    single_channels = np.array(problem.get_current_basis())
+    single_channels = moving_average(np.array(problem.get_current_basis()), n)
     # single_channels = np.array(problem.get_current_basis())[:, (3,)]
     # single_channels = np.concatenate([single_channels, np.ones((single_channels.shape[0], 1))], axis=1)
     if method == "lstsq":

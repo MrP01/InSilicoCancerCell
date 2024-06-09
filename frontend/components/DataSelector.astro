@@ -20,6 +20,7 @@ import Figure from "./Figure.astro";
 
   <div class="container phase-selector">
     <button class="data-selection selected" data-phase="g0"><div class="text">G0</div></button>
+    <div class="phase-arrows"></div>
     <button class="data-selection" data-phase="g1"><div class="text">G1</div></button>
   </div>
 </div>
@@ -154,6 +155,25 @@ import Figure from "./Figure.astro";
       text-align: center;
       height: 100%;
       padding-top: 14px;
+    }
+  }
+  .phase-arrows {
+    &::before,
+    &::after {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    &::before {
+      content: ">";
+      top: -22px;
+    }
+    &::after {
+      content: "<";
+      top: calc(100% - 18px);
     }
   }
 

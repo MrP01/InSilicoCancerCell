@@ -23,7 +23,9 @@ def save_screenshot(ctx: invoke.context.Context):
     out = "figures/above-the-fold-screenshot.png"
     url = "http://localhost:4321/"
     size = "1920,1080"
-    subprocess.run(f"chromium --headless --screenshot={out} --window-size={size} --hide-scrollbars {url}".split(" "))
+    subprocess.run(
+        f"chromium --headless --screenshot={out} --window-size={size} --hide-scrollbars --timeout=1100 {url}".split(" ")
+    )
 
 
 @invoke.tasks.task()

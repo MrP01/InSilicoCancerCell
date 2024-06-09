@@ -116,7 +116,7 @@
   \label{sec:adaptive-dt}
   In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size based on
   \begin{equation}
-    (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n} - \vec{s}_{k,n-1}}_2}\right)^{1/2}\,,
+    (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n+1} - \vec{s}_{k,n}}_2}\right)^{1/2}\,,
   \end{equation}
   for all $n$, where $\Delta^{\rm tol} \in \R^+$ is a measure for the allowed state change in between steps.
   When the state changes too quickly in between time steps, the above heuristic will decrease $(\Delta t)_{n+1}$ and vice-versa.
@@ -144,7 +144,7 @@
   The most important constraint here is that of integer non-negativity, $\vec{N}_{\rm opt} \in \N_0^M$, which makes this problem hard to solve directly.
 
   \begin{table}
-    \caption{Ion Channel Types}
+    \caption{Ion Channel Types: Most fitting configuration and corresponding references.}
     \begin{tabular}{lll}
       \textbf{Channel Type} & \textbf{Channel Count $N_k$} & \textbf{Reference}            \\
       \midrule
@@ -171,19 +171,19 @@
 
   \begin{figure}
     \includegraphics[width=\columnwidth]{../figures/results/voltage-protocol.pdf}
-    \caption{Please insert your figure caption here.}
+    \caption{The \textit{activation} voltage pulse protocol $V(t)$ used for the measurement and simulation. This is the voltage set across the A549 cell's membrane using a Patch-Clamp-System. The corresponding current is then recorded and depicted in \Cref{figure:full-simulation-current} along with its simulation result.}
     \label{figure:voltage-protocol}
   \end{figure}
 
   \section{Results}
   \begin{figure}[h]
     \includegraphics[width=\columnwidth]{../figures/results/full-simulation-current.pdf}
-    \caption{Please insert your figure caption here.}
+    \caption{The simulated and measured current response $I(t)$ across the membrane of an A549 cancer cell, given the \textit{activation} voltage protocol $V(t)$ in \Cref{figure:voltage-protocol}, recorded in the G0 phase of the cell cycle.}
     \label{figure:full-simulation-current}
   \end{figure}
   \begin{figure}
     \includegraphics[width=\columnwidth]{../figures/results/simulation-error.pdf}
-    \caption{Please insert your figure caption here.}
+    \caption{Pointwise squared error between the measured current $\vec{I}_{\rm meas}$ and the simulated current $\vec{I}$, showing potential systematic problems within the computational model's representation of the ion channels as compared to the experimental results.}
     \label{figure:simulation-error}
   \end{figure}
 
@@ -203,7 +203,7 @@
 
   \begin{figure*}
     \includegraphics[width=\textwidth]{../figures/above-the-fold-screenshot.png}
-    \caption{Please insert your figure caption here.}
+    \caption{Screenshot of the live simulation dashboard, available here: \url{https://in-silico-cancer-cell.waldert.at/}. This is the graphical user interface to the simulation written in Rust. The full simulation, completing within around 500ms, runs live in the browser using Rust's bindings to WebAssembly. One can choose the voltage protocol and cell cycle phase (G0/G1) in the menu on the left, while the full current and individual channel currents and internal states can be seen on the right. The remaining ion channel types have been cut off on this screenshot.}
     \label{figure:screenshot}
   \end{figure*}
 

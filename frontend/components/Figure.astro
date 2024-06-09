@@ -49,10 +49,12 @@ const staticPlot = Plot.plot({
         });
         // console.log(`In-place replacement of ${this.dataset.plot} succeeded.`);
       };
-      if (extras.updateOnResim) {
-        selector.subscribe(setPlot);
-      } else {
-        setPlot();
+      if (!extras.donotUpdateOnLoad) {
+        if (extras.updateOnResim) {
+          selector.subscribe(setPlot);
+        } else {
+          setPlot();
+        }
       }
     }
   }

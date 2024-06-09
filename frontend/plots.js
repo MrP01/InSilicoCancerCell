@@ -1,4 +1,4 @@
-import { run } from "./pkg/in_silico_frontend";
+import { run, get_protocol_sample } from "./pkg/in_silico_frontend";
 import * as Plot from "@observablehq/plot";
 import { selector } from "./store";
 
@@ -127,7 +127,8 @@ async function channelState({ channel }, interactive = false) {
 }
 
 async function protocol({ protocol, cut = true }) {
-  const voltage = cut ? simulation.voltage.slice(0, (800 / 9) * 3) : simulation.voltage;
+  const sample = get_protocol_sample(protocol);
+  const voltage = cut ? sample.slice(0, (800 / 9) * 3) : sample;
   return {
     marks: [
       Plot.axisX({ label: "Time / s" }),

@@ -110,6 +110,14 @@ pub fn get_cell_metadata() -> JsValue {
   return serde_wasm_bindgen::to_value(&channels).unwrap();
 }
 
+#[wasm_bindgen]
+pub fn get_protocol_sample(protocol: String) -> JsValue {
+  let proto = PatchClampProtocol::from(protocol);
+  let pulse_protocol = ProtocolGenerator { proto: proto.clone() };
+  let v = pulse_protocol.sample(800);
+  return serde_wasm_bindgen::to_value(&v).unwrap();
+}
+
 // This is like the `main` function, except for JavaScript.
 #[wasm_bindgen(start)]
 pub fn main_js() -> Result<(), JsValue> {

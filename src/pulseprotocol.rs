@@ -110,6 +110,18 @@ impl ProtocolGenerator {
   pub fn single_duration(&self) -> f64 {
     self.generator().map(|step| step.duration).sum()
   }
+  pub fn sample(&self, n_times: usize) -> Vec<f64> {
+    let mut v = vec![];
+    let dt = self.single_duration() / (n_times as f64);
+    for step in self.generator() {
+      let mut t = 0.0;
+      while t < step.duration {
+        v.push(step.voltage);
+        t += dt;
+      }
+    }
+    v
+  }
 }
 
 // pub trait RepeatingGenerator {

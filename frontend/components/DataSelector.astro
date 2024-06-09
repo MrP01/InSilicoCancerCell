@@ -5,15 +5,15 @@ import Figure from "./Figure.astro";
 <div class="outer-container">
   <div class="container protocol-selector">
     <button class="data-selection selected" data-protocol="activation">
-      <Figure plot="protocol" args={{ protocol: "activation" }} />
+      <Figure plot="protocol" args={{ protocol: "activation" }} extra={{ donotUpdateOnLoad: true }} />
       Activation
     </button>
     <button class="data-selection" data-protocol="deactivation">
-      <Figure plot="protocol" args={{ protocol: "deactivation" }} />
+      <Figure plot="protocol" args={{ protocol: "deactivation" }} extra={{ donotUpdateOnLoad: true }} />
       Deactivation
     </button>
     <button class="data-selection" data-protocol="ramp">
-      <Figure plot="protocol" args={{ protocol: "ramp" }} />
+      <Figure plot="protocol" args={{ protocol: "ramp" }} extra={{ donotUpdateOnLoad: true }} />
       Ramp
     </button>
   </div>

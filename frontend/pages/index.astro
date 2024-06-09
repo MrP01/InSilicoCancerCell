@@ -4,6 +4,7 @@ import Card from "../components/Card.astro";
 import Figure from "../components/Figure.astro";
 import IonChannel from "../components/IonChannel.astro";
 import DataSelector from "../components/DataSelector.astro";
+import VacuoleOval from "../components/vacuole-oval.svg?raw";
 ---
 
 <Layout title="Elecrophysiological Model of a Cancer Cell">
@@ -74,7 +75,9 @@ import DataSelector from "../components/DataSelector.astro";
     </ul>
     <p style="text-align: right">&copy; Peter Waldert, 2024.</p>
   </main>
-  <div id="progress-meter"></div>
+  <div id="progress-meter">
+    <Fragment set:html={VacuoleOval} />
+  </div>
 </Layout>
 
 <style>
@@ -99,16 +102,20 @@ import DataSelector from "../components/DataSelector.astro";
     grid-template-columns: repeat(auto-fit, minmax(40ch, 2fr));
   }
 
+  @keyframes appear {
+    0% {
+      transform: rotate(0deg) scale(1);
+    }
+    100% {
+      transform: rotate(360deg) scale(1.3);
+    }
+  }
   #progress-meter {
+    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    height: 4px;
-    width: 30vw;
-    background-color: rgb(var(--accent));
-    /* background-color: white; */
-    /* color: white;
-    font-size: 1.5em; */
-    transition: width 0.3s;
+    top: 30vh;
+    left: 40vw;
+    width: 300px;
+    animation: appear 1s;
   }
 </style>

@@ -29,14 +29,14 @@ import Figure from "./Figure.astro";
   import { selector } from "../store";
 
   function startProgress() {
+    document.querySelector("main").style.opacity = "0.5";
     document.getElementById("progress-meter").style.display = "block";
-    document.getElementById("progress-meter").style.width = "30vw";
   }
   startProgress(); // once at the start
 
   function endProgress() {
-    document.getElementById("progress-meter").style.width = "100vw";
-    setTimeout(() => (document.getElementById("progress-meter").style.display = "none"), 500);
+    document.querySelector("main").style.opacity = "1.0";
+    document.getElementById("progress-meter").style.display = "none";
   }
   setTimeout(endProgress, 800);
 

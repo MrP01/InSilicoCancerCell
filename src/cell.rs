@@ -13,7 +13,7 @@ use crate::{
 };
 
 pub trait SimulationRecorder {
-  fn record(&mut self, cell: &A549CancerCell, voltage: f64);
+  fn record(&mut self, cell: &A549CancerCell, voltage: f64, dt: f64);
 }
 
 pub struct TotalCurrentRecord {
@@ -31,7 +31,7 @@ impl TotalCurrentRecord {
 }
 
 impl SimulationRecorder for TotalCurrentRecord {
-  fn record(&mut self, cell: &A549CancerCell, voltage: f64) {
+  fn record(&mut self, cell: &A549CancerCell, voltage: f64, _dt: f64) {
     self
       .current
       .push(cell.channels().iter().map(|c| c.current(voltage)).sum());
@@ -132,7 +132,7 @@ impl A549CancerCell {
           state_delta += channel.update_state(step.voltage, dt);
         }
         if total_time + step_time >= t_next_measurement {
-          recorder.record(self, step.voltage);
+          recorder.record(self, step.voltage, dt);
           t_next_measurement += measurements_dt;
         }
         n += 1;

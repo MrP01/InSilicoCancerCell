@@ -21,7 +21,7 @@ impl SingleChannelCurrentRecord {
   }
 }
 impl SimulationRecorder for SingleChannelCurrentRecord {
-  fn record(&mut self, cell: &A549CancerCell, voltage: f64) {
+  fn record(&mut self, cell: &A549CancerCell, voltage: f64, _dt: f64) {
     for (channel, current) in std::iter::zip(cell.channels(), &mut self.currents) {
       current.push(channel.single_channel_current(voltage));
     }

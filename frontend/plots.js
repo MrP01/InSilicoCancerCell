@@ -36,6 +36,7 @@ async function fullSimulationCurrent({}, interactive = false) {
         y: (y) => y,
         z: null,
         stroke: (y) => y,
+        strokeWidth: 4,
         // tip: interactive ? "x" : undefined,
       }),
       // @ts-ignore
@@ -45,6 +46,37 @@ async function fullSimulationCurrent({}, interactive = false) {
         z: null,
         tip: interactive ? "x" : undefined,
       }),
+      // Plot.ruleX(
+      //   simulation.dt,
+      //   // simulation.dt.map((x) => 1 / x),
+      //   { x: sharedX, stroke: (y) => y, strokeWidth: 4 }
+      // ),
+    ],
+  };
+}
+
+async function dtScale({}, interactive = false) {
+  const sharedX = [...Array(simulation.total_current.length).keys()].map(
+    (x) => x * (9.901 / simulation.total_current.length)
+  );
+  return {
+    color: {
+      scheme: "turbo",
+    },
+    // marks: [
+    //   Plot.lineY(
+    //     simulation.dt.map((x) => 1 / x),
+    //     { x: sharedX }
+    //   ),
+    // ],
+    x: { ticks: [] },
+    marks: [
+      Plot.ruleX(
+        simulation.dt,
+        // Plot.windowX(5, { y: simulation.dt }),
+        // simulation.dt.map((x) => 1 / x),
+        { x: sharedX, stroke: (y) => y, strokeWidth: 4 }
+      ),
     ],
   };
 }
@@ -144,7 +176,7 @@ async function protocol({ protocol, cut = true }) {
   };
 }
 
-const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState, protocol, simulationError };
+const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState, protocol, simulationError, dtScale };
 export async function generatePlot(name, args = {}, interactive = false) {
   // console.log(name, "args", args);
   return await ALL_PLOT_GENERATORS[name](args, (interactive = interactive));

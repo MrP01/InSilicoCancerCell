@@ -25,6 +25,7 @@ pub struct FullRecorder {
   pub voltage: Vec<f64>,
   pub total_current: Vec<f64>,
   pub channels: HashMap<String, ChannelThroughput>,
+  pub dt: Vec<f64>,
 }
 impl FullRecorder {
   pub fn new_for_cell(cell: &A549CancerCell) -> Self {
@@ -42,12 +43,13 @@ impl FullRecorder {
       voltage: vec![],
       total_current: vec![],
       channels,
+      dt: vec![],
     }
   }
 }
 
 impl SimulationRecorder for FullRecorder {
-  fn record(&mut self, cell: &A549CancerCell, voltage: f64) {
+  fn record(&mut self, cell: &A549CancerCell, voltage: f64, dt: f64) {
     self.voltage.push(voltage);
     let mut total_current = 0.0;
     for channel in cell.channels() {
@@ -62,6 +64,7 @@ impl SimulationRecorder for FullRecorder {
       total_current += current;
     }
     self.total_current.push(total_current);
+    self.dt.push(dt);
   }
 }
 

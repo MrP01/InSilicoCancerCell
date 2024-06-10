@@ -24,7 +24,7 @@ fn evaluate_on_langthaler_et_al_counts(measurements: PatchClampData) {
   let mut cell = A549CancerCell::new();
   cell.set_langthaler_et_al_channel_counts(measurements.phase.clone());
   let mut recorded = TotalCurrentRecord::empty();
-  cell.simulate(pulse_protocol, &mut recorded, measurements.current.len());
+  cell.simulate(pulse_protocol, &mut recorded, measurements.current.len(), true);
   evaluate_match(&measurements, recorded);
 }
 
@@ -56,6 +56,24 @@ fn save_to_json(measurements: PatchClampData, subsampling: Option<usize>) {
   log::info!("Wrote to {}", &path);
 }
 
+pub fn compare_adaptivity() {
+  let mut cell = A549CancerCell::new();
+  let mut iterations = [0; 2];
+  for adaptive_dt in vec![true, false] {
+    for protocol in enum_iterator::all::<PatchClampProtocol>() {
+      for phase in enum_iterator::all::<CellPhase>() {
+        cell.set_langthaler_et_al_channel_counts(phase);
+        let pulse_protocol = ProtocolGenerator { proto: protocol };
+        let mut recorded = TotalCurrentRecord::empty();
+        let n = cell.simulate(pulse_protocol, &mut recorded, 800, adaptive_dt);
+        iterations[adaptive_dt as usize] += n;
+      }
+    }
+  }
+  println!("Without adaptive timestepping: {}", iterations[0]);
+  println!("With adaptive timestepping: {}", iterations[1]);
+}
+
 #[derive(Parser)]
 #[clap(arg_required_else_help = true)]
 #[command(
@@ -84,6 +102,8 @@ struct Cli {
 enum Command {
   #[command(about = "Evaluate the model on the parameters supplied by Langthaler et al.")]
   Single,
+  #[command(about = "Compare adaptivity")]
+  CompareAdaptivity,
   #[command(about = "Perform a large-scale optimisation on the number of channels per type")]
   Fit { using: optimisation::InSilicoMethod },
   #[command(about = "Save patch clamp data (measurements) to a JSON file")]
@@ -104,5 +124,6 @@ fn main() {
     Command::SavePatchClampData { subsampling } => {
       save_to_json(measurements, subsampling);
     }
+    Command::CompareAdaptivity => compare_adaptivity(),
   }
 }

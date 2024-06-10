@@ -90,7 +90,7 @@ impl ChannelCountsProblem {
     };
     let mut cell = A549CancerCell::new();
     let mut recorded = SingleChannelCurrentRecord::empty();
-    cell.simulate(pulse_protocol, &mut recorded, self.fit_to.current.len());
+    cell.simulate(pulse_protocol, &mut recorded, self.fit_to.current.len(), true);
     self.current_basis = Some(nalgebra::DMatrix::from_columns(
       &recorded.currents.map(|c| nalgebra::DVector::from(c)),
     ));

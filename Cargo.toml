@@ -17,11 +17,9 @@ default = [
   "dep:serde_json",
   "dep:clap",
   "nalgebra/serde-serialize",
-  "adaptive-timestepping",
 ]
 pyo3 = ["dep:pyo3"]
 pause-each-step = []
-adaptive-timestepping = []
 
 [dependencies]
 nalgebra = "0.32.5"
@@ -38,6 +36,7 @@ serde_json = { version = "1.0.117", optional = true }
 clap = { version = "4.5.4", features = ["derive"], optional = true }
 rand = "0.8.5"
 getrandom = { version = "0.2.15", features = ["js"] }
+enum-iterator = "2.1.0"
 
 [workspace]
 members = [".", "frontend"]

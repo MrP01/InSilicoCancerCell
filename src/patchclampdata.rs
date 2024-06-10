@@ -4,7 +4,7 @@ use nalgebra::DVector;
 
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq, enum_iterator::Sequence)]
 #[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize, clap::ValueEnum))]
 pub enum PatchClampProtocol {
   Activation,
@@ -35,7 +35,7 @@ impl From<String> for PatchClampProtocol {
 
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[derive(Clone)]
+#[derive(Clone, Copy, enum_iterator::Sequence)]
 #[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize, clap::ValueEnum))]
 pub enum CellPhase {
   G0,

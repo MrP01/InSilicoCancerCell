@@ -101,7 +101,8 @@ impl A549CancerCell {
     pulse_protocol: ProtocolGenerator,
     recorder: &mut impl SimulationRecorder,
     min_points: usize,
-  ) {
+    adaptive_dt: bool,
+  ) -> usize {
     let total_duration = pulse_protocol.single_duration();
     let measurements_dt = total_duration / (min_points as f64);
     log::info!(
@@ -137,8 +138,7 @@ impl A549CancerCell {
         n += 1;
         step_time += dt;
 
-        #[cfg(feature = "adaptive-timestepping")]
-        {
+        if adaptive_dt {
           dt = self.adapt_timestep(dt, state_delta, measurements_dt);
         }
 
@@ -166,6 +166,7 @@ impl A549CancerCell {
       let runtime = start.elapsed().as_secs_f64();
       log::info!("Total simulation runtime: {runtime:.3} s");
     }
+    n
   }
 }
 
@@ -226,7 +227,7 @@ impl A549CancerCell {
     let measurements = PatchClampData::load(protocol.clone(), phase).unwrap();
     let pulse_protocol = ProtocolGenerator { proto: protocol };
     let mut recorded = TotalCurrentRecord::empty();
-    self.simulate(pulse_protocol, &mut recorded, measurements.current.len());
+    self.simulate(pulse_protocol, &mut recorded, measurements.current.len(), true);
     evaluate_match(&measurements, recorded)
   }
 }

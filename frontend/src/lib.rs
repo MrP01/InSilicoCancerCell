@@ -82,6 +82,7 @@ pub fn run(protocol: String, phase: String) -> JsValue {
       PatchClampProtocol::Deactivation => 844,
       PatchClampProtocol::Ramp => 1032,
     },
+    true,
   );
   return serde_wasm_bindgen::to_value(&recorded).unwrap();
 }

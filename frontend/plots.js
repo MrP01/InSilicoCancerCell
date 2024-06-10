@@ -46,11 +46,6 @@ async function fullSimulationCurrent({}, interactive = false) {
         z: null,
         tip: interactive ? "x" : undefined,
       }),
-      // Plot.ruleX(
-      //   simulation.dt,
-      //   // simulation.dt.map((x) => 1 / x),
-      //   { x: sharedX, stroke: (y) => y, strokeWidth: 4 }
-      // ),
     ],
   };
 }
@@ -63,21 +58,32 @@ async function dtScale({}, interactive = false) {
     color: {
       scheme: "turbo",
     },
+    x: { ticks: [] },
+    marks: [Plot.ruleX(simulation.dt, { x: sharedX, stroke: (y) => y, strokeWidth: 4 })],
+  };
+}
+
+async function dtScalePlot({}, interactive = false) {
+  const sharedX = [...Array(simulation.total_current.length).keys()].map(
+    (x) => x * (9.901 / simulation.total_current.length)
+  );
+  return {
+    color: {
+      scheme: "turbo",
+    },
+    marks: [
+      Plot.axisX({ label: "Time / s" }),
+      Plot.axisY({ label: "Time Step dt / µs" }),
+      Plot.lineY(simulation.dt, { x: sharedX, y: (y) => y * 1e6, z: null, stroke: (y) => -Math.sqrt(y) }),
+    ],
     // marks: [
-    //   Plot.lineY(
-    //     simulation.dt.map((x) => 1 / x),
-    //     { x: sharedX }
+    //   Plot.ruleX(
+    //     simulation.dt,
+    //     // Plot.windowX(5, { y: simulation.dt }),
+    //     // simulation.dt.map((x) => 1 / x),
+    //     { x: sharedX, stroke: (y) => y, strokeWidth: 4 }
     //   ),
     // ],
-    x: { ticks: [] },
-    marks: [
-      Plot.ruleX(
-        simulation.dt,
-        // Plot.windowX(5, { y: simulation.dt }),
-        // simulation.dt.map((x) => 1 / x),
-        { x: sharedX, stroke: (y) => y, strokeWidth: 4 }
-      ),
-    ],
   };
 }
 
@@ -86,7 +92,7 @@ async function simulationError({}, interactive = false) {
     (x) => x * (9.901 / simulation.total_current.length)
   );
   const measurements = await getMeasurements();
-  const minLength = Math.min(simulation.total_current.length, measurements.current[0].length);
+  const minLength = Math.min(simulation.total_current.length, measurements.current[0].length) * 0.95;
   let diff = [];
   for (let i = 0; i < minLength; i++) {
     const delta = simulation.total_current[i] - measurements.current[0][i];
@@ -120,6 +126,7 @@ async function channelCurrent({ channel }, interactive = false) {
         y: (y) => y,
         z: null,
         stroke: (y) => y,
+        strokeWidth: 3,
         tip: interactive ? "x" : undefined,
       }),
     ],
@@ -168,7 +175,7 @@ async function protocol({ protocol, cut = true }) {
       Plot.lineY(voltage, {
         y: (y) => y * 1e3,
         z: null,
-        // stroke: (y) => y,
+        stroke: "#358bf8",
       }),
     ],
     width: 150,
@@ -176,7 +183,15 @@ async function protocol({ protocol, cut = true }) {
   };
 }
 
-const ALL_PLOT_GENERATORS = { fullSimulationCurrent, channelCurrent, channelState, protocol, simulationError, dtScale };
+const ALL_PLOT_GENERATORS = {
+  fullSimulationCurrent,
+  channelCurrent,
+  channelState,
+  protocol,
+  simulationError,
+  dtScale,
+  dtScalePlot,
+};
 export async function generatePlot(name, args = {}, interactive = false) {
   // console.log(name, "args", args);
   return await ALL_PLOT_GENERATORS[name](args, (interactive = interactive));

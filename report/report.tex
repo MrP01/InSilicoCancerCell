@@ -117,6 +117,7 @@
   In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size based on
   \begin{equation}
     (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n+1} - \vec{s}_{k,n}}_2}\right)^{1/2}\,,
+    \label{eq:dt-heuristic}
   \end{equation}
   for all $n$, where $\Delta^{\rm tol} \in \R^+$ is a measure for the allowed state change in between steps.
   When the state changes too quickly in between time steps, the above heuristic will decrease $(\Delta t)_{n+1}$ and vice-versa.
@@ -192,6 +193,12 @@
   With the standard forward iteration approach, the simulation takes 412 million steps to simulate over all voltage protocols and cell cycle phases, while the adaptive timestepping only requires 23 million steps for the same configuration.
   While keeping the same level of accuracy when matching with the experimental data, our adaptive timestepping method is therefore 17 times faster than the standard approach, on average.
 
+  \begin{figure}
+    \includegraphics[width=\columnwidth]{../figures/results/dt-plot.pdf}
+    \caption{Timestep $\Delta t$ throughout the duration of the simulation. $(\Delta t)_n$ is chosen in between simulation steps based on the heuristic given in \Cref{eq:dt-heuristic}. Red areas (small dt) indicate a high resolution within the simulation, blue areas indicate lower resolution (and therefore higher simulation speed).}
+    \label{figure:dt-plot}
+  \end{figure}
+
   \begin{table}
     \caption{Comparison of Optimization Approaches}
     \begin{tabular}{ll}
@@ -206,7 +213,7 @@
     \label{table:optimization-comparison}
   \end{table}
 
-  \begin{figure*}
+  \begin{figure*}[h]
     \includegraphics[width=\textwidth]{../figures/above-the-fold-screenshot.png}
     \caption{Screenshot of the live simulation dashboard, available here: \url{https://in-silico-cancer-cell.waldert.at/}. This is the graphical user interface to the simulation written in Rust. The full simulation, completing within around 500ms, runs live in the browser using Rust's bindings to WebAssembly. One can choose the voltage protocol and cell cycle phase (G0/G1) in the menu on the left, while the full current and individual channel currents and internal states can be seen on the right. The remaining ion channel types have been cut off on this screenshot.}
     \label{figure:screenshot}

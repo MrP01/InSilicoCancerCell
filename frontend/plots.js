@@ -1,6 +1,7 @@
 import { run, get_protocol_sample } from "./pkg/in_silico_frontend";
 import * as Plot from "@observablehq/plot";
 import { selector } from "./store";
+import { movingAverage } from "./utils";
 
 var simulation;
 selector.subscribe((value) => {
@@ -71,11 +72,16 @@ async function dtScalePlot({}, interactive = false) {
     color: {
       scheme: "turbo",
     },
-    // y: { type: "log" },
+    y: { type: "log" },
     marks: [
       Plot.axisX({ label: "Time / s" }),
       Plot.axisY({ label: "Time Step dt / µs" }),
-      Plot.lineY(simulation.dt, { x: sharedX, y: (y) => y * 1e6, z: null, stroke: (y) => -Math.log10(y) }),
+      Plot.lineY(movingAverage(simulation.dt, 20), {
+        x: sharedX,
+        y: (y) => y * 1e6,
+        z: null,
+        stroke: (y) => -Math.log10(y),
+      }),
     ],
     // marks: [
     //   Plot.ruleX(

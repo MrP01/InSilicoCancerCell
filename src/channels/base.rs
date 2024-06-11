@@ -21,6 +21,7 @@ pub struct ChannelMetadata {
 
 pub trait IsChannel {
   fn update_state(&mut self, voltage: f64, dt: f64) -> f64;
+  fn accept_state(&mut self);
   fn reset_state(&mut self);
   fn single_channel_current(&self, voltage: f64) -> f64;
   fn current(&self, voltage: f64) -> f64;
@@ -44,6 +45,7 @@ macro_rules! define_ion_channel {
     use $crate::channels::base::*;
     pub struct $name {
       pub state: nalgebra::SVector<f64, $n_states>,
+      pub _tentative_state: nalgebra::SVector<f64, $n_states>,
       pub n_channels: u32,
     }
 
@@ -63,6 +65,7 @@ macro_rules! define_ion_channel {
         return $name {
           n_channels: 1,
           state: Self::initial_state(),
+          _tentative_state: Self::initial_state(),
         };
       }
     }
@@ -75,11 +78,11 @@ macro_rules! define_ion_channel {
 
         match SIMULATION_METHOD {
           StateSimulationMethod::Floating => {
-            self.state = transition * previous;
+            self._tentative_state = transition * previous;
           }
           StateSimulationMethod::Rounding => {
             use $crate::utils::{Roundable,Cappable};
-            self.state = (((transition * previous) * (self.n_channels as f64)).round() / (self.n_channels as f64))
+            self._tentative_state = (((transition * previous) * (self.n_channels as f64)).round() / (self.n_channels as f64))
               .cap_all_values_to(1.0).lower_cap_all_values_to(0.0);
           }
           StateSimulationMethod::Individual => {
@@ -98,14 +101,17 @@ macro_rules! define_ion_channel {
                 }
               }
             }
-            self.state = nalgebra::SVector::<f64, $n_states>::from_iterator(
+            self._tentative_state = nalgebra::SVector::<f64, $n_states>::from_iterator(
               new_state_scaled_up.iter().cloned().map(|x| x as f64)) / (self.n_channels as f64);
           }
         }
 
         #[cfg(debug_assertions)]
-        validate_state::<$n_states>(Self::display_name(), self.state);
-        return (self.state - previous).norm_squared() * (self.n_channels as f64);  // delta
+        validate_state::<$n_states>(Self::display_name(), self._tentative_state);
+        return (self._tentative_state - previous).norm_squared() * (self.n_channels as f64);  // delta
+      }
+      fn accept_state(&mut self) {
+        self.state = self._tentative_state;
       }
       fn reset_state(&mut self) {
         self.state = Self::initial_state();

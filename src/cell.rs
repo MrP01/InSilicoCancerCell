@@ -111,9 +111,10 @@ impl A549CancerCell {
       min_points
     );
     let mut n = 0;
+    let mut n_raw = 0;
     let mut total_time = 0.0;
     let mut t_next_measurement = 0.0;
-    for channel in self.channels_mut() {
+    for channel in self.channels() {
       log::info!("{}", channel.display_me());
     }
     #[cfg(not(target_arch = "wasm32"))]
@@ -135,12 +136,20 @@ impl A549CancerCell {
           recorder.record(self, step.voltage, dt);
           t_next_measurement += measurements_dt;
         }
-        n += 1;
-        step_time += dt;
-
-        if adaptive_dt {
-          dt = self.adapt_timestep(dt, state_delta, measurements_dt);
+        if !adaptive_dt || (state_delta < 8.0 * constants::delta_tolerance) || dt < constants::slowest_dt {
+          for channel in self.channels_mut() {
+            channel.accept_state();
+          }
+          n += 1;
+          step_time += dt;
+          if adaptive_dt {
+            dt = self.adapt_timestep(dt, state_delta, measurements_dt);
+          }
+        } else {
+          // log::warn!("Rejected state, delta was: {state_delta:.2e}, dt: {dt:.2e}");
+          dt /= 10.0;
         }
+        n_raw += 1;
 
         #[cfg(all(debug_assertions, feature = "pause-each-step"))]
         {
@@ -152,11 +161,12 @@ impl A549CancerCell {
       total_time += step_time;
 
       log::info!(
-        "Pulse protocol step {:7} ({:6.3} V) for {:.3} s done, overall average dt = {:.3e} s",
+        "Pulse protocol step {:7} ({:6.3} V) for {:.3} s done, overall average dt = {:.3e} s, overall accept rate = {:.1}",
         step.label,
         step.voltage,
         step.duration,
-        total_time / (n as f64)
+        total_time / (n as f64),
+        (n as f64) / (n_raw as f64) * 100.0
       );
     }
     log::info!("Ran ~{}k iterations in total.", n / 1000);

@@ -24,8 +24,6 @@
 
 \addbibresource{../literature/sources.bib}
 
-% TODO: https://en.wikipedia.org/wiki/Non-negative_least_squares
-
 % Report details: Max. 6 pages, composed of:
 % • Summary
 % • Introduction
@@ -159,7 +157,7 @@
 
   The unconstrained least-squares problem could be solved very efficiently using a QR-decomposition of the current basis $R = Q_b R_b$, its solution would be $\vec{N}_{opt} = \lfloor R_b\inv Q_b^* \vec{I}_{\rm meas} \rceil \in \Z^M$.
 
-  \subsection{Formulation as Quadratic Problem}
+  \subsection{Formulation as a Quadratic Program}
   Relaxing the integer condition on the solution, and letting $\vec{d} := \vec{I}_{\rm meas}$ for brevity, we can reformulate \Cref{eq:minimization},
   $$\vec{N}_{\rm opt} \approx \argmin_{\vec{x} \in \R_+^M} f(\vec{x}) = \argmin_{\vec{x} \in \R_+^M} \sfrac{1}{2} \norm{R \vec{x} - \vec{d}}_2^2\,,$$
   with cost function $f: \R^M \to \R^+$, which we manipulate to
@@ -245,16 +243,20 @@
     \label{figure:dt-plot}
   \end{figure}
 
+  \subsection{Inverse Problem}
+  We compare different optimization approaches based on their runtime and root mean square error,
+  $$\Delta = \sqrt{\sfrac{1}{N_t} {\textstyle \sum_{j=1}^{N_t}} (I_j - I_{{\rm meas}, j})^2} = \frac{\norm{\vec{I} - \vec{I}_{\rm meas}}_2}{\sqrt{N_t}}\,.$$
+
   \begin{table}
     \caption{Comparison of Optimization Approaches}
-    \begin{tabular}{ll}
-      \textbf{Algorithm}                          & \textbf{Accuracy} \\
+    \begin{tabular}{lll}
+      \textbf{Algorithm}                          & \textbf{Runtime} & \textbf{RMSE} \\
       \midrule
-      Particle Swarm Optimization                 & 1                 \\
-      Non-Negative Least Squares \cite{1997-nnls} & 1                 \\
-      Quadratic Program                           & 1                 \\
-      Gradient Descent + Penalty                  & 1                 \\
-      LBFGS + Penalty                             & 1                 \\
+      Particle Swarm Optimization                 & 1                & 1             \\
+      Non-Negative Least Squares \cite{1997-nnls} & 1                & 1             \\
+      Quadratic Program                           & 1                & 1             \\
+      Gradient Descent + Penalty                  & 1                & 1             \\
+      LBFGS + Penalty                             & 1                & 1             \\
     \end{tabular}
     \label{table:optimization-comparison}
   \end{table}

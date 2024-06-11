@@ -29,7 +29,7 @@ def save_screenshot(ctx: invoke.context.Context):
 
 
 @invoke.tasks.task()
-def save_python_plots(ctx: invoke.context.Context):
+def save_python_plots(ctx: invoke.context.Context, method="nnls"):
     insilico_plot.set_results_folder(RESULTS)
-    insilico_plot.plot_full_comparison()
+    insilico_plot.plot_full_comparison(method)
     plt.show()

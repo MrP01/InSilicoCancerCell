@@ -3,12 +3,23 @@
 \usepackage[big,online]{dgruyter}
 \usepackage{lmodern}
 \usepackage{anyfontsize}
-% \usepackage[sort&compress,square,numbers]{natbib}
 \usepackage[backend=biber, citestyle=numeric, bibstyle=authoryear, hyperref=true, sorting=none, maxbibnames=99]{biblatex}
 \usepackage{csquotes}
 \usepackage{times}
 \usepackage{bm}
 \usepackage[nameinlink]{cleveref}
+\usepackage{xfrac}
+\usepackage{dsfont}
+\usepackage{minted}
+\setminted{
+  breaklines=true,
+  python3=true,
+  baselinestretch=1,
+  autogobble
+}
+\setmintedinline{
+  breaklines=true
+}
 \input{macros.tex}
 
 \addbibresource{../literature/sources.bib}
@@ -34,7 +45,9 @@
   %%%--------------------------------------------%%%
 
   % \title{Performance optimization of the A549 electrophysiological cancer cell model and live simulation dashboard}
-  \title{Reducing runtime of an electrophysiological cancer cell model from X to Y and live simulation dashboard}
+  % \title{Reducing runtime of an electrophysiological cancer cell model from X to Y and live simulation dashboard}
+  \title{Improved optimization, runtime reduction and live simulation dashboard of an electrophysiological cancer cell model}
+  % \title{Optimization of an electrophysiological cancer cell model for a live simulation dashboard}
   \runningtitle{Computational model of ion channel current}
   %\subtitle{Insert subtitle if needed}
 
@@ -103,13 +116,13 @@
   \begin{equation}
     \vec{s}_{k,n+1} = H_{k}\left(V(t_n), \vec{C}(t_n), t_n\right) \vec{s}_{k,n}
   \end{equation}
-  where $\vec{s}_{k,n} \in \R^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in \R_+^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$ with $\sum_{j=1}^{N_{s,k}} \{H_k\}_{i,j} = 1 \;\forall\,i$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
+  where $\vec{s}_{k,n} \in [0, 1]^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in [0, 1]^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$ with $\sum_{j=1}^{N_{s,k}} \{H_k\}_{i,j} = 1 \;\forall\,i$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
   We initialize the simulation at $t_0 = 0$ with $\vec{s}_{k,0} = (1, 0, ..., 0)^T$ for all $k$.
 
   Given the state $\vec{s}_{k}$, current measurements are then simply
   $$\vec{I} := \left(I(t_0), I(t_1), ..., I(t_{N_t-1})\right)^T \in \R^{N_t}\,,$$
   with $I$ as stated above in \Cref{eq:current} and
-  $$p_{o,k} = \sum_{n_s \in \mathcal{S}_{o,k}} \{\vec{s}_{n,k}\}_{n_s}\,,$$
+  $$p_{o,k} = \sum_{j \in \mathcal{S}_{o,k}} \{\vec{s}_{n,k}\}_{j}\,,$$
   where $\mathcal{S}_{o,k}$ is the set of all states contributing to the ion channel current, the ``open states''.
 
   \subsection{Adaptive Timestepping}
@@ -127,10 +140,10 @@
   \subsection{Inverse Problem}
   When regarding the cell model as a whole, the number of ion channels $N_k$ per type $k$ may be put into a configuration vector $\vec{N} := (N_1, ..., N_M)^T \in \N_0^M$ and the total simulated current $I$ sampled at measurement points $T_{\rm meas}$ can be expressed as a matrix-vector product
   \begin{equation}
-    \vec{I} = \sum_{k=1}^{M} N_k \vec{I_k} = A \vec{N}\,,
+    \vec{I} = \sum_{k=1}^{M} N_k \vec{I_k} = R \vec{N}\,,
     \label{eq:matrix-formulation}
   \end{equation}
-  where $A \in \R^{N_t \times M}$ is the matrix of all current measurements per channel type.
+  where $R \in \R^{N_t \times M}$ is the matrix of all current measurements per channel type.
 
   Given the individual ion channel type models' parameters, which we know from literature (cf. \Cref{table:channel-types}), the question that remains is how many channels there are of each type to fit the measurements.
   This problem can be solved using a number of optimization approaches.
@@ -138,11 +151,36 @@
   However, the formulation in \Cref{eq:matrix-formulation} also gives rise to a least-squares formulation, by projecting the measured current into the space of all individual channel currents.
   More specifically, we want to find
   \begin{equation}
-    \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \norm{A \vec{N} - I_{\rm meas}}_2^2\,,
+    \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \frac{1}{2} \norm{R \vec{N} - \vec{I}_{\rm meas}}_2^2\,,
     \label{eq:minimization}
   \end{equation}
   with $\vec{I}_{\rm meas} \in \R^{N_t}$ the experimentally measured current.
   The most important constraint here is that of integer non-negativity, $\vec{N}_{\rm opt} \in \N_0^M$, which makes this problem hard to solve directly.
+
+  The unconstrained least-squares problem could be solved very efficiently using a QR-decomposition of the current basis $R = Q_b R_b$, its solution would be $\vec{N}_{opt} = \lfloor R_b\inv Q_b^* \vec{I}_{\rm meas} \rfloor \in \Z^M$.
+
+  \subsection{Formulation as Quadratic Problem}
+  Relaxing the integer condition on the solution, and letting $\vec{d} := \vec{I}_{\rm meas}$ for brevity, we can reformulate \Cref{eq:minimization},
+  $$\vec{N}_{\rm opt} \approx \argmin_{\vec{x} \in \R_+^M} f(\vec{x}) = \argmin_{\vec{x} \in \R_+^M} \sfrac{1}{2} \norm{R \vec{x} - \vec{d}}_2^2\,,$$
+  with cost function $f: \R^M \to \R^+$, which we manipulate to
+  \begin{align*}
+    f(\vec{x}) & = \sfrac{1}{2} (R \vec{x} - \vec{d})^T (R \vec{x} - \vec{d})                                                          \\
+               & = \sfrac{1}{2} \left(\vec{x}^T R^T R \vec{x} - \vec{x}^T R^T \vec{d} - \vec{d}^T R \vec{x} + \vec{d}^T \vec{d}\right) \\
+               & = \sfrac{1}{2} \left(\vec{x}^T P \vec{x} + \vec{x}^T \vec{q} + \vec{q}^T \vec{x}\right)                               \\
+               & = \sfrac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x}
+  \end{align*}
+  where we let $P := R^T R \in \R^{M \times M}$ and $\vec{q} := -R^T \vec{d} \in \R^M$ and leave out the constant $\vec{d}^T \vec{d}$.
+  We can express the nonnegativity constraint $\vec{x} \ge \vec{0}$ as an equality constraint using a slack variable $\vec{s} \in \R_+^M$,
+  $$-\vec{x} + \vec{s} = \vec{0} \quad\Leftrightarrow\quad A \vec{x} + \vec{s} = \vec{b}\,,$$
+  where we set $A := -\mathds{1}$ and $\vec{b} := \vec{0}$.
+  This leaves us with a constrained \textit{quadratic program},
+  \begin{align}
+    \min_{\vec{x} in \R^M} & \frac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x},     \\
+    s.t.\;                 & A \vec{x} + \vec{s} = \vec{b}\,,\; \vec{s} \in \R_+^M\,.
+  \end{align}
+
+  We solve the quadratic problem in this exact form using Clarabel \cite{2024-clarabel}.
+  Note that in Clarabel notation, the slack variable is to be taken as an element of the nonnegativity cone.
 
   \begin{table}
     \caption{Ion Channel Types: Most fitting configuration and corresponding references.}
@@ -167,6 +205,11 @@
   \subsection{Implementation and Usage}
   The core simulation is implemented in the Rust programming language \cite{2014-rust}.
   Each channel is
+
+  \begin{minted}{python}
+    # pip install in-silico-cancer-cell
+    import in_silico_cancer_cell
+  \end{minted}
 
   \subsection{Live Simulation}
   The live
@@ -205,10 +248,10 @@
       \textbf{Algorithm}          & \textbf{Accuracy} \\
       \midrule
       Particle Swarm Optimization & 1                 \\
-      Gradient Descent            & 2                 \\
-      LBFGS                       & 3                 \\
-      QR-based LSQ                & 4                 \\
-      NNLS                        & 5                 \\
+      Non-Negative Least Squares  & 1                 \\
+      Quadratic Program           & 1                 \\
+      Gradient Descent + Penalty  & 1                 \\
+      LBFGS + Penalty             & 1                 \\
     \end{tabular}
     \label{table:optimization-comparison}
   \end{table}

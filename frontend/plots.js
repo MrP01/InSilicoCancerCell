@@ -71,10 +71,11 @@ async function dtScalePlot({}, interactive = false) {
     color: {
       scheme: "turbo",
     },
+    // y: { type: "log" },
     marks: [
       Plot.axisX({ label: "Time / s" }),
       Plot.axisY({ label: "Time Step dt / µs" }),
-      Plot.lineY(simulation.dt, { x: sharedX, y: (y) => y * 1e6, z: null, stroke: (y) => -Math.sqrt(y) }),
+      Plot.lineY(simulation.dt, { x: sharedX, y: (y) => y * 1e6, z: null, stroke: (y) => -Math.log10(y) }),
     ],
     // marks: [
     //   Plot.ruleX(
@@ -99,16 +100,16 @@ async function simulationError({}, interactive = false) {
     diff.push(Math.pow(delta, 2));
   }
   return {
-    y: { type: "log" },
+    // y: { type: "log" },
     marks: [
       Plot.axisX({ label: "Time / s" }),
-      Plot.axisY({ label: "Squared Error / pA²" }),
+      Plot.axisY({ label: "Squared Error / pA" }),
       // @ts-ignore
       Plot.lineY(diff, {
         x: sharedX,
-        y: (y) => y,
+        y: (y) => Math.sqrt(y),
         z: null,
-        stroke: (y) => y,
+        stroke: (y) => Math.pow(y, 0.2),
         // tip: interactive ? "x" : undefined,
       }),
     ],

@@ -53,8 +53,8 @@
 
   \author*[1]{Peter Waldert}
   \author[2]{Sonja Langthaler}
-  \author[2]{Theresa Rienmüller}
   \author[2]{Christian Baumgartner}
+  \author[2]{Theresa Rienmüller}
   \runningauthor{P.~Waldert et al.}
 
   \affil[1]{\protect\raggedright
@@ -157,7 +157,7 @@
   with $\vec{I}_{\rm meas} \in \R^{N_t}$ the experimentally measured current.
   The most important constraint here is that of integer non-negativity, $\vec{N}_{\rm opt} \in \N_0^M$, which makes this problem hard to solve directly.
 
-  The unconstrained least-squares problem could be solved very efficiently using a QR-decomposition of the current basis $R = Q_b R_b$, its solution would be $\vec{N}_{opt} = \lfloor R_b\inv Q_b^* \vec{I}_{\rm meas} \rfloor \in \Z^M$.
+  The unconstrained least-squares problem could be solved very efficiently using a QR-decomposition of the current basis $R = Q_b R_b$, its solution would be $\vec{N}_{opt} = \lfloor R_b\inv Q_b^* \vec{I}_{\rm meas} \rceil \in \Z^M$.
 
   \subsection{Formulation as Quadratic Problem}
   Relaxing the integer condition on the solution, and letting $\vec{d} := \vec{I}_{\rm meas}$ for brevity, we can reformulate \Cref{eq:minimization},
@@ -172,7 +172,7 @@
   where we let $P := R^T R \in \R^{M \times M}$ and $\vec{q} := -R^T \vec{d} \in \R^M$ and leave out the constant $\vec{d}^T \vec{d}$.
   We can express the nonnegativity constraint $\vec{x} \ge \vec{0}$ as an equality constraint using a slack variable $\vec{s} \in \R_+^M$,
   $$-\vec{x} + \vec{s} = \vec{0} \quad\Leftrightarrow\quad A \vec{x} + \vec{s} = \vec{b}\,,$$
-  where we set $A := -\mathds{1}$ and $\vec{b} := \vec{0}$.
+  where we set $A := -\mathds{1} \in \R^{M \times M}$ and $\vec{b} := \vec{0} \in \R^M$.
   This leaves us with a constrained \textit{quadratic program},
   \begin{align}
     \min_{\vec{x} in \R^M} & \frac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x},     \\
@@ -181,6 +181,9 @@
 
   We solve the quadratic problem in this exact form using Clarabel \cite{2024-clarabel}.
   Note that in Clarabel notation, the slack variable is to be taken as an element of the nonnegativity cone.
+
+  The integer solution can then be obtained from rounding,
+  $$\vec{N}_{\rm opt} = \lfloor \vec{x} \rceil \in \N_0^M\,.$$
 
   \begin{table}
     \caption{Ion Channel Types: Most fitting configuration and corresponding references.}
@@ -245,13 +248,13 @@
   \begin{table}
     \caption{Comparison of Optimization Approaches}
     \begin{tabular}{ll}
-      \textbf{Algorithm}          & \textbf{Accuracy} \\
+      \textbf{Algorithm}                          & \textbf{Accuracy} \\
       \midrule
-      Particle Swarm Optimization & 1                 \\
-      Non-Negative Least Squares  & 1                 \\
-      Quadratic Program           & 1                 \\
-      Gradient Descent + Penalty  & 1                 \\
-      LBFGS + Penalty             & 1                 \\
+      Particle Swarm Optimization                 & 1                 \\
+      Non-Negative Least Squares \cite{1997-nnls} & 1                 \\
+      Quadratic Program                           & 1                 \\
+      Gradient Descent + Penalty                  & 1                 \\
+      LBFGS + Penalty                             & 1                 \\
     \end{tabular}
     \label{table:optimization-comparison}
   \end{table}

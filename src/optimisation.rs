@@ -7,6 +7,7 @@ use crate::cell::ChannelCounts;
 use crate::cell::SimulationRecorder;
 use crate::cell::N_CHANNEL_TYPES;
 use crate::cell::{evaluate_current_match, A549CancerCell};
+use crate::constants;
 use crate::patchclampdata::PatchClampData;
 use crate::pulseprotocol::ProtocolGenerator;
 
@@ -90,7 +91,13 @@ impl ChannelCountsProblem {
     };
     let mut cell = A549CancerCell::new();
     let mut recorded = SingleChannelCurrentRecord::empty();
-    cell.simulate(pulse_protocol, &mut recorded, self.fit_to.current.len(), true);
+    cell.simulate(
+      pulse_protocol,
+      &mut recorded,
+      self.fit_to.current.len(),
+      true,
+      constants::default_delta_tolerance,
+    );
     self.current_basis = Some(nalgebra::DMatrix::from_columns(
       &recorded.currents.map(|c| nalgebra::DVector::from(c)),
     ));

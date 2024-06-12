@@ -50,9 +50,9 @@
   %\subtitle{Insert subtitle if needed}
 
   \author*[1]{Peter Waldert}
-  \author[2]{Sonja Langthaler}
-  \author[2]{Christian Baumgartner}
   \author[2]{Theresa Rienmüller}
+  \author[2]{Christian Baumgartner}
+  \author[2]{Sonja Langthaler}
   \runningauthor{P.~Waldert et al.}
 
   \affil[1]{\protect\raggedright
@@ -185,20 +185,20 @@
 
   \begin{table}
     \caption{Ion Channel Types: Most fitting configuration and corresponding references.}
-    \begin{tabular}{lll}
-      \textbf{Channel Type} & \textbf{Channel Count $\bm{N_k}$} & \textbf{Reference}            \\
+    \begin{tabular}{lrrl}
+      \textbf{Channel Type} & \textbf{$\bm{N_k}$ \cite{2021-A549-model}} & \textbf{Our $\bm{N_k}$} & \textbf{Reference}            \\
       \midrule
-      Kv13                  & 1                                 & \cite{1998-potassium-channel} \\
-      Kv31                  & 1                                 & \cite{1998-potassium-channel} \\
-      Kv34                  & 1                                 & \cite{1998-potassium-channel} \\
-      Kv71                  & 1                                 & \cite{1998-potassium-channel} \\
-      KCa11                 & 1                                 & \cite{1998-potassium-channel} \\
-      KCa31                 & 1                                 & \cite{1998-potassium-channel} \\
-      Task1                 & 1                                 & \cite{1998-potassium-channel} \\
-      CRAC1                 & 1                                 & \cite{1998-potassium-channel} \\
-      TRPC6                 & 1                                 & \cite{1998-potassium-channel} \\
-      TRPV3                 & 1                                 & \cite{1998-potassium-channel} \\
-      CLC2                  & 1                                 & \cite{1998-potassium-channel} \\
+      Kv13                  & 22                                         & 13                      & \cite{1998-potassium-channel} \\
+      Kv31                  & 78                                         & 247                     & \cite{1998-potassium-channel} \\
+      Kv34                  & 5                                          & 10                      & \cite{1998-potassium-channel} \\
+      Kv71                  & 1350                                       & 1176                    & \cite{1998-potassium-channel} \\
+      KCa11                 & 40                                         & 38                      & \cite{1998-potassium-channel} \\
+      KCa31                 & 77                                         & 7                       & \cite{1998-potassium-channel} \\
+      Task1                 & 19                                         & 24                      & \cite{1998-potassium-channel} \\
+      CRAC1                 & 200                                        & 188                     & \cite{1998-potassium-channel} \\
+      TRPC6                 & 17                                         & 15                      & \cite{1998-potassium-channel} \\
+      TRPV3                 & 12                                         & 10                      & \cite{1998-potassium-channel} \\
+      CLC2                  & 13                                         & 234                     & \cite{1998-potassium-channel} \\
     \end{tabular}
     \label{table:channel-types}
   \end{table}
@@ -241,6 +241,12 @@
     \includegraphics[width=\columnwidth]{../figures/results/dt-plot.pdf}
     \caption{Timestep $\Delta t$ throughout the duration of the simulation. $(\Delta t)_n$ is chosen in between simulation steps based on the heuristic given in \Cref{eq:dt-heuristic}. Red areas (small dt) indicate a high resolution within the simulation, blue areas indicate lower resolution (and therefore higher simulation speed).}
     \label{figure:dt-plot}
+  \end{figure}
+
+  \begin{figure}
+    \includegraphics[width=\columnwidth]{../figures/results/delta-tolerance.pdf}
+    \caption{Relative change of the average timestep $\Delta t$, simulation runtime and acceptance rate.}
+    \label{figure:delta-tolerance}
   \end{figure}
 
   \subsection{Inverse Problem}

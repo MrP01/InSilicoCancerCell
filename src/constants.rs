@@ -1,7 +1,8 @@
 #![allow(non_upper_case_globals)]
 
-pub const slowest_dt: f64 = 5e-7; // slowest timestep, this is the minimum speed
-pub const delta_tolerance: f64 = 1e-4; // how much of a change in \Delta state the system is aiming for (squared)
+pub const slowest_dt: f64 = 2e-7; // slowest timestep, this is the minimum speed
+pub const accept_tolerance: f64 = 1e-3; // how much state delta will be accepted
+pub const default_delta_tolerance: f64 = 1e-4; // how much of a change in \Delta state the system is aiming for (squared)
 
 // pub const Ca_i: f64 = 0.0647e-6; // initial calcium concentration
 pub const Ca_i: f64 = 4.6847e-6; // steady state calcium concentration

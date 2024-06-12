@@ -2,6 +2,8 @@ use core::fmt;
 
 use nalgebra::DVector;
 
+use crate::utils;
+
 #[allow(dead_code)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[derive(Clone, Copy, PartialEq, enum_iterator::Sequence)]
@@ -61,8 +63,9 @@ impl From<String> for CellPhase {
   }
 }
 
+#[derive(Clone)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize, Clone))]
+#[cfg_attr(feature = "default", derive(serde::Serialize, serde::Deserialize))]
 pub struct PatchClampData {
   pub protocol: PatchClampProtocol,
   pub phase: CellPhase,
@@ -150,6 +153,21 @@ impl PatchClampData {
 
   pub fn to_list(&self) -> Vec<f64> {
     self.current.iter().cloned().collect::<Vec<f64>>()
+  }
+
+  pub fn subsampled(&self, subsampling: usize) -> Self {
+    let mut subsampled = self.clone();
+    subsampled.current = DVector::from_vec(self.current.iter().cloned().step_by(subsampling).collect());
+    subsampled
+  }
+
+  pub fn smoothed(&self, n: usize) -> Self {
+    // println!("{:?}", utils::gaussian_kernel(n, n as f64 / 8.0));
+    let mut averaged = self.clone();
+    averaged.current = averaged
+      .current
+      .convolve_full(utils::gaussian_kernel(n, n as f64 / 8.0).into());
+    averaged
   }
 
   #[cfg_attr(feature = "pyo3", staticmethod)]

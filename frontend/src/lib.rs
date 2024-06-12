@@ -2,6 +2,7 @@ use std::{collections::HashMap, vec};
 
 use in_silico_cancer_cell::{
   cell::{A549CancerCell, SimulationRecorder},
+  constants,
   patchclampdata::{CellPhase, PatchClampProtocol},
   pulseprotocol::ProtocolGenerator,
   utils,
@@ -86,6 +87,7 @@ pub fn run(protocol: String, phase: String) -> JsValue {
       PatchClampProtocol::Ramp => 1032,
     },
     true,
+    constants::default_delta_tolerance,
   );
   return serde_wasm_bindgen::to_value(&recorded).unwrap();
 }

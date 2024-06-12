@@ -59,3 +59,14 @@ impl<const D: usize> Cappable for nalgebra::SVector<f64, D> {
     nalgebra::SVector::<f64, D>::from_vec(self.iter().cloned().map(|x| x.max(val)).collect::<Vec<f64>>())
   }
 }
+
+// Creates a Gaussian kernel with the given size and standard deviation
+pub fn gaussian_kernel(size: usize, sigma: f64) -> Vec<f64> {
+  let mut kernel = vec![0.0; size];
+  let half_size = size / 2;
+  for i in 0..size {
+    let x = i as f64 - half_size as f64;
+    kernel[i] = (1.0 / (sigma * (2.0 * std::f64::consts::PI).sqrt())) * (-0.5 * (x.powi(2) / sigma.powi(2))).exp();
+  }
+  kernel
+}

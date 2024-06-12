@@ -38,6 +38,13 @@ impl SimulationRecorder for TotalCurrentRecord {
   }
 }
 
+pub struct SimulationResult {
+  pub n_iterations: usize,
+  pub runtime: Option<f64>,
+  pub accept_rate: f64,
+  pub average_dt: f64,
+}
+
 pub const N_CHANNEL_TYPES: usize = 11;
 pub type ChannelCounts = [u32; N_CHANNEL_TYPES];
 
@@ -88,9 +95,9 @@ impl A549CancerCell {
     ]
   }
 
-  pub fn adapt_timestep(&self, current_dt: f64, state_delta: f64, max_dt: f64) -> f64 {
+  pub fn adapt_timestep(&self, current_dt: f64, state_delta: f64, delta_tolerance: f64, max_dt: f64) -> f64 {
     f64::max(
-      current_dt * (constants::delta_tolerance / state_delta).powf(0.5),
+      current_dt * (delta_tolerance / state_delta).powf(0.5),
       constants::slowest_dt,
     )
     .min(max_dt)
@@ -102,7 +109,8 @@ impl A549CancerCell {
     recorder: &mut impl SimulationRecorder,
     min_points: usize,
     adaptive_dt: bool,
-  ) -> usize {
+    delta_tolerance: f64,
+  ) -> SimulationResult {
     let total_duration = pulse_protocol.single_duration();
     let measurements_dt = total_duration / (min_points as f64);
     log::info!(
@@ -136,14 +144,14 @@ impl A549CancerCell {
           recorder.record(self, step.voltage, dt);
           t_next_measurement += measurements_dt;
         }
-        if !adaptive_dt || (state_delta < 8.0 * constants::delta_tolerance) || dt < constants::slowest_dt {
+        if !adaptive_dt || (state_delta < constants::accept_tolerance) || dt < constants::slowest_dt {
           for channel in self.channels_mut() {
             channel.accept_state();
           }
           n += 1;
           step_time += dt;
           if adaptive_dt {
-            dt = self.adapt_timestep(dt, state_delta, measurements_dt);
+            dt = self.adapt_timestep(dt, state_delta, delta_tolerance, measurements_dt);
           }
         } else {
           // log::warn!("Rejected state, delta was: {state_delta:.2e}, dt: {dt:.2e}");
@@ -171,12 +179,19 @@ impl A549CancerCell {
     }
     log::info!("Ran ~{}k iterations in total.", n / 1000);
     log::info!("Total time passed from the cell perspective: {total_time:.3} s");
+    #[allow(unused_assignments)]
+    let mut runtime: Option<f64> = None;
     #[cfg(not(target_arch = "wasm32"))]
     {
-      let runtime = start.elapsed().as_secs_f64();
-      log::info!("Total simulation runtime: {runtime:.3} s");
+      runtime = Some(start.elapsed().as_secs_f64());
+      log::info!("Total simulation runtime: {:.3} s", runtime.unwrap());
     }
-    n
+    SimulationResult {
+      runtime,
+      n_iterations: n,
+      average_dt: total_time / (n as f64),
+      accept_rate: (n as f64) / (n_raw as f64) * 100.0,
+    }
   }
 }
 
@@ -187,7 +202,7 @@ pub fn evaluate_current_match(measurements: &PatchClampData, current: DVector<f6
     measurements.current.len()
   );
   let rows = measurements.current.len();
-  let error = (current.rows_range(0..rows) - measurements.current.clone()).norm_squared();
+  let error = (current.rows_range(0..rows) - measurements.current.clone()).norm() / (rows as f64).sqrt();
   log::info!("Simulation match with measurements: {:.3}", error);
   error
 }
@@ -231,13 +246,30 @@ impl A549CancerCell {
       }
     }
   }
+  pub fn set_clarabel_channel_counts(&mut self, phase: CellPhase) {
+    match phase {
+      CellPhase::G0 => {
+        self.set_channel_counts([13, 247, 10, 1176, 38, 7, 24, 188, 15, 10, 234].into());
+      }
+      CellPhase::G1 => {
+        // self.set_channel_counts([20, 90, 54, 558, 15, 63, 10, 200, 12, 13, 11].into());
+        panic!("Unknown");
+      }
+    }
+  }
 
   #[cfg(feature = "default")]
   pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
     let measurements = PatchClampData::load(protocol.clone(), phase).unwrap();
     let pulse_protocol = ProtocolGenerator { proto: protocol };
     let mut recorded = TotalCurrentRecord::empty();
-    self.simulate(pulse_protocol, &mut recorded, measurements.current.len(), true);
+    self.simulate(
+      pulse_protocol,
+      &mut recorded,
+      measurements.current.len(),
+      true,
+      constants::default_delta_tolerance,
+    );
     evaluate_match(&measurements, recorded)
   }
 }

@@ -12,7 +12,7 @@ RESULTS = pathlib.Path(__file__).resolve().parent / "figures" / "results"
 @invoke.tasks.task()
 def save_d3_plots(ctx: invoke.context.Context):
     subprocess.run(["yarn", "build"])
-    for name in ("full-simulation-current", "voltage-protocol", "simulation-error", "dt-plot"):
+    for name in ("full-simulation-current", "voltage-protocol", "simulation-error", "dt-plot", "delta-tolerance"):
         subprocess.run(
             ["rsvg-convert", "-f", "pdf", "-o", f"figures/results/{name}.pdf", f"dist/plots/{name}/index.html"]
         )

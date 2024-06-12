@@ -2,6 +2,7 @@ import { run, get_protocol_sample } from "./pkg/in_silico_frontend";
 import * as Plot from "@observablehq/plot";
 import { selector } from "./store";
 import { movingAverage } from "./utils";
+import deltaToleranceData from "./pkg/delta-tolerance.json";
 
 var simulation;
 selector.subscribe((value) => {
@@ -190,6 +191,58 @@ async function protocol({ protocol, cut = true }) {
   };
 }
 
+async function deltaTolerancePlot({}, interactive = false) {
+  let data = deltaToleranceData;
+  // let base = { x: "tolerance", tip: interactive ? "x" : undefined, basis: "extent" };
+  return {
+    x: { type: "log", reverse: true },
+    color: { legend: true },
+    marks: [
+      Plot.axisX({ label: "Delta Tolerance / 1" }),
+      Plot.axisY({ label: "Normalized Quantities / 1" }),
+      Plot.lineY(
+        data,
+        Plot.normalizeY(
+          Plot.windowY(4, {
+            y: (e) => e.average_dt,
+            stroke: "blue",
+            x: "tolerance",
+            tip: interactive ? "x" : undefined,
+            basis: "extent",
+          })
+        )
+      ),
+      Plot.lineY(
+        data,
+        Plot.normalizeY(
+          Plot.windowY(4, {
+            y: (e) => e.accept_rate,
+            stroke: "green",
+            x: "tolerance",
+            tip: interactive ? "x" : undefined,
+            basis: "extent",
+          })
+        )
+      ),
+      Plot.lineY(
+        data,
+        Plot.normalizeY(
+          Plot.windowY(4, {
+            y: (e) => e.runtime,
+            stroke: "violet",
+            x: "tolerance",
+            tip: interactive ? "x" : undefined,
+            basis: "extent",
+          })
+        )
+      ),
+      // Plot.lineY(data, Plot.normalizeY({ y: (e) => e.iterations_k, stroke: "orange", x: "tolerance", tip: interactive ? "x" : undefined, basis: "extent"})),
+      // Plot.lineY(data, Plot.normalizeY({ y: (e) => e.error, stroke: "red", x: "tolerance", tip: interactive ? "x" : undefined, basis: "extent"})),
+      Plot.dot([{ label: "runtime", stroke: "violet" }]),
+    ],
+  };
+}
+
 const ALL_PLOT_GENERATORS = {
   fullSimulationCurrent,
   channelCurrent,
@@ -198,6 +251,7 @@ const ALL_PLOT_GENERATORS = {
   simulationError,
   dtScale,
   dtScalePlot,
+  deltaTolerancePlot,
 };
 export async function generatePlot(name, args = {}, interactive = false) {
   // console.log(name, "args", args);

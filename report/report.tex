@@ -4,7 +4,6 @@
 \usepackage{lmodern}
 \usepackage{anyfontsize}
 \usepackage[backend=biber, citestyle=numeric, bibstyle=authoryear, hyperref=true, sorting=none, maxbibnames=99]{biblatex}
-\usepackage{csquotes}
 \usepackage{times}
 \usepackage{bm}
 \usepackage[nameinlink]{cleveref}
@@ -20,6 +19,7 @@
 \setmintedinline{
   breaklines=true
 }
+\usepackage{csquotes}
 \input{macros.tex}
 
 \addbibresource{../literature/sources.bib}
@@ -45,7 +45,8 @@
   % \title{Performance optimization of the A549 electrophysiological cancer cell model and live simulation dashboard}
   % \title{Reducing runtime of an electrophysiological cancer cell model from X to Y and live simulation dashboard}
   \title{Improved optimization, runtime reduction and live simulation dashboard of an electrophysiological cancer cell model}
-  % \title{Optimization of an electrophysiological cancer cell model for a live simulation dashboard}
+  % \title{Optimization of an electrophysiological cancer cell model to facilitate a live simulation dashboard}
+  % \title{Optimization of a parametrized, time-dependent Hidden Markov Model by example of an electrophysiological cancer cell model}
   \runningtitle{Computational model of ion channel current}
   %\subtitle{Insert subtitle if needed}
 
@@ -54,6 +55,8 @@
   \author[2]{Christian Baumgartner}
   \author[2]{Sonja Langthaler}
   \runningauthor{P.~Waldert et al.}
+
+  \contributioncopyright{Peter Waldert}{2024}{}{}
 
   \affil[1]{\protect\raggedright
     Institute of Health Care Engineering with European Testing Center for Medical Devices, Graz University of Technology, Graz, Austria, e-mail: peter.waldert@tugraz.at}
@@ -65,7 +68,14 @@
   %   Institution, city, country}
 
   \abstract{
-    Through a reimplementation in Rust and numerical optimization approaches we were able to reduce the runtime of the A549 electrophysiological cancer cell model \cite{2021-A549-model} from X to Y.
+    Lung cancer is one of the most widespread pathologies worldwide and its mechanisms, specifically at the level of individual cells, are not well understood.
+    We improve on the A549 electrophysiological cancer cell model introduced in \cite{2021-A549-model,2024-calcium-channels}, combining numerical methods with an efficient implementation to reduce simulation time and accuracy to a level where it is feasible for live interaction.
+    More specifically, we were able to accelerate the simulation with adaptive timestepping and a highly efficient implementation in the Rust programming language, while we also managed to approach the corresponding inverse problem using a quadratic program, solving it within milliseconds.
+    We introduce a visualisation approach of the entire model in the form of a live simulation dashboard available at \url{https://in-silico-cancer-cell.waldert.at/} running directly in the browser.
+    The entire source code is freely available on GitHub and reusable through three different channels: the simulation interface (powered by compilation to WebAssembly), the Rust linkable library implementation and a Python package (simply run: \mintinline{text}{pip install in-silico-cancer-cell}).
+    Our aim behind a distribution in this way is to make the topic and simulation as accessible as possible.
+
+    % Through a reimplementation in Rust and numerical optimization approaches we were able to reduce the runtime of the A549 electrophysiological cancer cell model \cite{2021-A549-model} from X to Y.
 
     % Please insert your abstract here. Remember that online
     % systems rely heavily on the content of titles and abstracts to
@@ -222,7 +232,7 @@
   \end{figure}
 
   \section{Results}
-  \begin{figure}[h]
+  \begin{figure}[ht]
     \includegraphics[width=\columnwidth]{../figures/results/full-simulation-current.pdf}
     \caption{The simulated and measured current response $I(t)$ across the membrane of an A549 cancer cell, given the \textit{activation} voltage protocol $V(t)$ in \Cref{figure:voltage-protocol}, recorded in the G0 phase of the cell cycle.}
     \label{figure:full-simulation-current}
@@ -267,7 +277,7 @@
     \label{table:optimization-comparison}
   \end{table}
 
-  \begin{figure*}[h]
+  \begin{figure*}[ht]
     \includegraphics[width=\textwidth]{../figures/above-the-fold-screenshot.png}
     \caption{Screenshot of the live simulation dashboard, available here: \url{https://in-silico-cancer-cell.waldert.at/}. This is the graphical user interface to the simulation written in Rust. The full simulation, completing within around 500ms, runs live in the browser using Rust's bindings to WebAssembly. One can choose the voltage protocol and cell cycle phase (G0/G1) in the menu on the left, while the full current and individual channel currents and internal states can be seen on the right. The remaining ion channel types have been cut off on this screenshot.}
     \label{figure:screenshot}

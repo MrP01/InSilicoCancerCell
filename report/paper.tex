@@ -1,0 +1,83 @@
+\documentclass[USenglish,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[big,online]{dgruyter}
+\usepackage{lmodern}
+\usepackage{anyfontsize}
+\usepackage{minted}
+\setminted{
+  breaklines=true,
+  python3=true,
+  baselinestretch=1,
+  autogobble
+}
+\setmintedinline{
+  breaklines=true
+}
+\input{macros.tex}
+\input{prettytinytex.tex}
+
+\addbibresource{../literature/sources.bib}
+
+% Report details: Max. 6 pages, composed of:
+% • Summary
+% • Introduction
+% • Methods
+% • Results
+% • Future perspectives
+
+\begin{document}
+  %%%--------------------------------------------%%%
+  %%% Please do not alter the following lines: %%%
+  %%%--------------------------------------------%%%
+  %\articletype{Proceedings}
+  %\aop
+  \DOI{10.1515/}
+  \openaccess
+  \pagenumbering{gobble}
+  %%%--------------------------------------------%%%
+
+  % \title{Performance optimization of the A549 electrophysiological cancer cell model and live simulation dashboard}
+  % \title{Reducing runtime of an electrophysiological cancer cell model from X to Y and live simulation dashboard}
+  % \title{Improved optimization, runtime reduction and live simulation dashboard of an electrophysiological cancer cell model}
+  % \title{Optimization of an electrophysiological cancer cell model to facilitate a live simulation dashboard}
+  % \title{Optimization of a parametrized, time-dependent Hidden Markov Model by example of an electrophysiological cancer cell model}
+  % \title{Enabling real-time analysis of an electrophysiological cancer cell model}
+  \title{Enabling real-time interaction with an electrophysiological cancer cell model}
+  \runningtitle{Computational model of ion channel current}
+  %\subtitle{Insert subtitle if needed}
+
+  \author*[1]{Peter Waldert}
+  \author[2]{Theresa Rienmüller}
+  \author[2]{Christian Baumgartner}
+  \author[2]{Sonja Langthaler}
+  \runningauthor{P.~Waldert et al.}
+
+  \contributioncopyright{Peter Waldert}{2024}{}{}
+
+  \affil[1]{\protect\raggedright
+    Institute of Health Care Engineering with European Testing Center for Medical Devices, Graz University of Technology, Graz, Austria, e-mail: peter.waldert@tugraz.at}
+  \affil[2]{\protect\raggedright
+    Institute of Health Care Engineering with European Testing Center for Medical Devices, Graz University of Technology, Graz, Austria}
+  % \affil[2]{\protect\raggedright
+  %   Institution (if same for both authors), city, country}
+  % \affil[3]{\protect\raggedright
+  %   Institution, city, country}
+
+  \abstract{\input{abstract.tex}}
+  \keywords{Hidden Markov Model, Real-Time Simulation, Inverse Problems, Cancer Electrophysiology.}
+
+  \maketitle
+  \input{content.tex}
+  \vspace{1cm}
+
+  %\begin{acknowledgement}
+  %\end{acknowledgement}
+
+  \textsf{\textbf{Author Statement}}\\
+  Research funding: This work was funded through a BioTechMed-Graz Lab Rotation Research Fellowship.
+  Conflict of interest: Authors state no conflict of interest.
+  Informed consent: Informed consent has been obtained from all individuals included in this study.
+  Ethical approval: The research related to human use complies with all the relevant national regulations, institutional policies and was performed in accordance with the tenets of the Helsinki Declaration, and has been approved by the authors' institutional review board or equivalent committee.
+
+  \printbibliography
+\end{document}

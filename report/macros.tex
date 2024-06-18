@@ -1,12 +1,15 @@
-\newcommand{\inv}{^{-1}}
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\Q}{\mathbb{Q}}
-\newcommand{\D}{\mathbb{D}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\I}{\mathbb{I}}
-\newcommand{\C}{\mathbb{C}}
-\newcommand{\T}{\mathbb{T}}
-\renewcommand{\vec}[1]{{\bm{#1}}}
-\newcommand{\norm}[1]{{\|#1\|}}
-\DeclareMathOperator*{\argmin}{\arg\!\min}
+% \usepackage[toc, acronym, style=long3col, indexonlyfirst=true, nogroupskip=true]{glossaries}
+\usepackage[backend=biber, citestyle=authoryear, bibstyle=authoryear, hyperref=true, sorting=none, maxbibnames=99]{biblatex}
+\usepackage{csquotes}
+\usepackage[nameinlink]{cleveref}
+\usepackage{dsfont}
+
+\usepackage{times}
+\usepackage{xfrac}
+\usepackage{bm}
+
+\ifdefined\norm
+  \renewcommand{\norm}[1]{\left\lVert#1\right\rVert_{\scriptscriptstyle 2}}
+\else
+  \newcommand{\norm}[1]{\left\lVert#1\right\rVert_{\scriptscriptstyle 2}}
+\fi

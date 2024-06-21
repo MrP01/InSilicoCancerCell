@@ -2,7 +2,6 @@ import { run, get_protocol_sample } from "./pkg/in_silico_frontend";
 import * as Plot from "@observablehq/plot";
 import { selector } from "./store";
 import { movingAverage } from "./utils";
-import deltaToleranceData from "./pkg/delta-tolerance.json";
 
 var simulation;
 selector.subscribe((value) => {
@@ -192,7 +191,7 @@ async function protocol({ protocol, cut = true }) {
 }
 
 async function deltaTolerancePlot({}, interactive = false) {
-  let data = deltaToleranceData;
+  let data = (await import("./pkg/delta-tolerance.json")).default;
   // let base = { x: "tolerance", tip: interactive ? "x" : undefined, basis: "extent" };
   return {
     x: { type: "log", reverse: true },

@@ -35,23 +35,6 @@ jobs:
           cargo run --release --target=${{ matrix.target }} -- --protocol ramp --phase g1 save-patch-clamp-data
           echo "[]" > frontend/pkg/delta-tolerance.json
       - run: yarn run build
-      # deploy to TU
-      - name: Create SSH key
-        if: runner.os == 'Linux'
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > ../private.key
-          sudo chmod 600 ../private.key
-          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-        shell: bash
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
-      - name: Deploy to in-silico.hce.tugraz.at
-        if: runner.os == 'Linux'
-        run: scp -i $SSH_KEY_PATH -r dist/* insilico@lampz.tugraz.at:/home/insilico/public_html/
-        env:
-          SSH_KEY_PATH: ${{ github.workspace }}/../private.key
       # deploy to Netlify
       - uses: jsmrcaga/action-netlify-deploy@master
         # if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux'

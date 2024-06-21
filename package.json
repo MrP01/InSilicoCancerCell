@@ -12,15 +12,15 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@observablehq/plot": "^0.6.14",
+    "@observablehq/plot": "^0.6.15",
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
-    "astro": "^4.9.2",
+    "astro": "^4.11.0",
     "jsdom": "^24.1.0",
     "nanostores": "^0.10.3",
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {
-    "sass": "^1.77.4",
+    "sass": "^1.77.6",
     "wasm-pack": "^0.12.1"
   }
 }

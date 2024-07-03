@@ -1,5 +1,5 @@
 \section{Introduction}
-Lung cancer is one of the most widespread pathologies worldwide and its mechanisms, specifically those of individual A549 cells, are not well understood.
+The mechanisms behind lung adenocarcinoma, specifically those of individual A549 cells.
 Computational techniques can help with a better understanding of the behaviour of these cancer cells.
 We work with the A549 model introduced in \cite{2021-A549-model}, together with a calcium channel extension introduced in \cite{2024-calcium-channels}, reimplementing the model in the Rust programming language and performing a number of numerical optimizations such as adaptive timestepping.
 We also verify the model's performance in \textit{Floating} mode, as compared to an individual simulation of the estimated number of channels.
@@ -107,19 +107,19 @@ $$\vec{N}_{\rm opt} = \lfloor \vec{x} \rceil \in \N_0^M\,.$$
 \begin{table}
   \caption{Ion Channel Types: Most fitting configuration and corresponding references.}
   \begin{tabular}{lrrl}
-    \textbf{Channel Type} & \textbf{$\bm{N_k}$ \cite{2021-A549-model}} & \textbf{Our $\bm{N_k}$} & \textbf{Reference}            \\
+    \textbf{Channel Type} & \textbf{$\bm{N_k}$ \cite{2021-A549-model}} & \textbf{Our $\bm{N_k}$} & \textbf{Reference} \\
     \midrule
-    Kv13                  & 22                                         & 13                      & \cite{1998-potassium-channel} \\
-    Kv31                  & 78                                         & 247                     & \cite{1998-potassium-channel} \\
-    Kv34                  & 5                                          & 10                      & \cite{1998-potassium-channel} \\
-    Kv71                  & 1350                                       & 1176                    & \cite{1998-potassium-channel} \\
-    KCa11                 & 40                                         & 38                      & \cite{1998-potassium-channel} \\
-    KCa31                 & 77                                         & 7                       & \cite{1998-potassium-channel} \\
-    Task1                 & 19                                         & 24                      & \cite{1998-potassium-channel} \\
-    CRAC1                 & 200                                        & 188                     & \cite{1998-potassium-channel} \\
-    TRPC6                 & 17                                         & 15                      & \cite{1998-potassium-channel} \\
-    TRPV3                 & 12                                         & 10                      & \cite{1998-potassium-channel} \\
-    CLC2                  & 13                                         & 234                     & \cite{1998-potassium-channel} \\
+    Kv13                  & 22                                         & 13                      & \cite{kv13-1}      \\
+    Kv31                  & 78                                         & 247                     & \cite{kv31}        \\
+    Kv34                  & 5                                          & 10                      & \cite{kv34}        \\
+    Kv71                  & 1350                                       & 1176                    & \cite{kv71}        \\
+    KCa11                 & 40                                         & 38                      & \cite{kca11}       \\
+    KCa31                 & 77                                         & 7                       & \cite{kca31-2}     \\
+    Task1                 & 19                                         & 24                      & \cite{task1}       \\
+    CRAC1                 & 200                                        & 188                     & \cite{cracm1}      \\
+    TRPC6                 & 17                                         & 15                      & \cite{trpc6}       \\
+    TRPV3                 & 12                                         & 10                      & \cite{trpv3}       \\
+    CLC2                  & 13                                         & 234                     & \cite{clc2}        \\
   \end{tabular}
   \label{table:channel-types}
 \end{table}

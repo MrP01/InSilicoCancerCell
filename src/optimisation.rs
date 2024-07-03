@@ -1,6 +1,5 @@
 use argmin::core::State;
 use argmin::core::{CostFunction, Error, Executor, Gradient};
-use argmin_math::ArgminInv;
 use nalgebra::SVector;
 
 use crate::cell::ChannelCounts;
@@ -128,7 +127,7 @@ impl ChannelCountsProblem {
     let mut transformed = self.fit_to.current.clone();
     // qr.q_tr_mul(&mut transformed); // computes Q^T I_m
     transformed = qr.q().transpose() * transformed;
-    let r_inv = qr.unpack_r().inv().expect("R matrix should be invertible");
+    let r_inv = qr.unpack_r().try_inverse().expect("R matrix should be invertible");
     // then finally computes R^(-1) Q^T I_m, the solution of the least-squares problem
     let solution = r_inv * transformed;
     log::info!("Num. solution: {}", solution);

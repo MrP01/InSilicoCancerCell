@@ -14,13 +14,13 @@
   "dependencies": {
     "@observablehq/plot": "^0.6.15",
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
-    "astro": "^4.11.0",
+    "astro": "^4.11.3",
     "jsdom": "^24.1.0",
     "nanostores": "^0.10.3",
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {
     "sass": "^1.77.6",
-    "wasm-pack": "^0.12.1"
+    "wasm-pack": "^0.13.0"
   }
 }

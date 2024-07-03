@@ -18,7 +18,7 @@ repos:
       - id: fmt
       - id: cargo-check
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.7
+    rev: v0.5.0
     hooks:
       - id: ruff
         args:
@@ -31,7 +31,7 @@ repos:
       - id: python-no-eval
       - id: python-no-log-warn
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
   - repo: local

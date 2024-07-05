@@ -16,6 +16,7 @@ pub trait SimulationRecorder {
   fn record(&mut self, cell: &A549CancerCell, voltage: f64, dt: f64);
 }
 
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct TotalCurrentRecord {
   pub current: Vec<f64>,
 }
@@ -27,6 +28,14 @@ impl TotalCurrentRecord {
 
   pub fn current_as_dvec(self) -> DVector<f64> {
     DVector::<f64>::from_vec(self.current)
+  }
+}
+
+#[cfg_eval]
+#[cfg_attr(feature = "pyo3", pyo3::pymethods)]
+impl TotalCurrentRecord {
+  pub fn current(&self) -> Vec<f64> {
+    self.current.clone()
   }
 }
 
@@ -261,7 +270,7 @@ impl A549CancerCell {
   }
 
   #[cfg(feature = "default")]
-  pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
+  pub fn run(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> TotalCurrentRecord {
     let measurements = PatchClampData::load(protocol.clone(), phase).unwrap();
     let pulse_protocol = ProtocolGenerator { proto: protocol };
     let mut recorded = TotalCurrentRecord::empty();
@@ -272,7 +281,13 @@ impl A549CancerCell {
       true,
       constants::default_delta_tolerance,
     );
-    evaluate_match(&measurements, recorded)
+    recorded
+  }
+
+  #[cfg(feature = "default")]
+  pub fn evaluate(&mut self, protocol: PatchClampProtocol, phase: CellPhase) -> f64 {
+    let measurements = PatchClampData::load(protocol.clone(), phase).unwrap();
+    evaluate_match(&measurements, self.run(protocol, phase))
   }
 }
 

@@ -189,8 +189,8 @@ impl ChannelCountsProblem {
   }
 }
 
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[derive(Clone, clap::ValueEnum)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
+#[derive(Clone, clap::ValueEnum, PartialEq)]
 pub enum InSilicoMethod {
   Projection,
   ParticleSwarm,

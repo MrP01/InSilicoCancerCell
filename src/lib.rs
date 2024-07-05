@@ -14,6 +14,7 @@ pub mod optimisation;
 #[cfg(feature = "pyo3")]
 #[pyo3::pymodule]
 fn _in_rusty_silico(_py: pyo3::Python, m: &pyo3::Bound<'_, pyo3::types::PyModule>) -> pyo3::PyResult<()> {
+  use pyo3::types::PyModuleMethods;
   m.add_class::<patchclampdata::PatchClampProtocol>()?;
   m.add_class::<patchclampdata::CellPhase>()?;
   m.add_class::<patchclampdata::PatchClampData>()?;

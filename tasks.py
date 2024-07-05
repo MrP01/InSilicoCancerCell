@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 import pathlib
 import subprocess
-import invoke
+import time
 
-import in_silico_cancer_cell.plot as insilico_plot
+import invoke
 import matplotlib.pyplot as plt
+from in_silico_cancer_cell.fit import load_problem, solve_with
+from in_silico_cancer_cell.plot import plot_full_comparison, set_results_folder
+import numpy as np
 
 RESULTS = pathlib.Path(__file__).resolve().parent / "figures" / "results"
 
@@ -30,6 +33,24 @@ def save_screenshot(ctx: invoke.context.Context):
 
 @invoke.tasks.task()
 def save_python_plots(ctx: invoke.context.Context, method="nnls"):
-    insilico_plot.set_results_folder(RESULTS)
-    insilico_plot.plot_full_comparison(method)
+    set_results_folder(RESULTS)
+    plot_full_comparison(method)
     plt.show()
+
+
+@invoke.tasks.task()
+def compare_solvers(ctx: invoke.context.Context, n=800):
+    single_channels, data = load_problem(n)
+    rmses = {}
+    runtimes = {}
+    for method in ("lstsq", "nnls", "qp", "langthaler"):
+        start = time.monotonic()
+        channel_counts = solve_with(single_channels, data, method)
+        runtimes[method] = time.monotonic() - start
+        diff = (single_channels * channel_counts).sum(axis=1) - data
+        rmses[method] = np.sqrt((diff**2).sum() / len(diff))
+
+    print(60 * "-")
+    for method in ("lstsq", "nnls", "qp", "langthaler"):
+        print(f"{method:12} error: {rmses[method]:.2f}\t runtime: {runtimes[method] * 1000:.2f} ms")
+    print(60 * "-")

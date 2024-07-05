@@ -196,13 +196,15 @@ impl A549CancerCell {
 }
 
 pub fn evaluate_current_match(measurements: &PatchClampData, current: DVector<f64>) -> f64 {
+  let n = 800;
+  let smoothed = current.convolve_full(crate::utils::gaussian_kernel(n, n as f64 / 8.0).into());
   log::info!(
     "Collected data: {} points from simulation, {} points from measurements.",
-    current.len(),
+    smoothed.len(),
     measurements.current.len()
   );
   let rows = measurements.current.len();
-  let error = (current.rows_range(0..rows) - measurements.current.clone()).norm() / (rows as f64).sqrt();
+  let error = (smoothed.rows_range(0..rows) - measurements.current.clone()).norm() / (rows as f64).sqrt();
   log::info!("Simulation match with measurements: {:.3}", error);
   error
 }

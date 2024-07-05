@@ -24,6 +24,8 @@ def plot_measurement():
 def plot_full_comparison(method="nnls", n=800):
     single_channels, data = load_problem(n)
     channel_counts = solve_with(single_channels, data, method)
+    diff = (single_channels * channel_counts).sum(axis=1) - data
+    print(f"Error: {np.sqrt((diff ** 2).sum() / len(diff)):.2f}")
     time = np.linspace(0, 9.901, single_channels.shape[0])
     fig = plt.figure(figsize=(8, 4))
     axes: matplotlib.axes.Axes = fig.add_subplot(1, 1, 1)

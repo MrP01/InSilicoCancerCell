@@ -56,8 +56,8 @@ impl Gradient for ChannelCountsProblem {
     let current_cost = self.cost(current)?;
     for i in 0..9 {
       let mut temp_params = current.clone();
-      temp_params[i] += 1.0;
-      grad[i] = (self.cost(&temp_params)? - current_cost) / 2.0;
+      temp_params[i] += 2.0;
+      grad[i] = (self.cost(&temp_params)? - current_cost) / 4.0;
     }
     Ok(grad)
   }
@@ -149,10 +149,10 @@ impl ChannelCountsProblem {
       InSilicoMethod::ParticleSwarm => {
         let solver = argmin::solver::particleswarm::ParticleSwarm::new(
           ([0.0; N_CHANNEL_TYPES].into(), [1350.0; N_CHANNEL_TYPES].into()),
-          8,
+          120,
         );
         let result = Executor::new((*self).clone(), solver)
-          .configure(|state| state.max_iters(100))
+          .configure(|state| state.max_iters(40))
           .run()
           .unwrap();
         println!("{}", result);
@@ -160,10 +160,10 @@ impl ChannelCountsProblem {
       }
       InSilicoMethod::SteepestDescent => {
         let linesearch =
-          argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
+          argmin::solver::linesearch::MoreThuenteLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
         let solver = argmin::solver::gradientdescent::SteepestDescent::new(linesearch);
         let result = Executor::new((*self).clone(), solver)
-          .configure(|state| state.max_iters(10))
+          .configure(|state| state.max_iters(20).param([15.0; N_CHANNEL_TYPES].into()))
           .run()
           .unwrap();
         println!("{}", result);
@@ -174,7 +174,7 @@ impl ChannelCountsProblem {
           argmin::solver::linesearch::HagerZhangLineSearch::<F64ChannelCounts, F64ChannelCounts, f64>::new();
         let solver = argmin::solver::quasinewton::LBFGS::new(linesearch, 200);
         let result = Executor::new((*self).clone(), solver)
-          .configure(|state| state.max_iters(10))
+          .configure(|state| state.max_iters(8).param([15.0; N_CHANNEL_TYPES].into()))
           .run()
           .unwrap();
         println!("{}", result);

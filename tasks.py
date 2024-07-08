@@ -41,16 +41,20 @@ def save_python_plots(ctx: invoke.context.Context, method="nnls"):
 @invoke.tasks.task()
 def compare_solvers(ctx: invoke.context.Context, n=800):
     single_channels, data = load_problem(n)
+    single_channels_raw, data_raw = load_problem(1)
     rmses = {}
     runtimes = {}
     for method in ("lstsq", "nnls", "qp", "langthaler"):
         start = time.monotonic()
         channel_counts = solve_with(single_channels, data, method)
+        if not all(c >= 0 for c in channel_counts):
+            print(f"{method} returned invalid result", channel_counts)
+            continue
         runtimes[method] = time.monotonic() - start
-        diff = (single_channels * channel_counts).sum(axis=1) - data
+        diff = (single_channels_raw * channel_counts).sum(axis=1) - data_raw
         rmses[method] = np.sqrt((diff**2).sum() / len(diff))
 
     print(60 * "-")
-    for method in ("lstsq", "nnls", "qp", "langthaler"):
+    for method in runtimes.keys():
         print(f"{method:12} error: {rmses[method]:.2f}\t runtime: {runtimes[method] * 1000:.2f} ms")
     print(60 * "-")

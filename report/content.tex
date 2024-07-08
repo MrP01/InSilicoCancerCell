@@ -174,19 +174,19 @@ While keeping the same level of accuracy when matching with the experimental dat
 We compare different optimization approaches based on their runtime and root mean square error,
 $$\Delta = \sqrt{\sfrac{1}{N_t} {\textstyle \sum_{j=1}^{N_t}} (I_j - I_{{\rm meas}, j})^2} = \frac{\norm{\vec{I} - \vec{I}_{\rm meas}}}{\sqrt{N_t}}\,.$$
 
-\begin{table}
+\begin{table*}[ht]
   \caption{Comparison of Optimization Approaches}
-  \begin{tabular}{lll}
-    \textbf{Algorithm}                          & \textbf{Runtime} & \textbf{RMSE} \\
+  \begin{tabular}{llrr}
+    \textbf{Algorithm}                          & \textbf{Abbreviation} & \textbf{Runtime} / s & \textbf{RMSE} / pA \\
     \midrule
-    Particle Swarm Optimization                 & 1                & 1             \\
-    Non-Negative Least Squares \cite{1997-nnls} & 1                & 1             \\
-    Quadratic Program                           & 1                & 1             \\
-    Gradient Descent + Penalty                  & 1                & 1             \\
-    LBFGS + Penalty                             & 1                & 1             \\
+    Particle Swarm Optimization                 & PSO                   & 22.5                 & 27.691             \\
+    Gradient Descent + More Thuente             & GD                    & 18.9                 & 32.342             \\
+    Limited-Memory BFGS + Hager Zhang           & LBFGS                 & 4.8                  & 32.196             \\
+    Non-Negative Least Squares \cite{1997-nnls} & NNLS                  & 0.318                & 28.00              \\
+    Quadratic Program                           & QP                    & 0.018                & 28.13              \\
   \end{tabular}
   \label{table:optimization-comparison}
-\end{table}
+\end{table*}
 
 \begin{figure*}[ht]
   \includegraphics[width=\textwidth]{../figures/above-the-fold-screenshot.png}

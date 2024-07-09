@@ -1,7 +1,7 @@
 Lung cancer is one of the most widespread pathologies worldwide and its mechanisms, specifically at the level of individual cells, are not well understood.
-We improve on the A549 electrophysiological cancer cell model introduced in \cite{2021-A549-model,2024-calcium-channels}, combining numerical methods with an efficient implementation to reduce simulation time and accuracy to a level where it is feasible for live interaction.
+We improve on the A549 electrophysiological cancer cell model introduced in \cite{2021-A549-model,2024-calcium-channels}, combining numerical methods with an efficient implementation to reduce simulation time to a level where it is feasible for live interaction.
 More specifically, we were able to accelerate the simulation with adaptive timestepping and a highly efficient implementation in the Rust programming language, while we also managed to approach the corresponding inverse problem using a quadratic program, solving it within milliseconds.
-We introduce a visualisation approach of the entire model in the form of a live simulation dashboard available at \url{https://in-silico-cancer-cell.waldert.at/} running directly in the browser.
+We introduce a visualisation approach of the entire model in the form of a live simulation dashboard available at \url{https://in-silico.hce.tugraz.at/} running directly in the browser.
 The entire source code is freely available on GitHub and reusable through three different channels: the simulation interface (powered by compilation to WebAssembly), the Rust linkable library implementation and a Python package (simply run: \mintinline{text}{pip install in-silico-cancer-cell}).
 Our aim behind a distribution in this way is to make the topic and simulation as accessible as possible.
 

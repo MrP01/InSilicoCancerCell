@@ -1,18 +1,15 @@
 \section{Introduction}
 The mechanisms behind lung adenocarcinoma, specifically those of individual A549 cells.
 Computational techniques can help with a better understanding of the behaviour of these cancer cells.
-We work with the A549 model introduced in \cite{2021-A549-model}, together with a calcium channel extension introduced in \cite{2024-calcium-channels}, reimplementing the model in the Rust programming language and performing a number of numerical optimizations such as adaptive timestepping.
-We also verify the model's performance in \textit{Floating} mode, as compared to an individual simulation of the estimated number of channels.
-We introduce a visualisation approach of the entire model in the form of a live simulation dashboard\footnote{\url{https://in-silico-cancer-cell.waldert.at/}}.
-The entire source code behind this simulation is freely available on GitHub\footnote{\url{https://github.com/MrP01/InSilicoCancerCell}}, and reusable through three different channels: the simulation interface (powered by WebAssembly), the Rust linkable library implementation and a Python package.
-These three interfaces all originate from the same source code and our aim behind a distribution in this way is to make the simulation as accessible as possible.
+% , together with a calcium channel extension introduced in \cite{2024-calcium-channels}, 
+We work with the A549 model introduced in \cite{2021-A549-model,2024-calcium-channels}, reimplementing the model in the Rust programming language and performing a number of numerical optimizations such as adaptive timestepping.
+Physical measurements are obtained using a \textit{Patch-Clamp System}, where one records the current through the membrane given a voltage protocol.
+% We also verify the model's performance in \textit{Floating} mode, as compared to an individual simulation of the estimated number of channels.
 In order to find appropriate parameters for the model, an optimization procedure is performed.
 Multiple optimization approaches for the solution of the corresponding inverse problem (fitting model parameters to measurement data) are put in comparison.
-The measurements are obtained using a \textit{Patch-Clamp System}, where one records the current through the membrane given a voltage protocol.
 
 \section{Methods}
-% The computational model is as follows:
-A cell's membrane consists of multiple ion channels, categorized into $M \in \N$ different types.
+A single cell's membrane consists of multiple ion channels, categorized into $M \in \N$ different types.
 Each ion channel is represented in one of $N_{s, k} \in \N$ states, which, in physical terms, is related to a positional configuration of a protein within the ion channel.
 Only some states can be observed directly, and its development only depends on the one previous state.
 Hence, we are working with a Hidden Markov Model (HMM).
@@ -126,15 +123,39 @@ $$\vec{N}_{\rm opt} = \lfloor \vec{x} \rceil \in \N_0^M\,.$$
 
 \subsection{Implementation and Usage}
 The core simulation is implemented in the Rust programming language \cite{2014-rust}.
-Each channel is
+Each channel is represented as its own struct, implementing the \texttt{HasTransitionMatrix} trait.
+The number of states per channel type is constant by design, allowing the compiler to optimize the instruction hierarchy and memory alignment of the simulation.
+All individual ion channel types are then combined into the full \texttt{A549CancerCell} struct, whose most important function is \mintinline{rust}{cell.simulate();}.
+
+For ease of use, we provide a Python interface to the simulation, ready to install via the Python Package Index (PyPI) as precompiled wheels for the most common platforms.
 
 \begin{minted}{python}
-    # pip install in-silico-cancer-cell
-    import in_silico_cancer_cell
-  \end{minted}
+  # pip install in-silico-cancer-cell
+  from in_silico_cancer_cell import *
+
+  # to evaluate on existing parameters
+  cell = A549CancerCell.new()
+  error = cell.evaluate(
+    PatchClampProtocol.Ramp,
+    CellPhase.G1
+  )
+
+  # to obtain the current basis matrix
+  measurements = PatchClampData.pyload(
+    PatchClampProtocol.Activation,
+    CellPhase.G0
+  )
+  problem = ChannelCountsProblem.new(measurements)
+  problem.precompute_single_channel_currents()
+  single_channels = problem.get_current_basis()
+\end{minted}
 
 \subsection{Live Simulation}
-The live
+In addition to the programming interfaces, we also provide a live simulation web dashboard, available on \url{https://in-silico.hce.tugraz.at}. A screenshot is provided in \Cref{figure:screenshot}.
+After choosing the voltage protocol and cell cycle phase, the dashboard runs the full simulation live, within the browser.
+Computation time is well below a second for all protocol \& phase measurement configurations.
+The dashboard shows the full current through the membrane at the top, compared to the measurement, while also breaking it down into individual channel type contributions.
+Each channel type is shown as the evolution of its state space and resulting current over time.
 
 \begin{figure}
   \includegraphics[width=\columnwidth]{../figures/results/voltage-protocol.pdf}
@@ -175,6 +196,7 @@ We compare different optimization approaches based on their runtime and root mea
 $$\Delta = \sqrt{\sfrac{1}{N_t} {\textstyle \sum_{j=1}^{N_t}} (I_j - I_{{\rm meas}, j})^2} = \frac{\norm{\vec{I} - \vec{I}_{\rm meas}}}{\sqrt{N_t}}\,.$$
 
 \begin{table*}[ht]
+  \centering
   \caption{Comparison of Optimization Approaches}
   \begin{tabular}{llrr}
     \textbf{Algorithm}                          & \textbf{Abbreviation} & \textbf{Runtime} / s & \textbf{RMSE} / pA \\
@@ -190,7 +212,7 @@ $$\Delta = \sqrt{\sfrac{1}{N_t} {\textstyle \sum_{j=1}^{N_t}} (I_j - I_{{\rm mea
 
 \begin{figure*}[ht]
   \includegraphics[width=\textwidth]{../figures/above-the-fold-screenshot.png}
-  \caption{Screenshot of the live simulation dashboard, available here: \url{https://in-silico-cancer-cell.waldert.at/}. This is the graphical user interface to the simulation written in Rust. The full simulation, completing within around 500ms, runs live in the browser using Rust's bindings to WebAssembly. One can choose the voltage protocol and cell cycle phase (G0/G1) in the menu on the left, while the full current and individual channel currents and internal states can be seen on the right. The remaining ion channel types have been cut off on this screenshot.}
+  \caption{Screenshot of the live simulation dashboard, available here: \url{https://in-silico.hce.tugraz.at/}. This is the graphical user interface to the simulation written in Rust. The full simulation, completing within around 500ms, runs live in the browser using Rust's bindings to WebAssembly. One can choose the voltage protocol and cell cycle phase (G0/G1) in the menu on the left, while the full current and individual channel currents and internal states can be seen on the right. The remaining ion channel types have been cut off on this screenshot.}
   \label{figure:screenshot}
 \end{figure*}
 

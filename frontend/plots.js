@@ -103,19 +103,19 @@ async function simulationError({}, interactive = false) {
   let diff = [];
   for (let i = 0; i < minLength; i++) {
     const delta = simulation.total_current[i] - measurements.current[0][i];
-    diff.push(Math.pow(delta, 2));
+    diff.push(Math.abs(delta));
   }
   return {
     // y: { type: "log" },
     marks: [
       Plot.axisX({ label: "Time / s" }),
-      Plot.axisY({ label: "Squared Error / pA" }),
+      Plot.axisY({ label: "Absolute Error / pA" }),
       // @ts-ignore
       Plot.lineY(diff, {
         x: sharedX,
-        y: (y) => Math.sqrt(y),
+        y: (y) => y,
         z: null,
-        stroke: (y) => Math.pow(y, 0.2),
+        stroke: (y) => Math.pow(y, 0.4),
         // tip: interactive ? "x" : undefined,
       }),
     ],
@@ -197,7 +197,7 @@ async function deltaTolerancePlot({}, interactive = false) {
     x: { type: "log", reverse: true },
     color: { legend: true },
     marks: [
-      Plot.axisX({ label: "Delta Tolerance / 1" }),
+      Plot.axisX({ label: "Delta Tolerance / 1", tickFormat: "e" }),
       Plot.axisY({ label: "Normalized Quantities / 1" }),
       Plot.lineY(
         data,

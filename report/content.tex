@@ -82,8 +82,8 @@ with cost function $f: \R^M \to \R^+$, which we manipulate to
 \begin{align*}
   f(\vec{x}) & = \sfrac{1}{2} (R \vec{x} - \vec{d})^T (R \vec{x} - \vec{d})                                                          \\
              & = \sfrac{1}{2} \left(\vec{x}^T R^T R \vec{x} - \vec{x}^T R^T \vec{d} - \vec{d}^T R \vec{x} + \vec{d}^T \vec{d}\right) \\
-             & = \sfrac{1}{2} \left(\vec{x}^T P \vec{x} + \vec{x}^T \vec{q} + \vec{q}^T \vec{x}\right)                               \\
-             & = \sfrac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x}
+             & = \sfrac{1}{2} \left(\vec{x}^T P \vec{x} + \vec{x}^T \vec{q} + \vec{q}^T \vec{x}\right) + \mathcal{O}(1)              \\
+             & = \sfrac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x} + \mathcal{O}(1)
 \end{align*}
 where we let $P := R^T R \in \R^{M \times M}$ and $\vec{q} := -R^T \vec{d} \in \R^M$ and leave out the constant $\vec{d}^T \vec{d}$.
 We can express the nonnegativity constraint $\vec{x} \ge \vec{0}$ as an equality constraint using a slack variable $\vec{s} \in \R_+^M$,
@@ -171,7 +171,7 @@ Each channel type is shown as the evolution of its state space and resulting cur
 \end{figure}
 \begin{figure}
   \includegraphics[width=\columnwidth]{../figures/results/simulation-error.pdf}
-  \caption{Pointwise squared error between the measured current $\vec{I}_{\rm meas}$ and the simulated current $\vec{I}$, showing potential systematic problems within the computational model's representation of the ion channels as compared to the experimental results.}
+  \caption{Pointwise error between the measured current $\vec{I}_{\rm meas}$ and the simulated current $\vec{I}$, showing potential systematic problems within the computational model's representation of the ion channels as compared to the experimental results.}
   \label{figure:simulation-error}
 \end{figure}
 

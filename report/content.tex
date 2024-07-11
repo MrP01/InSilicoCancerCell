@@ -141,13 +141,13 @@ For ease of use, we provide a Python interface to the simulation, ready to insta
   )
 
   # to obtain the current basis matrix
-  measurements = PatchClampData.pyload(
+  meas = PatchClampData.pyload(
     PatchClampProtocol.Activation,
     CellPhase.G0
   )
-  problem = ChannelCountsProblem.new(measurements)
-  problem.precompute_single_channel_currents()
-  single_channels = problem.get_current_basis()
+  p = ChannelCountsProblem.new(meas)
+  p.precompute_single_channel_currents()
+  single_channels = p.get_current_basis()
 \end{minted}
 
 \subsection{Live Simulation}
@@ -187,7 +187,7 @@ While keeping the same level of accuracy when matching with the experimental dat
 
 \begin{figure}
   \includegraphics[width=\columnwidth]{../figures/results/delta-tolerance.pdf}
-  \caption{Relative change of the average timestep $\Delta t$, simulation runtime and acceptance rate.}
+  \caption{Relative change of the average timestep $\Delta t$ (in blue), simulation runtime (in violet) and step acceptance rate (in green) when varying the delta tolerance $\Delta^{\rm tol}$ on a log-scale. All three quantities were normalized from their individual extent to $[0, 1]$. The most effective $\Delta^{\rm tol}$ is arguably on the order of $10^{-4}$.}
   \label{figure:delta-tolerance}
 \end{figure}
 
@@ -219,3 +219,4 @@ $$\Delta = \sqrt{\sfrac{1}{N_t} {\textstyle \sum_{j=1}^{N_t}} (I_j - I_{{\rm mea
 \section{Outlook}
 Numerically, the stability of the simulation varies greatly with the time step state change tolerance $\Delta^{\rm tol}$, this could be improved using a higher-order integration scheme.
 Regarding the simulation dashboard, there are still many adjustments that could improve and enable further usage perspectives.
+Specifically, it would be effective to add visual handles for adjusting the number of channels per type and weigh their specific contributions, for instance.

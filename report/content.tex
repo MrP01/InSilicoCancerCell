@@ -85,7 +85,7 @@ with cost function $f: \R^M \to \R^+$, which we manipulate to
              & = \sfrac{1}{2} \left(\vec{x}^T P \vec{x} + \vec{x}^T \vec{q} + \vec{q}^T \vec{x}\right) + \mathcal{O}(1)              \\
              & = \sfrac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x} + \mathcal{O}(1)
 \end{align*}
-where we let $P := R^T R \in \R^{M \times M}$ and $\vec{q} := -R^T \vec{d} \in \R^M$ and leave out the constant $\vec{d}^T \vec{d}$.
+where we let $P := R^T R \in \R^{M \times M}$ and $\vec{q} := -R^T \vec{d} \in \R^M$ and leave out the constant $\vec{d}^T \vec{d}$ as $\mathcal{O}(1)$.
 We can express the nonnegativity constraint $\vec{x} \ge \vec{0}$ as an equality constraint using a slack variable $\vec{s} \in \R_+^M$,
 $$-\vec{x} + \vec{s} = \vec{0} \quad\Leftrightarrow\quad A \vec{x} + \vec{s} = \vec{b}\,,$$
 where we set $A := -\mathds{1} \in \R^{M \times M}$ and $\vec{b} := \vec{0} \in \R^M$.
@@ -164,6 +164,10 @@ Each channel type is shown as the evolution of its state space and resulting cur
 \end{figure}
 
 \section{Results}
+The new simulation reproduces the measurements documented in \cite{2021-A549-model} accurately (cf. \Cref{figure:full-simulation-current,figure:simulation-error}, the remaining five cell cycle phase \& voltage protocol configurations were ommitted in this paper but can be verified via the online dashboard).
+The simulation itself is accessible via its code interface, available from GitHub\footnote{\url{https://github.com/MrP01/InSilicoCancerCell}} and the live simulation dashboard.
+Our method offers a set of significant numerical improvements in terms of the simulation runtime and optimization procedure, as presented in the previous chapter.
+
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{../figures/results/full-simulation-current.pdf}
   \caption{The simulated and measured current response $I(t)$ across the membrane of an A549 cancer cell, given the \textit{activation} voltage protocol $V(t)$ in \Cref{figure:voltage-protocol}, recorded in the G0 phase of the cell cycle.}
@@ -178,12 +182,16 @@ Each channel type is shown as the evolution of its state space and resulting cur
 \subsection{Adaptive Timestepping}
 With the standard forward iteration approach, the simulation takes 412 million steps to simulate over all voltage protocols and cell cycle phases, while the adaptive timestepping only requires 9 million steps for the same configuration.
 While keeping the same level of accuracy when matching with the experimental data, our adaptive timestepping method is therefore 45 times faster than the standard approach, on average.
+The time increment $\Delta t$ chosen at each point in the simulation can be found in \Cref{figure:dt-plot}.
 
 \begin{figure}
   \includegraphics[width=\columnwidth]{../figures/results/dt-plot.pdf}
   \caption{Timestep $\Delta t$ throughout the duration of the simulation. $(\Delta t)_n$ is chosen in between simulation steps based on the heuristic given in \Cref{eq:dt-heuristic}. Red areas (small dt) indicate a high resolution within the simulation, blue areas indicate lower resolution (and therefore higher simulation speed).}
   \label{figure:dt-plot}
 \end{figure}
+
+In order to quantitatively establish the best possible state change tolerance $\Delta^{\rm tol}$, we recorded a number of simulation snapshots across different values for $\Delta^{\rm tol}$.
+The results of this numerical experiment are documented in \Cref{figure:delta-tolerance}, which proves $\Delta^{\rm tol} = 10^{-4}$ to be the best choice.
 
 \begin{figure}
   \includegraphics[width=\columnwidth]{../figures/results/delta-tolerance.pdf}
@@ -193,19 +201,19 @@ While keeping the same level of accuracy when matching with the experimental dat
 
 \subsection{Inverse Problem}
 We compare different optimization approaches based on their runtime and root mean square error,
-$$\Delta = \sqrt{\sfrac{1}{N_t} {\textstyle \sum_{j=1}^{N_t}} (I_j - I_{{\rm meas}, j})^2} = \frac{\norm{\vec{I} - \vec{I}_{\rm meas}}}{\sqrt{N_t}}\,.$$
+$$\Delta_{\rm RMS} = \sqrt{\sfrac{1}{N_t} {\textstyle \sum_{j=1}^{N_t}} (I_j - I_{{\rm meas}, j})^2} = \frac{\norm{\vec{I} - \vec{I}_{\rm meas}}}{\sqrt{N_t}}\,.$$
 
 \begin{table*}[ht]
   \centering
-  \caption{Comparison of Optimization Approaches}
+  \caption{Comparison of Optimization Approaches, evaluated on the G0 cell cycle phase with an activation voltage protocol (cf. \Cref{figure:voltage-protocol}).}
   \begin{tabular}{llrr}
-    \textbf{Algorithm}                          & \textbf{Abbreviation} & \textbf{Runtime} / s & \textbf{RMSE} / pA \\
+    \textbf{Algorithm}                          & \textbf{Abbreviation} & \textbf{Runtime} / ms & \textbf{RMSE} / pA \\
     \midrule
-    Particle Swarm Optimization                 & PSO                   & 22.5                 & 27.691             \\
-    Gradient Descent + More Thuente             & GD                    & 18.9                 & 32.342             \\
-    Limited-Memory BFGS + Hager Zhang           & LBFGS                 & 4.8                  & 32.196             \\
-    Non-Negative Least Squares \cite{1997-nnls} & NNLS                  & 0.318                & 28.00              \\
-    Quadratic Program                           & QP                    & 0.018                & 28.13              \\
+    Particle Swarm Optimization                 & PSO                   & 22571                 & 27.69              \\
+    Gradient Descent + More Thuente             & GD                    & 18924                 & 32.34              \\
+    Limited-Memory BFGS + Hager Zhang           & LBFGS                 & 4845                  & 32.20              \\
+    Non-Negative Least Squares \cite{1997-nnls} & NNLS                  & 318                   & 28.00              \\
+    Quadratic Program                           & QP                    & 18                    & 28.13              \\
   \end{tabular}
   \label{table:optimization-comparison}
 \end{table*}

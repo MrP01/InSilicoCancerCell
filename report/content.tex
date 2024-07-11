@@ -12,6 +12,11 @@ Multiple optimization approaches for the solution of the corresponding inverse p
 \input{chapters/results.tex}
 
 \section{Outlook}
+Efforts to further enhance and complete the first electrophysiological cancer cell model simulation were fruitful, resulting in a new library implementation, an improved inverse problem solution technique and a live in-browser simulation dashboard.
+
 Numerically, the stability of the simulation varies greatly with the time step state change tolerance $\Delta^{\rm tol}$, this could be improved using a higher-order integration scheme.
+
 Regarding the simulation dashboard, there are still many adjustments that could improve and enable further usage perspectives.
-Specifically, it would be effective to add visual handles for adjusting the number of channels per type and weigh their specific contributions, for instance.
+Specifically, it would be effective to add visual handles for adjusting the number of channels per type and weigh their individual contributions, for instance.
+
+Another useful extension would be to enable the interface-based integration of further ion channel types as part of the simulation, without the need to specifically modify the pre-compiled Rust source code.

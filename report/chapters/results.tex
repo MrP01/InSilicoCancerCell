@@ -54,7 +54,7 @@ $$\Delta_{\rm RMS} = \sqrt{\sfrac{1}{N_t} {\textstyle \sum_{j=1}^{N_t}} (I_j - I
 \end{table*}
 
 Specifically, the best performing formulation for the channel counts problem in this context is the Quadratic Program (QP), cf. \Cref{table:optimization-comparison}.
-The program was solved using the Clarabel \parencite{2024-clarabel} optimization library (also written in Rust), which completes the procedure in just 18 milliseconds, including the individual ion channel current simulation itself.
+The program was solved using the Clarabel \parencite{2024-clarabel} optimization library (also written in Rust), which completes the procedure in just 18 milliseconds.
 Measurements and simulation were compared based on an FFT-accelerated Gauss-kernel convolution smoothed version of the 180,000 point measurements.
 
 \subsection{Live Simulation Dashboard}

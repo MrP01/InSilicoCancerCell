@@ -19,4 +19,4 @@ This computational model is based on [Langthaler et al., 2021](https://journals.
 
 ## The Simulation Dashboard
 
-![Screenshot of the User Interface](./figures/screenshot.png)
+![Screenshot of the User Interface](./figures/full-length-screenshot.png)

@@ -82,8 +82,8 @@ $$-\vec{x} + \vec{s} = \vec{0} \quad\Leftrightarrow\quad A \vec{x} + \vec{s} = \
 where we set $A := -\mathds{1} \in \R^{M \times M}$ and $\vec{b} := \vec{0} \in \R^M$.
 This leaves us with a constrained \textit{quadratic program},
 \begin{align}
-  \min_{\vec{x} in \R^M} & \frac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x},     \\
-  s.t.\;                 & A \vec{x} + \vec{s} = \vec{b}\,,\; \vec{s} \in \R_+^M\,.
+  \min_{\vec{x} \in \R^M} & \frac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x},     \\
+  s.t.\;                  & A \vec{x} + \vec{s} = \vec{b}\,,\; \vec{s} \in \R_+^M\,.
 \end{align}
 
 We solve the quadratic problem in this exact form using Clarabel \cite{2024-clarabel}.

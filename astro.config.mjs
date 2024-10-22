@@ -8,6 +8,13 @@ export default defineConfig({
     optimizeDeps: {
       entries: ["layouts", "pages", "components"],
     },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: "modern-compiler",
+        },
+      },
+    },
     plugins: [wasm()],
   },
 });

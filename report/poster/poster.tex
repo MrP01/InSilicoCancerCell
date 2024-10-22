@@ -56,19 +56,20 @@
 \useblockstyle{Minimal}
 
 \settitle{
-  \color{titlefgcolor} {\bfseries \Huge \sc \@title \par}
-  \vspace*{1em}
-  {\huge \@author \par} \vspace*{1em} {\LARGE \@institute}  
-  % \vbox{
-  %   % \@titlegraphic \\[\TP@titlegraphictotitledistance]
-  % }
+  \vspace{0.4cm}
+  \hspace{0.5cm}
+  \vbox{
+    \color{titlefgcolor} {\bfseries \Huge \sc \@title \par}
+    \vspace*{1em}
+    {\huge \@author \par} \vspace*{1em} {\LARGE \@institute}  
+  }
 }
 
 \begin{document}
   \maketitle[width=\linewidth]
 
-  \node[anchor=east] at ([xshift=-1cm, yshift=-1cm]TP@title.east) {\includegraphics[width=10cm]{../logos/tugraz.pdf}};
-  \node[anchor=east] at ([xshift=-10cm, yshift=-1cm]TP@title.east) {\includegraphics[width=15cm]{../logos/biotechmed-graz.eps}};
+  \node[anchor=east] at ([xshift=-1cm, yshift=-1cm]TP@title.east) {\includegraphics[height=4.0cm]{../logos/tugraz.pdf}};
+  \node[anchor=east] at ([xshift=-9cm, yshift=-1cm]TP@title.east) {\includegraphics[height=5.2cm]{../logos/biotechmed-graz.eps}};
   % \node[] at (33.1in/2-10cm, -46.8in/2+4cm) {\includegraphics[width=15cm]{../logos/biotechmed-graz.eps}};
 
   \begin{columns}

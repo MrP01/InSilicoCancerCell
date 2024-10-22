@@ -72,20 +72,39 @@
   % \node[] at (33.1in/2-10cm, -46.8in/2+4cm) {\includegraphics[width=15cm]{../logos/biotechmed-graz.eps}};
 
   \begin{columns}
-    \column{0.8}
+    \column{0.25}
+    \block{Introduction}{
+      We extend the previous work \cite{2021-A549-model} by a faster, in-browser implementation in Rust \cite{2014-rust} using compilation to WebAssembly.
+
+      \section*{Number of Channels}
+      \begin{tabular}{lrr}
+        \textbf{Channel Type} & \textbf{$\bm{N_k}$ \cite{2021-A549-model}} & \textbf{Our $\bm{N_k}$} \\
+        \midrule
+        Kv13                  & 22                                         & 13                      \\
+        Kv31                  & 78                                         & 247                     \\
+        Kv34                  & 5                                          & 10                      \\
+        Kv71                  & 1350                                       & 1176                    \\
+        KCa11                 & 40                                         & 38                      \\
+        KCa31                 & 77                                         & 7                       \\
+        Task1                 & 19                                         & 24                      \\
+        CRAC1                 & 200                                        & 188                     \\
+        TRPC6                 & 17                                         & 15                      \\
+        TRPV3                 & 12                                         & 10                      \\
+        CLC2                  & 13                                         & 234                     \\
+      \end{tabular}
+    }
+
+    \column{0.75}
     \block{Live, In-Browser Cell Simulation Interface}{
       \includegraphics[width=\linewidth]{../../figures/above-the-fold-screenshot.png}
       Available live on \href{https://in-silico.hce.tugraz.at/}{in-silico.hce.tugraz.at}.
     }
-
-    \column{0.2}
-    \block{Good stuff}{}
   \end{columns}
 
   \begin{columns}
     \column{0.5}
     \block{Model}{
-      % The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is then obtained as the sum of all individual channel contributions $I_k, k \in \{1, ..., M\}$ over $M \in \N$ channel types
+      The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is the sum of all individual channel contributions $I_k, k \in \{1, ..., M\}$ over $M \in \N$ channel types
       \begin{equation}
         I(t) := \sum_{k=1}^{M} N_k I_k(t) = \sum_{k=1}^{M} N_k g_k p_{o,k} \left(V(t)-E_k\right)\,,
         \label{eq:current}
@@ -98,8 +117,34 @@
       \end{equation}
       % where $\vec{s}_{k,n} \in [0, 1]^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in [0, 1]^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$ with $\sum_{j=1}^{N_{s,k}} \{H_k\}_{i,j} = 1 \;\forall\,i$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
     }
+    \block{Adaptive Timestepping}{
+      \begin{equation}
+        (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n+1} - \vec{s}_{k,n}}}\right)^{1/2}\,,
+        \label{eq:dt-heuristic}
+      \end{equation}
+
+      % \begin{figure}
+      \includegraphics[width=\linewidth]{../../figures/results/delta-tolerance.pdf}
+      % \caption{Relative change of the average timestep $\Delta t$ (in blue), simulation runtime (in violet) and step acceptance rate (in green) when varying the delta tolerance $\Delta^{\rm tol}$ on a log-scale. All three quantities were normalized from their individual extent to $[0, 1]$. The most effective $\Delta^{\rm tol}$ is arguably on the order of $10^{-4}$.}
+      % \label{figure:delta-tolerance}
+      % \end{figure}
+      \vspace*{-3.5cm}
+    }
+    \block{Pointwise Error between Simulation and Measurements}{
+      \includegraphics[width=\linewidth]{../../figures/results/simulation-error.pdf}
+      % \caption{Pointwise error between the measured current $\vec{I}_{\rm meas}$ and the simulated current $\vec{I}$, showing potential systematic problems within the computational model's representation of the ion channels as compared to the experimental results.}
+      \vspace*{-3.5cm}
+    }
+
+    \column{0.5}
     \block{Formulation as a Quadratic Program}{
-      Relaxing the integer condition on the solution, and letting $\vec{d} := \vec{I}_{\rm meas}$ for brevity, we can reformulate \Cref{eq:minimization},
+      We want to find
+      \begin{equation}
+        \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \frac{1}{2} \norm{R \vec{N} - \vec{I}_{\rm meas}}^2\,,
+        \label{eq:minimization}
+      \end{equation}
+      with $\vec{I}_{\rm meas} \in \R^{N_t}$ the experimentally measured current and $R \in \R^{N_t \times M}$ the matrix of all currents $I_k$ per channel type.
+      Letting $\vec{d} := \vec{I}_{\rm meas}$ for brevity,
       $$\vec{N}_{\rm opt} \approx \argmin_{\vec{x} \in \R_+^M} f(\vec{x}) = \argmin_{\vec{x} \in \R_+^M} \sfrac{1}{2} \norm{R \vec{x} - \vec{d}}^2\,,$$
       with cost function $f: \R^M \to \R^+$, which we manipulate to
       \begin{align*}
@@ -118,29 +163,11 @@
         s.t.\;                  & A \vec{x} + \vec{s} = \vec{b}\,,\; \vec{s} \in \R_+^M\,.
       \end{align}
 
-      We solve the quadratic problem in this exact form using Clarabel \cite{2024-clarabel}.
-      Note that in Clarabel notation, the slack variable is to be taken as an element of the nonnegativity cone.
+      % We solve the quadratic problem in this exact form using Clarabel \cite{2024-clarabel}.
+      % Note that in Clarabel notation, the slack variable is to be taken as an element of the nonnegativity cone.
 
       The integer solution can then be obtained from rounding,
       $$\vec{N}_{\rm opt} = \lfloor \vec{x} \rceil \in \N_0^M\,.$$
-    }
-    \block{Pointwise Error between Simulation and Measurements}{
-      \includegraphics[width=\linewidth]{../../figures/results/simulation-error.pdf}
-      % \caption{Pointwise error between the measured current $\vec{I}_{\rm meas}$ and the simulated current $\vec{I}$, showing potential systematic problems within the computational model's representation of the ion channels as compared to the experimental results.}
-    }
-
-    \column{0.5}
-    \block{Adaptive Timestepping}{
-      \begin{equation}
-        (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n+1} - \vec{s}_{k,n}}}\right)^{1/2}\,,
-        \label{eq:dt-heuristic}
-      \end{equation}
-
-      % \begin{figure}
-      \includegraphics[width=\linewidth]{../../figures/results/delta-tolerance.pdf}
-      % \caption{Relative change of the average timestep $\Delta t$ (in blue), simulation runtime (in violet) and step acceptance rate (in green) when varying the delta tolerance $\Delta^{\rm tol}$ on a log-scale. All three quantities were normalized from their individual extent to $[0, 1]$. The most effective $\Delta^{\rm tol}$ is arguably on the order of $10^{-4}$.}
-      % \label{figure:delta-tolerance}
-      % \end{figure}
     }
     \block{Comparison of Optimization Methods}{
       % \begin{table*}[ht]
@@ -148,7 +175,7 @@
       % \caption{Comparison of Optimization Approaches, evaluated on the G0 cell cycle phase with the activation voltage protocol. Runtime estimates were obtained on an Intel\texttrademark i7-5600U CPU.}
       \begin{tabular}{llrr}
         \textbf{Algorithm}                          & \textbf{Abbreviation} & \textbf{Runtime} / ms & \textbf{RMSE} / pA \\
-        % \midrule
+        \midrule
         Particle Swarm Optimization                 & PSO                   & 22571                 & 27.69              \\
         Gradient Descent + More Thuente             & GD                    & 18924                 & 32.34              \\
         Limited-Memory BFGS + Hager Zhang           & LBFGS                 & 4845                  & 32.20              \\

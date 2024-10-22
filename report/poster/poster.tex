@@ -1,13 +1,14 @@
 \documentclass[25pt, a0paper, portrait]{tikzposter}
 \usepackage[beamer]{prettytex/base}
 \usepackage{prettytex/math}
+\usepackage{prettytex/code}
 % \usepackage[backend=biber,style=numeric]{biblatex}
 \input{../macros.tex}
 \newcommand{\midrule}{\hline}
 
 \addbibresource{../../literature/sources.bib}
 
-\title{Enabling real-time interaction with an electrophysiological cancer cell model}
+\title{Real-time interaction with an electrophysiological cancer cell model}
 \author{
   Peter Waldert,
   Theresa Rienmüller,
@@ -33,9 +34,9 @@
   \colorlet{titlefgcolor}{black}
   \colorlet{titlebgcolor}{TUGraz}
   % Block Colors
-  \colorlet{blocktitlebgcolor}{colorTwo!50}
+  \colorlet{blocktitlebgcolor}{colorTwo}
   \colorlet{blocktitlefgcolor}{black}
-  \colorlet{blockbodybgcolor}{colorTwo!50}
+  \colorlet{blockbodybgcolor}{colorTwo}
   \colorlet{blockbodyfgcolor}{black}
   % Innerblock Colors
   \colorlet{innerblocktitlebgcolor}{white}
@@ -65,9 +66,20 @@
 \begin{document}
   \maketitle[width=\linewidth]
 
-  \block{Live, In-Browser Cell Simulation Interface}{
-    \includegraphics[width=\linewidth]{../../figures/above-the-fold-screenshot.png}
-  }
+  \node[anchor=east] at ([xshift=-1cm, yshift=-1cm]TP@title.east) {\includegraphics[width=10cm]{../logos/tugraz.pdf}};
+  \node[anchor=east] at ([xshift=-10cm, yshift=-1cm]TP@title.east) {\includegraphics[width=15cm]{../logos/biotechmed-graz.eps}};
+  % \node[] at (33.1in/2-10cm, -46.8in/2+4cm) {\includegraphics[width=15cm]{../logos/biotechmed-graz.eps}};
+
+  \begin{columns}
+    \column{0.8}
+    \block{Live, In-Browser Cell Simulation Interface}{
+      \includegraphics[width=\linewidth]{../../figures/above-the-fold-screenshot.png}
+      Available live on \href{https://in-silico.hce.tugraz.at/}{in-silico.hce.tugraz.at}.
+    }
+
+    \column{0.2}
+    \block{Good stuff}{}
+  \end{columns}
 
   \begin{columns}
     \column{0.5}
@@ -110,6 +122,10 @@
 
       The integer solution can then be obtained from rounding,
       $$\vec{N}_{\rm opt} = \lfloor \vec{x} \rceil \in \N_0^M\,.$$
+    }
+    \block{Pointwise Error between Simulation and Measurements}{
+      \includegraphics[width=\linewidth]{../../figures/results/simulation-error.pdf}
+      % \caption{Pointwise error between the measured current $\vec{I}_{\rm meas}$ and the simulated current $\vec{I}$, showing potential systematic problems within the computational model's representation of the ion channels as compared to the experimental results.}
     }
 
     \column{0.5}

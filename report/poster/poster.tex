@@ -1,4 +1,4 @@
-\documentclass[25pt, a0paper, portrait]{tikzposter}
+\documentclass[25pt, a0paper, portrait, colspace=8mm]{tikzposter}
 \usepackage[beamer]{prettytex/base}
 \usepackage{prettytex/math}
 % \usepackage[backend=biber,style=numeric]{biblatex}
@@ -23,6 +23,8 @@
 \definecolor{TUGraz}{HTML}{f70146}
 % \definecolor{TUGraz}{HTML}{e4154b}
 \definecolor{Accent}{RGB}{136, 58, 234}
+\definecolor{AccentGreen}{RGB}{0, 128, 0}
+\definecolor{AccentBlue}{RGB}{0, 0, 255}
 
 \definecolorstyle{TUGrazColorStyle}{
   \colorlet{colorTwo}{TUGraz}
@@ -53,7 +55,7 @@
   titlewidthscale=1, bodywidthscale=1,
   titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
   bodyverticalshift=0pt, roundedcorners=0, linewidth=0.2cm,
-  titleinnersep=6mm, bodyinnersep=6mm, titlecenter
+  titleinnersep=6mm, bodyinnersep=6mm, titleleft
 }{
   \begin{scope}[line width=\blocklinewidth, rounded corners=\blockroundedcorners]
     \ifBlockHasTitle %
@@ -77,76 +79,60 @@
   \vspace{0.4cm}
   \hspace{0.5cm}
   \vbox{
+    \centering
     \color{titlefgcolor}
     {\bfseries \Huge \sc \@title \par}
-    \vspace*{0.5em}
-    {\huge \@author \par}
-    \vspace*{0.5em}
-    {\LARGE \@institute}  
-    \vspace*{-2.4cm}
+    \vspace*{0.8em}
+    {\LARGE \@author \par}
+    \vspace*{0.6em}
+    {\Large \@institute}  
+    \vspace*{-1.8cm}
   }
 }
 
 \begin{document}
-  \hypersetup{urlcolor=purple, linkcolor=purple, citecolor=purple}
-  \renewcommand{\operatorcolor}{Accent}
+  \hypersetup{urlcolor=Accent, linkcolor=AccentBlue, citecolor=AccentBlue}
+  \renewcommand{\operatorcolor}{AccentBlue}
 
   \maketitle[width=\linewidth]
 
-  \node[anchor=east] at ([xshift=-1.8cm, yshift=-2cm]TP@title.east) {\includegraphics[height=4.0cm]{../logos/tugraz.pdf}};
-  \node[anchor=east] at ([xshift=-14cm, yshift=-6cm]TP@title.east) {\includegraphics[height=2.5cm]{../logos/hce.pdf}};
-  \node[anchor=east] at ([xshift=2.5cm, yshift=-6cm]TP@title.east) {\includegraphics[height=5.2cm]{../logos/biotechmed-graz.eps}};
+  \node[anchor=west] at ([xshift=1.8cm, yshift=-2.5cm]TP@title.west) {\includegraphics[height=4.0cm]{../logos/tugraz.pdf}};
+  % \node[anchor=east] at ([xshift=-14cm, yshift=-6cm]TP@title.east) {\includegraphics[height=2.5cm]{../logos/hce.pdf}};
+  \node[anchor=east] at ([xshift=2.8cm, yshift=-2.5cm]TP@title.east) {\includegraphics[height=5.4cm]{../logos/biotechmed-graz.eps}};
   % \node[] at (33.1in/2-10cm, -46.8in/2+4cm) {\includegraphics[width=15cm]{../logos/biotechmed-graz.eps}};
 
   \begin{columns}
     \column{0.25}
-    \block{Introduction}{
+    \block{\sc Introduction}{
       % We extend the previous work \cite{2021-A549-model} by a faster, in-browser implementation in Rust \cite{2014-rust} using compilation to WebAssembly.
 
       We improve on the A549 electrophysiological cancer cell model introduced in \cite{2021-A549-model,2024-calcium-channels}, combining numerical methods with an efficient implementation to reduce simulation time to a level where it is feasible for live interaction.
 
       \includegraphics[width=\linewidth]{../../figures/cell-by-langthaler-et-al.png}
-      \textit{Schematic depiction of a cell, source: \cite{2024-calcium-channels}.}
+      \textit{Schematic depiction of the cell, source: \cite{2024-calcium-channels}}
       \vspace*{2mm}
 
       We accelerated the simulation with adaptive timestepping and a highly efficient implementation in the Rust programming language.
       The corresponding inverse problem is expressed as a quadratic program, solving it within milliseconds.
       We introduce a visualisation approach of the entire model: a live simulation dashboard available online, running directly in the browser.
       % The entire source code is freely available on GitHub and reusable through three different channels: the simulation interface (powered by compilation to WebAssembly), the Rust linkable library implementation and a Python package.
-
-      % \section*{Number of Channels}
-      % \begin{tabular}{lrr}
-      %   \textbf{Channel Type} & \textbf{$\bm{N_k}$ \cite{2021-A549-model}} & \textbf{Our $\bm{N_k}$} \\
-      %   \midrule
-      %   Kv13                  & 22                                         & 13                      \\
-      %   Kv31                  & 78                                         & 247                     \\
-      %   Kv34                  & 5                                          & 10                      \\
-      %   Kv71                  & 1350                                       & 1176                    \\
-      %   KCa11                 & 40                                         & 38                      \\
-      %   KCa31                 & 77                                         & 7                       \\
-      %   Task1                 & 19                                         & 24                      \\
-      %   CRAC1                 & 200                                        & 188                     \\
-      %   TRPC6                 & 17                                         & 15                      \\
-      %   TRPV3                 & 12                                         & 10                      \\
-      %   CLC2                  & 13                                         & 234                     \\
-      % \end{tabular}
       \vspace*{-2.4cm}
     }
 
     \column{0.75}
-    \block{Live, In-Browser Cell Simulation Interface\vspace*{-0.16em}\hspace*{17cm}}{
+    \block{\sc Live, In-Browser Cell Simulation Interface\vspace*{-0.14em}}{
       \includegraphics[width=\linewidth, trim={0 2.5cm 0 0}, clip]{../../figures/interface-a4.pdf}
-      This interface is available online via \href{https://in-silico.hce.tugraz.at/}{in-silico.hce.tugraz.at}, try it out!
+      \textit{This interface is available online via \href{https://in-silico.hce.tugraz.at/}{in-silico.hce.tugraz.at}, try it out!}
       \vspace*{-1.5cm}
     }
   \end{columns}
 
   \begin{columns}
     \column{0.5}
-    \block{Model}{
+    \block{\sc Model}{
     The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is the sum of all individual channel contributions $I_k, k \in \{1, ..., M\}$ over $M \in \N$ channel types
     \begin{equation*}
-      I(t) := \sum_{k=1}^{M} N_k I_k(t) = \sum_{k=1}^{M} N_k g_k p_{o,k} \left(V(t)-E_k\right)\,,
+      I(t) := \sum_{k=1}^{M} N_k I_k(t) = \sum_{k=1}^{M} N_k g_k p_{o,k} \left(V(t)-E_k\right)\,.
       \label{eq:current}
     \end{equation*}
     % where $N_k$ is the number of channels of type $k \in \{1, ..., M\}$, $g_k$ is the respective ion channel's conductivity, $p_{o, k} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_k \in \R$ the reversal potential.
@@ -160,7 +146,7 @@
     % where $\vec{s}_{k,n} \in [0, 1]^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in [0, 1]^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$ with $\sum_{j=1}^{N_{s,k}} \{H_k\}_{i,j} = 1 \;\forall\,i$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
     \vspace*{-2.8cm}
     }
-    \block{Adaptive Timestepping}{
+    \block{\sc Adaptive Timestepping}{
       In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size $(\Delta t)_{n}$ based on
       \begin{equation*}
         (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n+1} - \vec{s}_{k,n}}}\right)^{1/2}\,.
@@ -173,19 +159,19 @@
 
       \includegraphics[width=\linewidth]{../../figures/results/delta-tolerance.pdf}
 
-      Relative change of the average timestep $\Delta t$ (in \col{blue}{blue}), simulation runtime (in \col{Accent}{violet}) and step acceptance rate (in \col{green}{green}) when varying the delta tolerance $\Delta^{\rm tol}$ on a log-scale. All three quantities were normalized from their individual extent to $[0, 1]$. The most effective $\Delta^{\rm tol}$ is arguably on the order of $10^{-4}$.
+      \textit{Relative change of the average timestep $\Delta t$ (in \col{AccentBlue}{blue}), simulation runtime (in \col{Accent}{violet}) and step acceptance rate (in \col{AccentGreen}{green}) when varying the delta tolerance $\Delta^{\rm tol}$ on a log-scale. All three quantities were normalized from their individual extent to $[0, 1]$. The most effective $\Delta^{\rm tol}$ is arguably on the order of $10^{-4}$.}
       % \label{figure:delta-tolerance}
       % \end{figure}
       \vspace*{-1.0cm}
     }
-    % \block{Pointwise Error between Simulation and Measurements}{
+    % \block{\sc Pointwise Error between Simulation and Measurements}{
     %   \includegraphics[width=\linewidth]{../../figures/results/simulation-error.pdf}
     %   % \caption{Pointwise error between the measured current $\vec{I}_{\rm meas}$ and the simulated current $\vec{I}$, showing potential systematic problems within the computational model's representation of the ion channels as compared to the experimental results.}
     %   \vspace*{-3.0cm}
     % }
 
     \column{0.5}
-    \block{Formulation as a Quadratic Program\vspace*{-0.16em}}{
+    \block{\sc Formulation as a Quadratic Program\vspace*{-0.18em}}{
       After simulation of the individual channel currents, we want to find
       \begin{equation*}
         \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \frac{1}{2} \norm{R \vec{N} - \vec{I}_{\rm meas}}^2\,.
@@ -217,7 +203,7 @@
       $$\vec{N}_{\rm opt} = \lfloor \vec{x} \rceil \in \N_0^M\,.$$
       \vspace*{-3.0cm}
     }
-    \block{Comparison of Optimization Methods}{
+    \block{\sc Comparison of Optimization Methods}{
       % \begin{table*}[ht]
       % \centering
       The different approaches were evaluated on the G0 cell cycle phase with the activation voltage protocol. Runtime estimates were obtained on an Intel\texttrademark i7-5600U CPU.
@@ -239,17 +225,15 @@
     }
   \end{columns}
 
-  \block{Conclusion}{
+  \block{\sc Conclusion}{
     Efforts to further enhance and complete the first electrophysiological cancer cell model simulation were fruitful, resulting in a new library implementation, an improved inverse problem solution technique and a live in-browser simulation dashboard.
     Numerically, the stability of the simulation varies greatly with the time step state change tolerance $\Delta^{\rm tol}$, this could be improved using a higher-order integration scheme.
     There are also many ideas for further customizations that would improve the live simulation dashboard, opening up future usage perspectives.
-
-    % simply run: \mintinline{text}{pip install in-silico-cancer-cell}
-    \vspace*{-1.2cm}
+    \vspace*{-1.0cm}
   }
 
-  \block{References}{
-    \nocite{sigfridsson,worman}
+  \block{\sc References}{
+    \vspace*{-0.2cm}
     \begin{minipage}{\linewidth}
       \begin{center}\mbox{}
         \printbibliography[heading=none]

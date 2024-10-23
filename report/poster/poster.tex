@@ -1,7 +1,6 @@
 \documentclass[25pt, a0paper, portrait]{tikzposter}
 \usepackage[beamer]{prettytex/base}
 \usepackage{prettytex/math}
-\usepackage{prettytex/code}
 % \usepackage[backend=biber,style=numeric]{biblatex}
 \input{../macros.tex}
 \newcommand{\midrule}{\hline}
@@ -51,10 +50,10 @@
 }
 
 \defineblockstyle{TUGrazBlockStyle}{
-  titlewidthscale=1, bodywidthscale=1, titleleft,
+  titlewidthscale=1, bodywidthscale=1,
   titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
   bodyverticalshift=0pt, roundedcorners=0, linewidth=0.2cm,
-  titleinnersep=6mm, bodyinnersep=6mm
+  titleinnersep=6mm, bodyinnersep=6mm, titlecenter
 }{
   \begin{scope}[line width=\blocklinewidth, rounded corners=\blockroundedcorners]
     \ifBlockHasTitle %
@@ -89,6 +88,9 @@
 }
 
 \begin{document}
+  \hypersetup{urlcolor=purple, linkcolor=purple, citecolor=purple}
+  \renewcommand{\operatorcolor}{Accent}
+
   \maketitle[width=\linewidth]
 
   \node[anchor=east] at ([xshift=-1.8cm, yshift=-2cm]TP@title.east) {\includegraphics[height=4.0cm]{../logos/tugraz.pdf}};
@@ -132,7 +134,7 @@
     }
 
     \column{0.75}
-    \block{Live, In-Browser Cell Simulation Interface\vspace*{-0.16em}}{
+    \block{Live, In-Browser Cell Simulation Interface\vspace*{-0.16em}\hspace*{17cm}}{
       \includegraphics[width=\linewidth, trim={0 2.5cm 0 0}, clip]{../../figures/interface-a4.pdf}
       This interface is available online via \href{https://in-silico.hce.tugraz.at/}{in-silico.hce.tugraz.at}, try it out!
       \vspace*{-1.5cm}
@@ -171,7 +173,7 @@
 
       \includegraphics[width=\linewidth]{../../figures/results/delta-tolerance.pdf}
 
-      Relative change of the average timestep $\Delta t$ (in blue), simulation runtime (in violet) and step acceptance rate (in green) when varying the delta tolerance $\Delta^{\rm tol}$ on a log-scale. All three quantities were normalized from their individual extent to $[0, 1]$. The most effective $\Delta^{\rm tol}$ is arguably on the order of $10^{-4}$.
+      Relative change of the average timestep $\Delta t$ (in \col{blue}{blue}), simulation runtime (in \col{Accent}{violet}) and step acceptance rate (in \col{green}{green}) when varying the delta tolerance $\Delta^{\rm tol}$ on a log-scale. All three quantities were normalized from their individual extent to $[0, 1]$. The most effective $\Delta^{\rm tol}$ is arguably on the order of $10^{-4}$.
       % \label{figure:delta-tolerance}
       % \end{figure}
       \vspace*{-1.0cm}

@@ -38,13 +38,19 @@ h1 {
   // text-align: center;
   margin-bottom: 1em;
 }
+
 .text-gradient {
-  background-image: var(--accent-gradient);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 400%;
-  background-position: 0%;
+  @media screen {
+    background-image: var(--accent-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 400%;
+    background-position: 0%;
+  }
+  @media print {
+    color: rgb(var(--accent));
+  }
 }
 
 h1,

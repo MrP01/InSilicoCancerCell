@@ -84,7 +84,7 @@
     {\huge \@author \par}
     \vspace*{0.5em}
     {\LARGE \@institute}  
-    \vspace*{-2cm}
+    \vspace*{-2.4cm}
   }
 }
 
@@ -137,22 +137,24 @@
   \begin{columns}
     \column{0.5}
     \block{Model}{
-      The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is the sum of all individual channel contributions $I_k, k \in \{1, ..., M\}$ over $M \in \N$ channel types
-      \begin{equation*}
-        I(t) := \sum_{k=1}^{M} N_k I_k(t) = \sum_{k=1}^{M} N_k g_k p_{o,k} \left(V(t)-E_k\right)\,,
-        \label{eq:current}
-      \end{equation*}
-      % where $N_k$ is the number of channels of type $k \in \{1, ..., M\}$, $g_k$ is the respective ion channel's conductivity, $p_{o, k} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_k \in \R$ the reversal potential.
+    The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is the sum of all individual channel contributions $I_k, k \in \{1, ..., M\}$ over $M \in \N$ channel types
+    \begin{equation*}
+      I(t) := \sum_{k=1}^{M} N_k I_k(t) = \sum_{k=1}^{M} N_k g_k p_{o,k} \left(V(t)-E_k\right)\,,
+      \label{eq:current}
+    \end{equation*}
+    % where $N_k$ is the number of channels of type $k \in \{1, ..., M\}$, $g_k$ is the respective ion channel's conductivity, $p_{o, k} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_k \in \R$ the reversal potential.
 
-      At each time step,
-      \begin{equation*}
-        \vec{s}_{k,n+1} = H_{k}\left(V(t_n), \vec{C}(t_n), t_n\right) \vec{s}_{k,n}\,.
-      \end{equation*}
-      % where $\vec{s}_{k,n} \in [0, 1]^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in [0, 1]^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$ with $\sum_{j=1}^{N_{s,k}} \{H_k\}_{i,j} = 1 \;\forall\,i$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
-      \vspace*{-3.0cm}
+    At each time step, the next state $\vec{s}_{k,n+1} \in [0, 1]^{N_{s,k}}$ of the $k$-th channel type is obtained by
+    \begin{equation*}
+      \vec{s}_{k,n+1} = H_{k}\left(V(t_n), \vec{C}(t_n), t_n\right) \vec{s}_{k,n}\,,
+      \quad
+      t_n := \sum_{i=0}^n (\Delta t)_i\,.
+    \end{equation*}
+    % where $\vec{s}_{k,n} \in [0, 1]^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in [0, 1]^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$ with $\sum_{j=1}^{N_{s,k}} \{H_k\}_{i,j} = 1 \;\forall\,i$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
+    \vspace*{-3.0cm}
     }
     \block{Adaptive Timestepping}{
-      In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size based on
+      In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size $(\Delta t)_{n}$ based on
       \begin{equation*}
         (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n+1} - \vec{s}_{k,n}}}\right)^{1/2}\,.
         \label{eq:dt-heuristic}
@@ -160,13 +162,14 @@
 
       % \begin{figure}
       In order to find the optimal $\Delta^{\rm tol} \in \R^+$ (the allowed state change in between steps):
+      \vspace{4mm}
 
       \includegraphics[width=\linewidth]{../../figures/results/delta-tolerance.pdf}
 
       Relative change of the average timestep $\Delta t$ (in blue), simulation runtime (in violet) and step acceptance rate (in green) when varying the delta tolerance $\Delta^{\rm tol}$ on a log-scale. All three quantities were normalized from their individual extent to $[0, 1]$. The most effective $\Delta^{\rm tol}$ is arguably on the order of $10^{-4}$.
       % \label{figure:delta-tolerance}
       % \end{figure}
-      \vspace*{-3.0cm}
+      \vspace*{-1.0cm}
     }
     % \block{Pointwise Error between Simulation and Measurements}{
     %   \includegraphics[width=\linewidth]{../../figures/results/simulation-error.pdf}
@@ -193,12 +196,11 @@
       \end{align*}
       where we let $P := R^T R \in \R^{M \times M}$ and $\vec{q} := -R^T \vec{d} \in \R^M$ and leave out the constant $\vec{d}^T \vec{d}$ as $\mathcal{O}(1)$.
       We can express the nonnegativity constraint $\vec{x} \ge \vec{0}$ as an equality constraint using a slack variable $\vec{s} \in \R_+^M$,
-      $$-\vec{x} + \vec{s} = \vec{0} \quad\Leftrightarrow\quad A \vec{x} + \vec{s} = \vec{b}\,,$$
-      where we set $A := -\mathds{1} \in \R^{M \times M}$ and $\vec{b} := \vec{0} \in \R^M$.
+      $$-\vec{x} + \vec{s} = \vec{0} \quad\Leftrightarrow\quad A \vec{x} + \vec{s} = \vec{b}\,\quad \text{with}\quad A = -\mathds{1} \in \R^{M \times M} \;\;\text{and}\;\; \vec{b} = \vec{0} \in \R^M\,.$$
       This leaves us with a constrained \textit{quadratic program},
       \begin{align*}
-        \min_{\vec{x} \in \R^M} & \frac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x},     \\
-        s.t.\;                  & A \vec{x} + \vec{s} = \vec{b}\,,\; \vec{s} \in \R_+^M\,.
+        \min_{\vec{x} \in \R^M}\; & \sfrac{1}{2}\, \vec{x}^T P \vec{x} + \vec{q}^T \vec{x},  \\
+        s.t.\;                    & A \vec{x} + \vec{s} = \vec{b}\,,\; \vec{s} \in \R_+^M\,.
       \end{align*}
 
       % We solve the quadratic problem in this exact form using Clarabel \cite{2024-clarabel}.

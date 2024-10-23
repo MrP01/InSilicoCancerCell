@@ -147,11 +147,11 @@
     At each time step, the next state $\vec{s}_{k,n+1} \in [0, 1]^{N_{s,k}}$ of the $k$-th channel type is obtained by
     \begin{equation*}
       \vec{s}_{k,n+1} = H_{k}\left(V(t_n), \vec{C}(t_n), t_n\right) \vec{s}_{k,n}\,,
-      \quad
+      \quad\text{with}\quad
       t_n := \sum_{i=0}^n (\Delta t)_i\,.
     \end{equation*}
     % where $\vec{s}_{k,n} \in [0, 1]^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in [0, 1]^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$ with $\sum_{j=1}^{N_{s,k}} \{H_k\}_{i,j} = 1 \;\forall\,i$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
-    \vspace*{-3.0cm}
+    \vspace*{-2.8cm}
     }
     \block{Adaptive Timestepping}{
       In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size $(\Delta t)_{n}$ based on
@@ -179,12 +179,12 @@
 
     \column{0.5}
     \block{Formulation as a Quadratic Program\vspace*{-0.16em}}{
-      We want to find
+      After simulation of the individual channel currents, we want to find
       \begin{equation*}
         \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \frac{1}{2} \norm{R \vec{N} - \vec{I}_{\rm meas}}^2\,.
         \label{eq:minimization}
       \end{equation*}
-      with $\vec{I}_{\rm meas} \in \R^{N_t}$ the experimentally measured current and $R \in \R^{N_t \times M}$ the matrix of all currents $I_k$ per channel type.
+      the number of channels per type, with $\vec{I}_{\rm meas} \in \R^{N_t}$ the experimentally measured current and $R \in \R^{N_t \times M}$ the matrix of all currents $I_k$ per channel type.
       Letting $\vec{d} := \vec{I}_{\rm meas}$ for brevity,
       $$\vec{N}_{\rm opt} \approx \argmin_{\vec{x} \in \R_+^M} f(\vec{x}) = \argmin_{\vec{x} \in \R_+^M} \sfrac{1}{2} \norm{R \vec{x} - \vec{d}}^2\,,$$
       with cost function $f: \R^M \to \R^+$, which we manipulate to
@@ -216,7 +216,7 @@
       The different approaches were evaluated on the G0 cell cycle phase with the activation voltage protocol. Runtime estimates were obtained on an Intel\texttrademark i7-5600U CPU.
       \vspace{.5cm}
 
-      \begin{tabular}{llrr}
+      \begin{tabular}{lcrr}
         \hline
         \textbf{Algorithm}                          & \textbf{Abbreviation} & \textbf{Runtime} / ms & \textbf{RMSE} / pA \\
         \midrule

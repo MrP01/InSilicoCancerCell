@@ -104,8 +104,8 @@
       We improve on the A549 electrophysiological cancer cell model introduced in \cite{2021-A549-model,2024-calcium-channels}, combining numerical methods with an efficient implementation to reduce simulation time to a level where it is feasible for live interaction.
 
       \includegraphics[width=\linewidth]{../../figures/cell-by-langthaler-et-al.png}
-      Schematic Depiction of a cell, source: \cite{2024-calcium-channels}.
-      \vspace*{-8mm}
+      \textit{Schematic depiction of a cell, source: \cite{2024-calcium-channels}.}
+      \vspace*{2mm}
 
       We accelerated the simulation with adaptive timestepping and a highly efficient implementation in the Rust programming language.
       The corresponding inverse problem is expressed as a quadratic program, solving it within milliseconds.
@@ -239,6 +239,8 @@
 
   \block{Conclusion}{
     Efforts to further enhance and complete the first electrophysiological cancer cell model simulation were fruitful, resulting in a new library implementation, an improved inverse problem solution technique and a live in-browser simulation dashboard.
+    Numerically, the stability of the simulation varies greatly with the time step state change tolerance $\Delta^{\rm tol}$, this could be improved using a higher-order integration scheme.
+    There are also many ideas for further customizations that would improve the live simulation dashboard, opening up future usage perspectives.
 
     % simply run: \mintinline{text}{pip install in-silico-cancer-cell}
     \vspace*{-1.2cm}

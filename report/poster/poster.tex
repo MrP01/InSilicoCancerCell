@@ -96,7 +96,6 @@
   \node[anchor=east] at ([xshift=2.5cm, yshift=-6cm]TP@title.east) {\includegraphics[height=5.2cm]{../logos/biotechmed-graz.eps}};
   % \node[] at (33.1in/2-10cm, -46.8in/2+4cm) {\includegraphics[width=15cm]{../logos/biotechmed-graz.eps}};
 
-
   \begin{columns}
     \column{0.25}
     \block{Introduction}{
@@ -105,10 +104,12 @@
       We improve on the A549 electrophysiological cancer cell model introduced in \cite{2021-A549-model,2024-calcium-channels}, combining numerical methods with an efficient implementation to reduce simulation time to a level where it is feasible for live interaction.
 
       \includegraphics[width=\linewidth]{../../figures/cell-by-langthaler-et-al.png}
-      [Image Source: \cite{2024-calcium-channels}].
+      Schematic Depiction of a cell, source: \cite{2024-calcium-channels}.
+      \vspace*{-8mm}
+
       We accelerated the simulation with adaptive timestepping and a highly efficient implementation in the Rust programming language.
-      The corresponding inverse problem is formulated into a quadratic program, solving it within milliseconds.
-      We introduce a visualisation approach of the entire model in the form of a live simulation dashboard available online, running directly in the browser.
+      The corresponding inverse problem is expressed as a quadratic program, solving it within milliseconds.
+      We introduce a visualisation approach of the entire model: a live simulation dashboard available online, running directly in the browser.
       % The entire source code is freely available on GitHub and reusable through three different channels: the simulation interface (powered by compilation to WebAssembly), the Rust linkable library implementation and a Python package.
 
       % \section*{Number of Channels}

@@ -103,9 +103,13 @@
       % We extend the previous work \cite{2021-A549-model} by a faster, in-browser implementation in Rust \cite{2014-rust} using compilation to WebAssembly.
 
       We improve on the A549 electrophysiological cancer cell model introduced in \cite{2021-A549-model,2024-calcium-channels}, combining numerical methods with an efficient implementation to reduce simulation time to a level where it is feasible for live interaction.
-      More specifically, we were able to accelerate the simulation with adaptive timestepping and a highly efficient implementation in the Rust programming language, while we also managed to approach the corresponding inverse problem using a quadratic program, solving it within milliseconds.
+
+      \includegraphics[width=\linewidth]{../../figures/cell-by-langthaler-et-al.png}
+      [Image Source: \cite{2024-calcium-channels}].
+      We accelerated the simulation with adaptive timestepping and a highly efficient implementation in the Rust programming language.
+      The corresponding inverse problem is formulated into a quadratic program, solving it within milliseconds.
       We introduce a visualisation approach of the entire model in the form of a live simulation dashboard available online, running directly in the browser.
-      The entire source code is freely available on GitHub and reusable through three different channels: the simulation interface (powered by compilation to WebAssembly), the Rust linkable library implementation and a Python package.
+      % The entire source code is freely available on GitHub and reusable through three different channels: the simulation interface (powered by compilation to WebAssembly), the Rust linkable library implementation and a Python package.
 
       % \section*{Number of Channels}
       % \begin{tabular}{lrr}

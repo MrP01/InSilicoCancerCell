@@ -1,4 +1,4 @@
-\documentclass[25pt, a0paper, portrait]{tikzposter}
+\documentclass[25pt, a0paper, portrait, blockbodyinnersep=5mm]{tikzposter}
 \usepackage[beamer]{prettytex/base}
 \usepackage{prettytex/math}
 \usepackage{prettytex/code}
@@ -50,10 +50,29 @@
   \colorlet{notefrcolor}{white}
 }
 
+\defineblockstyle{TUGrazBlockStyle}{
+  titlewidthscale=1, bodywidthscale=1, titleleft,
+  titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
+  bodyverticalshift=0pt, roundedcorners=0, linewidth=0.2cm,
+  titleinnersep=6mm, bodyinnersep=6mm
+}{
+  \begin{scope}[line width=\blocklinewidth, rounded corners=\blockroundedcorners]
+    \ifBlockHasTitle %
+      \draw[draw=none]
+          (blockbody.south west) rectangle (blocktitle.north east);
+      \draw[color=blocktitlebgcolor, solid, thin]
+          (blocktitle.south west) -- (blocktitle.south east);%
+    \else
+      \draw[draw=none]
+          (blockbody.south west) rectangle (blockbody.north east);
+    \fi
+  \end{scope}
+}
+
 \usetheme{Simple}
-\usecolorstyle{TUGrazColorStyle}
 \usetitlestyle{Empty}
-\useblockstyle{Minimal}
+\usecolorstyle{TUGrazColorStyle}
+\useblockstyle{TUGrazBlockStyle}
 
 \settitle{
   \vspace{0.4cm}
@@ -104,14 +123,14 @@
       %   TRPV3                 & 12                                         & 10                      \\
       %   CLC2                  & 13                                         & 234                     \\
       % \end{tabular}
-      \vspace*{-3.5cm}
+      \vspace*{-2.4cm}
     }
 
     \column{0.75}
-    \block{Live, In-Browser Cell Simulation Interface}{
+    \block{Live, In-Browser Cell Simulation Interface\vspace*{-0.16em}}{
       \includegraphics[width=\linewidth, trim={0 2.5cm 0 0}, clip]{../../figures/interface-a4.pdf}
-      Available live on \href{https://in-silico.hce.tugraz.at/}{in-silico.hce.tugraz.at}.
-      \vspace*{-3.5cm}
+      (Available online via \href{https://in-silico.hce.tugraz.at/}{in-silico.hce.tugraz.at}).
+      \vspace*{-2.4cm}
     }
   \end{columns}
 
@@ -130,7 +149,7 @@
         \vec{s}_{k,n+1} = H_{k}\left(V(t_n), \vec{C}(t_n), t_n\right) \vec{s}_{k,n}\,.
       \end{equation}
       % where $\vec{s}_{k,n} \in [0, 1]^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in [0, 1]^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$ with $\sum_{j=1}^{N_{s,k}} \{H_k\}_{i,j} = 1 \;\forall\,i$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
-      \vspace*{-3.5cm}
+      \vspace*{-3.0cm}
     }
     \block{Adaptive Timestepping}{
       \begin{equation}
@@ -143,16 +162,16 @@
       % \caption{Relative change of the average timestep $\Delta t$ (in blue), simulation runtime (in violet) and step acceptance rate (in green) when varying the delta tolerance $\Delta^{\rm tol}$ on a log-scale. All three quantities were normalized from their individual extent to $[0, 1]$. The most effective $\Delta^{\rm tol}$ is arguably on the order of $10^{-4}$.}
       % \label{figure:delta-tolerance}
       % \end{figure}
-      \vspace*{-3.5cm}
+      \vspace*{-3.0cm}
     }
-    \block{Pointwise Error between Simulation and Measurements}{
-      \includegraphics[width=\linewidth]{../../figures/results/simulation-error.pdf}
-      % \caption{Pointwise error between the measured current $\vec{I}_{\rm meas}$ and the simulated current $\vec{I}$, showing potential systematic problems within the computational model's representation of the ion channels as compared to the experimental results.}
-      \vspace*{-3.5cm}
-    }
+    % \block{Pointwise Error between Simulation and Measurements}{
+    %   \includegraphics[width=\linewidth]{../../figures/results/simulation-error.pdf}
+    %   % \caption{Pointwise error between the measured current $\vec{I}_{\rm meas}$ and the simulated current $\vec{I}$, showing potential systematic problems within the computational model's representation of the ion channels as compared to the experimental results.}
+    %   \vspace*{-3.0cm}
+    % }
 
     \column{0.5}
-    \block{Formulation as a Quadratic Program}{
+    \block{Formulation as a Quadratic Program\vspace*{-0.16em}}{
       We want to find
       \begin{equation}
         \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \frac{1}{2} \norm{R \vec{N} - \vec{I}_{\rm meas}}^2\,,
@@ -183,6 +202,7 @@
 
       The integer solution can then be obtained from rounding,
       $$\vec{N}_{\rm opt} = \lfloor \vec{x} \rceil \in \N_0^M\,.$$
+      \vspace*{-3.0cm}
     }
     \block{Comparison of Optimization Methods}{
       % \begin{table*}[ht]
@@ -199,11 +219,15 @@
       \end{tabular}
       % \label{table:optimization-comparison}
       % \end{table*}
+      \vspace*{-3.0cm}
     }
   \end{columns}
 
   \block{Conclusion}{
+    Efforts to further enhance and complete the first electrophysiological cancer cell model simulation were fruitful, resulting in a new library implementation, an improved inverse problem solution technique and a live in-browser simulation dashboard.
+
     simply run: \mintinline{text}{pip install in-silico-cancer-cell}
+    \vspace*{-2.0cm}
   }
 
   \block{References}{\printbibliography[heading=none]}

@@ -22,7 +22,7 @@ pyo3 = ["dep:pyo3"]
 pause-each-step = []
 
 [dependencies]
-nalgebra = "^0.33.2"
+nalgebra = "^0.32.6"
 log = "^0.4.22"
 simplelog = "^0.12.2"
 

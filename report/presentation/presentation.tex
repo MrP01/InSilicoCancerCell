@@ -1,0 +1,61 @@
+\documentclass[table, aspectratio=169]{beamer}
+
+\usetheme[serif, sansserifheader]{tugrazivc}
+% options:
+% * serif loads \lmodern and enables serifs everywhere
+% * webfonst loads switches to tugraz webfonts, more corporate
+% * sansserifheader removes serifs in headers and on title page
+% * sectionhead adds section names in header of each slide
+
+% use this theme if you want to get rid of the section header and use the tugraz webfont
+% \usetheme[webfonts]{tugrazivc}
+ 
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usetikzlibrary{overlay-beamer-styles}
+
+\usepackage{pgfplots} % Plots and diagrams
+\usetikzlibrary{shapes,shapes.misc}
+\DeclareUnicodeCharacter{2212}{−}
+\usepgfplotslibrary{groupplots,dateplot}
+\usetikzlibrary{patterns,shapes.arrows}
+\usepackage{tabularray}  % Coloured tables -- requires [table] option for beamer
+\usepackage{fontawesome} % Useful icons (\faName)
+\usepackage[style=ieee, bibencoding=utf8]{biblatex} % Bibliography
+\addbibresource{references.bib}
+\usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{csquotes}
+\usepackage{subcaption}
+\usepackage{varwidth}
+\usepackage{svg}
+\usepackage{booktabs}
+\usepackage{epigraph} 
+
+\usepackage[acronym, nomain]{glossaries}
+\usefonttheme{default}
+\addtobeamertemplate{frametitle}{}{\vspace*{-2em}}
+
+\makeglossaries
+\input{acronyms}
+
+\title[IVC Seminar SS2025]{In-Silico Cancer Cell}
+\author[Peter Waldert]{\textbf{Peter Waldert}}
+\date{\today}
+\institute{IVC}
+\instituteurl{ivc.tugraz.at}
+
+\begin{document}
+  \begin{frame}[plain]
+    \maketitle
+  \end{frame}
+
+  \section{Simulation}
+  \begin{frame}{Cancer Cell Simulation}
+    \begin{itemize}
+      \item Let's go!
+    \end{itemize}
+  \end{frame}
+\end{document}

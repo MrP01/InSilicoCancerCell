@@ -1,45 +1,17 @@
-\documentclass[table, aspectratio=169]{beamer}
-
+\documentclass[aspectratio=169, hyperref={colorlinks=true}]{beamer}
+\usepackage[beamer, collink]{prettytex/base}
+\usepackage{prettytex/math}
+\usepackage{prettytex/gfx}
+\usepackage{csquotes}
+\usepackage[backend=biber, style=numeric, maxbibnames=20]{biblatex}
+% \usepackage[acronym, style=long3col, indexonlyfirst=true, nogroupskip=true]{glossaries}
 \usetheme[serif, sansserifheader]{tugrazivc}
-% options:
-% * serif loads \lmodern and enables serifs everywhere
-% * webfonst loads switches to tugraz webfonts, more corporate
-% * sansserifheader removes serifs in headers and on title page
-% * sectionhead adds section names in header of each slide
 
-% use this theme if you want to get rid of the section header and use the tugraz webfont
-% \usetheme[webfonts]{tugrazivc}
- 
-\usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
-\usetikzlibrary{overlay-beamer-styles}
-
-\usepackage{pgfplots} % Plots and diagrams
-\usetikzlibrary{shapes,shapes.misc}
-\DeclareUnicodeCharacter{2212}{−}
-\usepgfplotslibrary{groupplots,dateplot}
-\usetikzlibrary{patterns,shapes.arrows}
-\usepackage{tabularray}  % Coloured tables -- requires [table] option for beamer
-\usepackage{fontawesome} % Useful icons (\faName)
-\usepackage[style=ieee, bibencoding=utf8]{biblatex} % Bibliography
-\addbibresource{references.bib}
-\usepackage{csquotes}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{bm}
-\usepackage{csquotes}
-\usepackage{subcaption}
-\usepackage{varwidth}
-\usepackage{svg}
-\usepackage{booktabs}
-\usepackage{epigraph}
-
-\usepackage[acronym, nomain]{glossaries}
 \usefonttheme{default}
-\addtobeamertemplate{frametitle}{}{\vspace*{-2em}}
+\addtobeamertemplate{frametitle}{}{\vspace*{-1em}}
 
-\makeglossaries
-\input{acronyms}
+% \makeglossaries
+% \input{acronyms}
 
 \addbibresource{../../literature/sources.bib}
 
@@ -94,7 +66,20 @@
 
   \begin{frame}{Hidden Markov Model}
     %% very nice, describe transition matrix and dependence on V, t
+    The whole cell current $I: T \to \R$ over time $t \in T \subset \R^+$ is the sum of all individual channel contributions $I_k, k \in \{1, ..., M\}$ over $M \in \N$ channel types
+    \begin{equation*}
+      I(t) := \sum_{k=1}^{M} N_k I_k(t) = \sum_{k=1}^{M} N_k g_k p_{o,k} \left(V(t)-E_k\right)\,.
+      \label{eq:current}
+    \end{equation*}
+    % where $N_k$ is the number of channels of type $k \in \{1, ..., M\}$, $g_k$ is the respective ion channel's conductivity, $p_{o, k} \in [0, 1]$ is the probability of observing the channel in a state where an ion current can flow (``open states''), $V: T \to \R$ is the voltage across the membrane and $E_k \in \R$ the reversal potential.
 
+    At each time step, the next state $\vec{s}_{k,n+1} \in [0, 1]^{N_{s,k}}$ of the $k$-th channel type is obtained by
+    \begin{equation*}
+      \vec{s}_{k,n+1} = H_{k}\left(V(t_n), \vec{C}(t_n), t_n\right) \vec{s}_{k,n}\,,
+      \quad\text{with}\quad
+      t_n := \sum_{i=0}^n (\Delta t)_i\,.
+    \end{equation*}
+    % where $\vec{s}_{k,n} \in [0, 1]^{N_{s,k}}$ is the state vector of ion channel type $k$ at the $n$-th time step, $H_{k}\left(V, \vec{C}, t_n\right) \in [0, 1]^{N_{s,k} \times N_{s,k}}$ the transition matrix for type $k$ with $\sum_{j=1}^{N_{s,k}} \{H_k\}_{i,j} = 1 \;\forall\,i$, $V(t_n)$ the voltage across the membrane at time $t_n$ and $\vec{C}(t_n) \in \R^4$ the concentrations of Kalium, Calcium, Sodium and Chlorine at time $t_n$.
   \end{frame}
 
   \begin{frame}{Solution of the Inverse Problem}

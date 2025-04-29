@@ -29,6 +29,3 @@ _minted-*
 *.pyg
 *.acn
 *.ist
-
-# For Overleaf...
-*.pdf

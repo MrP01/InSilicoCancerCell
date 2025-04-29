@@ -69,12 +69,13 @@
         \end{figure}
       \end{column}
       \begin{column}{0.58\textwidth}
-        Approach in which electrophysiological behaviour of a cell can be measured in a lab.
-
-        Patch-Clamping can be differentiated into two approaches:
         \begin{itemize}
-          \item the Cell-attached recording method and
-          \item the \emph{Whole-cell recording method}.
+          \item Approach in which electrophysiological behaviour of a cell can be measured in a lab (our data from TU Graz!).
+          \item Patch-Clamping can be differentiated into two approaches:
+                \begin{itemize}
+                  \item the Cell-attached recording method,
+                  \item the \emph{Whole-cell recording method}.
+                \end{itemize}
         \end{itemize}
       \end{column}
     \end{columns}
@@ -83,6 +84,12 @@
   \begin{frame}{Simulation of the Experiment}
     %% Multiple independent Ion Channels
     %% Each follows: $$
+    \begin{itemize}
+      \item We simulate each of the ion channels individually, once per type.
+      \item We know the ion channel types from previous research.
+      \item Models for each of them have been identified in long-standing collaborative effort.
+      \item We combine the models from literature into a full Rust implementation of each.
+    \end{itemize}
   \end{frame}
 
   \begin{frame}{Hidden Markov Model}
@@ -105,7 +112,11 @@
 
   \begin{frame}{Solution of the Inverse Problem}
     \begin{itemize}
-      \item We want to find
+      \item We want to find the best possible match between simulation and measurement current, so we take
+            $$\vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \int_T \norm{I_{{\rm sim}, \vec{N}}(t) - I_{\rm meas}(t)}^2 \idd t\,,$$
+      \item Where we optimise over the set $\N_0^M$ (for $M$ different channel types).
+      \item Using some algebra, one can separate the individual models and simulate their current profiles individually.
+      \item This makes the problem soluble much more efficiently (see later).
     \end{itemize}
   \end{frame}
 
@@ -124,7 +135,7 @@
     %% reformulation into a quadratic problem
     After simulation of the individual channel currents, we want to find
     \begin{equation*}
-      \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \frac{1}{2} \norm{R \vec{N} - \vec{d}}^2\,.
+      \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \frac{1}{2} \norm{R \vec{N} - \vec{d}}^2\,,
       \label{eq:minimization}
     \end{equation*}
     the number of channels per type, with $\vec{d} \in \R^{N_t}$ the experimentally measured current and $R \in \R^{N_t \times M}$ the matrix of all currents $I_k$ per channel type.
@@ -162,9 +173,10 @@
   \begin{frame}{Adaptive Timestepping}
     In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size $(\Delta t)_{n}$ based on
     \begin{equation*}
-      (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n+1} - \vec{s}_{k,n}}}\right)^{1/2}\,.
+      (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n+1} - \vec{s}_{k,n}}}\right)^{1/2}\,,
       \label{eq:dt-heuristic}
     \end{equation*}
+    where the heuristic we choose to stay fast while preventing instability of the simulation, is based on the difference in state change (and also dependent on the channel counts $\vec{N} \in \N_0^M$).
   \end{frame}
 
   \begin{frame}{Runtime Optimisation}
@@ -177,19 +189,48 @@
     \end{figure}
   \end{frame}
 
+  \begin{frame}{Optimisation Approaches}
+    % The different approaches were evaluated on the G0 cell cycle phase with the activation voltage protocol. Runtime estimates were obtained on an Intel\texttrademark i7-5600U CPU.
+    % \vspace{.5cm}
+    \scriptsize
+    \begin{table}
+      \begin{tabular}{lcrr}
+        \hline
+        \textbf{Algorithm}                          & \textbf{Abbreviation} & \textbf{Runtime} / ms & \textbf{RMSE} / pA \\
+        \hline
+        Particle Swarm Optimization                 & PSO                   & 22571                 & 27.69              \\
+        Gradient Descent + More Thuente             & GD                    & 18924                 & 32.34              \\
+        Limited-Memory BFGS + Hager Zhang           & LBFGS                 & 4845                  & 32.20              \\
+        Non-Negative Least Squares \cite{1997-nnls} & NNLS                  & 318                   & 28.00              \\
+        Quadratic Program                           & QP                    & 18                    & 28.13              \\
+        \hline
+      \end{tabular}
+      \caption{Comparison of different algorithms for the solution of the inverse problem.}
+    \end{table}
+  \end{frame}
+
+  \begin{frame}{Visualisation Idea and Accessibility}
+    \begin{itemize}
+      \item A complicated setup, hard to understand for non-experts
+      \item Make the simulation accessible by providing it in multiple formats
+      \item Rust linked library, Python (pip) package and visualisation dashboard! \\
+            \texttt{pip install in-silico-cancer-cell}
+    \end{itemize}
+  \end{frame}
+
   \begin{frame}{Visualisation Dashboard}
     %% Based on Astro and @observablehq/plot, but mostly:
-
-  \end{frame}
-  \begin{frame}{WebAssembly}
-    %% Compilation of Rust code
-    %% Solver: [insert]
+    \begin{figure}
+      \includegraphics[width=0.7\linewidth]{../../figures/above-the-fold-screenshot.png}
+    \end{figure}
   \end{frame}
 
-  \section{Simulation}
-  \begin{frame}{Cancer Cell Simulation}
+  \begin{frame}{Compilation to WebAssembly}
     \begin{itemize}
-      \item Let's go!
+      \item Rust's compiler can target \texttt{wasm} architectures.
+      \item Not all functionality is supported in a \texttt{wasm} environment, such as timing.
+      \item But of course, numerical code does run and we leverage the compile-time optimisations.
+      \item Communicate the results in-memory and visualise them using frontend libraries.
     \end{itemize}
   \end{frame}
 

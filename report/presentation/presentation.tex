@@ -7,8 +7,18 @@
 % \usepackage[acronym, style=long3col, indexonlyfirst=true, nogroupskip=true]{glossaries}
 \usetheme[serif, sansserifheader]{tugrazivc}
 
+\usepackage{xfrac}
+\usepackage{dsfont}
+
 \usefonttheme{default}
-\addtobeamertemplate{frametitle}{}{\vspace*{-1em}}
+\addtobeamertemplate{frametitle}{}{\vspace*{-1.5em}}
+% \captionsetup{font=small,labelfont=bf}
+
+\definecolor{TUGraz}{HTML}{f70146}
+% \definecolor{TUGraz}{HTML}{e4154b}
+\definecolor{Accent}{RGB}{136, 58, 234}
+\definecolor{AccentGreen}{RGB}{0, 128, 0}
+\definecolor{AccentBlue}{RGB}{0, 0, 255}
 
 % \makeglossaries
 % \input{acronyms}
@@ -26,15 +36,24 @@
     \maketitle
   \end{frame}
 
-  \begin{frame}{Biological Setting: Cancer Cell}
+  \begin{frame}{The Biological Setting: A Lung-Cancer Cell}
     %% A549 model (lung cancer)
     %% with picture
     \begin{columns}
-      \begin{column}{0.4\linewidth}
-        \includegraphics[width=\linewidth]{../../figures/cell-by-langthaler-et-al.png}
+      \begin{column}{0.42\textwidth}
+        \vspace*{-0.4cm}
+        \begin{figure}
+          \includegraphics[width=0.9\textwidth]{../../figures/cell-by-langthaler-et-al.png}
+          \caption{A549 Cancer Cell Model \cite{2021-A549-model}}
+        \end{figure}
       \end{column}
-      \begin{column}{0.58\linewidth}
-        Indeed
+      \begin{column}{0.58\textwidth}
+        \begin{itemize}
+          \item A human cell is complex. In this project, we focus on the electrophysiological behaviour! \pause
+          \item Specifically, on the ion channels on the membrane of an A549 cancer cell. \pause
+          \item We improve simulation of the world's first electrophysiological cancer cell model \cite{2021-A549-model}.
+          \item And visualise!
+        \end{itemize}
       \end{column}
     \end{columns}
   \end{frame}
@@ -43,17 +62,19 @@
     %% describe, with picture
     %% we measure current based on voltage changes
     \begin{columns}
-      \begin{column}{0.4\linewidth}
+      \begin{column}{0.4\textwidth}
         \begin{figure}
-          \includegraphics[width=\linewidth]{../../figures/patch-clamp-system.jpeg}
+          \includegraphics[width=\textwidth]{../../figures/patch-clamp-system.jpeg}
           \caption{Patch-Clamp System \cite{2025-patch-clamp-image}}
         \end{figure}
       \end{column}
-      \begin{column}{0.58\linewidth}
+      \begin{column}{0.58\textwidth}
         Approach in which electrophysiological behaviour of a cell can be measured in a lab.
+
+        Patch-Clamping can be differentiated into two approaches:
         \begin{itemize}
-          \item Cell-attached recording method
-          \item Whole-cell recording method
+          \item the Cell-attached recording method and
+          \item the \emph{Whole-cell recording method}.
         \end{itemize}
       \end{column}
     \end{columns}
@@ -83,13 +104,77 @@
   \end{frame}
 
   \begin{frame}{Solution of the Inverse Problem}
+    \begin{itemize}
+      \item We want to find
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}{Runtime Optimisation}
+    The original MatLab implementation ran the entire night, so:
+    \begin{itemize}
+      \item Improve what we simulate
+      \item Improve how we simulate
+      \item Improve the inverse solution method
+      \item Improve the solver
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}[allowframebreaks]{Quadratic Problem Formulation}
     %% using different methods, based on LSQ.
     %% reformulation into a quadratic problem
+    After simulation of the individual channel currents, we want to find
+    \begin{equation*}
+      \vec{N}_{\rm opt} = \argmin_{\vec{N} \in \N_0^M} \frac{1}{2} \norm{R \vec{N} - \vec{d}}^2\,.
+      \label{eq:minimization}
+    \end{equation*}
+    the number of channels per type, with $\vec{d} \in \R^{N_t}$ the experimentally measured current and $R \in \R^{N_t \times M}$ the matrix of all currents $I_k$ per channel type.
+    We find
+    $$\vec{N}_{\rm opt} \approx \argmin_{\vec{x} \in \R_+^M} f(\vec{x}) = \argmin_{\vec{x} \in \R_+^M} \sfrac{1}{2} \norm{R \vec{x} - \vec{d}}^2\,.$$
+
+    We manipulate the cost function $f: \R^M \to \R^+$,
+    \begin{align*}
+      f(\vec{x}) & = \sfrac{1}{2} (R \vec{x} - \vec{d})^T (R \vec{x} - \vec{d})                                                          \\
+                 & = \sfrac{1}{2} \left(\vec{x}^T R^T R \vec{x} - \vec{x}^T R^T \vec{d} - \vec{d}^T R \vec{x} + \vec{d}^T \vec{d}\right) \\
+                 & = \sfrac{1}{2} \left(\vec{x}^T P \vec{x} + \vec{x}^T \vec{q} + \vec{q}^T \vec{x}\right) + \mathcal{O}(1)              \\
+                 & = \sfrac{1}{2} \vec{x}^T P \vec{x} + \vec{q}^T \vec{x} + \mathcal{O}(1)
+    \end{align*}
+    where we let $P := R^T R \in \R^{M \times M}$ and $\vec{q} := -R^T \vec{d} \in \R^M$ and leave out the constant $\vec{d}^T \vec{d}$ as $\mathcal{O}(1)$.
+
+    We can express the nonnegativity constraint $\vec{x} \ge \vec{0}$ as an equality constraint using a slack variable $\vec{s} \in \R_+^M$,
+    $$-\vec{x} + \vec{s} = \vec{0} \quad\Leftrightarrow\quad A \vec{x} + \vec{s} = \vec{b}\,\quad \text{with}\quad A = -\mathds{1} \in \R^{M \times M} \;\;\text{and}\;\; \vec{b} = \vec{0} \in \R^M\,.$$
+    This leaves us with a constrained \textit{quadratic program},
+    \begin{align*}
+      \min_{\vec{x} \in \R^M}\; & \sfrac{1}{2}\, \vec{x}^T P \vec{x} + \vec{q}^T \vec{x},  \\
+      s.t.\;                    & A \vec{x} + \vec{s} = \vec{b}\,,\; \vec{s} \in \R_+^M\,.
+    \end{align*}
+
+    % We solve the quadratic problem in this exact form using Clarabel \cite{2024-clarabel}.
+    % Note that in Clarabel notation, the slack variable is to be taken as an element of the nonnegativity cone.
+
+    The integer solution can then be obtained from rounding,
+    $$\vec{N}_{\rm opt} = \lfloor \vec{x} \rceil \in \N_0^M\,.$$
+
+    One obtains:
+    $$\vec{N}_{\rm opt} = [13, 247, 10, 1176, 38, 7, 24, 188, 15, 10, 234]\,,$$
+    for the G0 cell cycle phase.
+  \end{frame}
+
+  \begin{frame}{Adaptive Timestepping}
+    In order to accelerate the simulation in areas where there is little change to the dynamics, we choose an adaptive step size $(\Delta t)_{n}$ based on
+    \begin{equation*}
+      (\Delta t)_{n+1} = (\Delta t)_{n} \left(\frac{\Delta^{\rm tol}}{\sum_{k=1}^{M} N_k \norm{\vec{s}_{k,n+1} - \vec{s}_{k,n}}}\right)^{1/2}\,.
+      \label{eq:dt-heuristic}
+    \end{equation*}
   \end{frame}
 
   \begin{frame}{Runtime Optimisation}
     %% using adaptive timestepping
-
+    \begin{figure}
+      \includegraphics[width=0.65\textwidth]{../../figures/results/delta-tolerance.pdf}
+      \caption{
+        Relative change of the average timestep $\Delta t$ (in \col{AccentBlue}{blue}), simulation runtime (in \col{Accent}{violet}) and step acceptance rate (in \col{AccentGreen}{green}) when varying the delta tolerance $\Delta^{\rm tol}$.
+      }
+    \end{figure}
   \end{frame}
 
   \begin{frame}{Visualisation Dashboard}

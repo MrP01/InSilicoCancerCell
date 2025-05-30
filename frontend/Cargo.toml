@@ -9,10 +9,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 in_silico_cancer_cell = { path = "../", default-features = false }
-wasm-bindgen = "0.2.92"
+wasm-bindgen = "0.2.100"
 console_error_panic_hook = "0.1.7"
 wee_alloc = { version = "0.4.5", optional = true }
-serde = { version = "1.0.203", features = ["derive"] }
+serde = { version = "1.0.219", features = ["derive"] }
 serde-wasm-bindgen = "0.6.5"
 
 [features]
@@ -24,12 +24,12 @@ default = ["wee_alloc"]
 
 # The `web-sys` crate allows you to interact with the various browser APIs, like the DOM.
 [dependencies.web-sys]
-version = "0.3.69"
+version = "0.3.77"
 features = ["console"]
 
 # These crates are used for running unit tests.
 [dev-dependencies]
-wasm-bindgen-test = "0.3.42"
-wasm-bindgen-futures = "0.4.42"
-futures = "0.3.30"
-js-sys = "0.3.69"
+wasm-bindgen-test = "0.3.50"
+wasm-bindgen-futures = "0.4.50"
+futures = "0.3.31"
+js-sys = "0.3.77"

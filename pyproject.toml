@@ -34,7 +34,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-matplotlib = "^3.10.3"
+matplotlib = "^3.10.5"
 numpy = "^2.3.2"
 clarabel = "^0.11.1"
 

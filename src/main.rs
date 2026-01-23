@@ -9,9 +9,9 @@ mod patchclampdata;
 mod pulseprotocol;
 mod utils;
 
-use cell::evaluate_match;
 use cell::A549CancerCell;
 use cell::TotalCurrentRecord;
+use cell::evaluate_match;
 use clap::{Parser, Subcommand};
 use patchclampdata::{CellPhase, PatchClampData, PatchClampProtocol};
 use pulseprotocol::ProtocolGenerator;
@@ -111,7 +111,7 @@ pub fn compare_delta_tolerance(measurements: PatchClampData) {
 #[command(
   about = "In-Silico Cancer Cell Model Simulator",
   author = "Peter Waldert <peter@waldert.at>",
-  version = "0.2.3"
+  version = "0.2.4"
 )]
 struct Cli {
   /// Turn debugging information on

@@ -32,10 +32,10 @@ pyo3 = { version = "^0.27.2", optional = true, features = ["extension-module"] }
 argmin = { version = "^0.10.0", features = ["rayon", "wasm-bindgen"], optional = true }
 argmin-math = { version = "^0.4.0", features = ["nalgebra_latest"], optional = true }
 serde = { version = "^1.0.228", features = ["derive"], optional = true }
-serde_json = { version = "^1.0.145", optional = true }
-clap = { version = "^4.5.53", features = ["derive"], optional = true }
+serde_json = { version = "^1.0.149", optional = true }
+clap = { version = "^4.5.54", features = ["derive"], optional = true }
 rand = "^0.8.5"
-getrandom = { version = "^0.2.16", features = ["js"] }
+getrandom = { version = "^0.2.17", features = ["js"] }
 enum-iterator = "^2.3.0"
 
 [workspace]

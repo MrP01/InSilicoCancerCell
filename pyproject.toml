@@ -1,48 +1,35 @@
 [project]
 name = "in_silico_cancer_cell"
+version = "0.2.3"
 description = "Simulation of an electrophysiological A549 cancer cell model using individual ion channels across the membrane"
+authors = [{ name = "MrP01", email = "peter@waldert.at" }]
 requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT"
 classifiers = [
   "Programming Language :: Rust",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dynamic = ["version"]
+dependencies = ["matplotlib>=3.10.5", "numpy>=2.3.2", "clarabel>=0.11.1"]
 
 [project.urls]
 homepage = "https://in-silico-cancer-cell.waldert.at/"
 repository = "https://github.com/MrP01/InSilicoCancerCell"
+
+[dependency-groups]
+dev = ["ipython>=9.4.0", "pytest>=8.4.1", "scipy>=1.16.1", "invoke>=2.2.0"]
 # documentation = "readthedocs.org"
 # changelog = "github.com/me/spam/blob/master/CHANGELOG.md"
 
 [build-system]
-requires = ["maturin>=1.5,<2.0"]
+requires = ["maturin>=1.5"]
 build-backend = "maturin"
 
 [tool.maturin]
 python-source = "python"
 module-name = "in_silico_cancer_cell._in_rusty_silico"
 features = ["pyo3/extension-module"]
-
-[tool.poetry]
-name = "in_silico_cancer_cell"
-version = "0.2.3"
-description = "Electrophysiological model of an A549 cancer cell"
-authors = ["MrP01 <peter@waldert.at>"]
-license = "MIT"
-readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-matplotlib = "^3.10.5"
-numpy = "^2.3.2"
-clarabel = "^0.11.1"
-
-[tool.poetry.group.dev.dependencies]
-ipython = "^9.4.0"
-pytest = "^8.4.1"
-scipy = "^1.16.1"
-invoke = "^2.2.0"
 
 [tool.ruff]
 line-length = 120

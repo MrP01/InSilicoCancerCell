@@ -25,6 +25,7 @@ jobs:
 
       # builds frontend with wasm-pack
       - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile # also include the "dev" dependencies (e.g. wasm-pack)
       - run: bun run wasm-pack build frontend --release
       - run: |
           cargo run --release --target=${{ matrix.target }} -- --protocol activation --phase g0 save-patch-clamp-data

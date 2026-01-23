@@ -24,8 +24,8 @@ jobs:
         run: cargo build --release --target=${{ matrix.target }}
 
       # builds frontend with wasm-pack
-      - uses: bahmutov/npm-install@v1
-      - run: yarn run wasm-pack build frontend --release
+      - uses: oven-sh/setup-bun@v2
+      - run: bun run wasm-pack build frontend --release
       - run: |
           cargo run --release --target=${{ matrix.target }} -- --protocol activation --phase g0 save-patch-clamp-data
           cargo run --release --target=${{ matrix.target }} -- --protocol deactivation --phase g0 save-patch-clamp-data
@@ -34,7 +34,7 @@ jobs:
           cargo run --release --target=${{ matrix.target }} -- --protocol deactivation --phase g1 save-patch-clamp-data
           cargo run --release --target=${{ matrix.target }} -- --protocol ramp --phase g1 save-patch-clamp-data
           echo "[]" > frontend/pkg/delta-tolerance.json
-      - run: yarn run build
+      - run: bun run build
       # deploy to Netlify
       - uses: jsmrcaga/action-netlify-deploy@master
         # if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux'

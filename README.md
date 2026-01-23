@@ -8,7 +8,7 @@ This software comes in three flavours:
 
 - to run the `main.rs` simulation, do `cargo run`,
 - to compile the Python module, do `maturin develop --features pyo3`,
-- to precompile for the Astro dashboard, do `yarn run wasm-pack build frontend`.
+- to precompile for the Astro dashboard, do `bun run wasm-pack build frontend`.
 
 ## A visual to capture your interest:
 

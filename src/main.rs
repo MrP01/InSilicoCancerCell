@@ -111,7 +111,7 @@ pub fn compare_delta_tolerance(measurements: PatchClampData) {
 #[command(
   about = "In-Silico Cancer Cell Model Simulator",
   author = "Peter Waldert <peter@waldert.at>",
-  version = "0.2.4"
+  version = "0.2.5"
 )]
 struct Cli {
   /// Turn debugging information on

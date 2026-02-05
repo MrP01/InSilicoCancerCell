@@ -137,7 +137,7 @@ jobs:
         with:
           command: sdist
           args: --out dist
-      - name: Upload sdist
+      - name: Upload sdist as a GitHub artifact
         uses: actions/upload-artifact@v4
         with:
           name: wheels-sdist

@@ -11,16 +11,16 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["matplotlib>=3.10.5", "numpy>=2.3.2", "clarabel>=0.11.1"]
+dependencies = ["matplotlib>=3.10.8", "numpy>=2.4.2", "clarabel>=0.11.1"]
 
 [project.urls]
 homepage = "https://in-silico-cancer-cell.waldert.at/"
 repository = "https://github.com/MrP01/InSilicoCancerCell"
-
-[dependency-groups]
-dev = ["ipython>=9.4.0", "pytest>=8.4.1", "scipy>=1.16.1", "invoke>=2.2.0"]
 # documentation = "readthedocs.org"
 # changelog = "github.com/me/spam/blob/master/CHANGELOG.md"
+
+[dependency-groups]
+dev = ["ipython>=9.10.0", "pytest>=9.0.2", "scipy>=1.17.0", "invoke>=2.2.1"]
 
 [build-system]
 requires = ["maturin>=1.5"]

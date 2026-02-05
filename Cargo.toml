@@ -2,6 +2,7 @@
 name = "in_silico_cancer_cell"
 version = "0.2.4"
 edition = "2024"
+include = ["/src", "/python/in_silico_cancer_cell"]
 
 [lib]
 name = "in_silico_cancer_cell"
